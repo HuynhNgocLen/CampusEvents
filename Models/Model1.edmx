@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="DangKySuKien">
+          <Key>
+            <PropertyRef Name="MaEvent" />
+            <PropertyRef Name="IDSinhVien" />
+          </Key>
+          <Property Name="MaEvent" Type="int" Nullable="false" />
+          <Property Name="IDSinhVien" Type="varchar" MaxLength="13" Nullable="false" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="TrangThai" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="EVENT">
+          <Key>
+            <PropertyRef Name="MaEnven" />
+          </Key>
+          <Property Name="MaEnven" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenEvent" Type="nvarchar" MaxLength="250" />
+          <Property Name="NgayCapNhat" Type="date" />
+          <Property Name="NgayHetHan" Type="date" />
+          <Property Name="ChiTiet" Type="nvarchar(max)" />
+          <Property Name="MoTa" Type="nvarchar(max)" />
+          <Property Name="NguoiDang" Type="varchar" MaxLength="13" />
+          <Property Name="LuotXem" Type="int" />
+          <Property Name="SoLuongDangKy" Type="int" />
+        </EntityType>
+        <EntityType Name="MaNghanh">
+          <Key>
+            <PropertyRef Name="MaNghanh" />
+          </Key>
+          <Property Name="MaNghanh" Type="varchar" MaxLength="6" Nullable="false" />
+          <Property Name="TenNghanh" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="SinhVien">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="varchar" MaxLength="13" Nullable="false" />
+          <Property Name="Ten" Type="nvarchar" MaxLength="100" />
+          <Property Name="NgayThangNamSinh" Type="date" />
+          <Property Name="SDT" Type="varchar" MaxLength="10" />
+          <Property Name="MaNghanh" Type="varchar" MaxLength="6" />
+          <Property Name="Vien" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <Association Name="FK_DangKy_Event">
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
+          <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EVENT">
+              <PropertyRef Name="MaEnven" />
+            </Principal>
+            <Dependent Role="DangKySuKien">
+              <PropertyRef Name="MaEvent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DangKy_SinhVien">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="1" />
+          <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DangKySuKien">
+              <PropertyRef Name="IDSinhVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_USER">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="NguoiDang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SINHVIEN_NGHANH">
+          <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="0..1" />
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaNghanh">
+              <PropertyRef Name="MaNghanh" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaNghanh" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="school_event_managementModelStoreContainer">
+          <EntitySet Name="DangKySuKien" EntityType="Self.DangKySuKien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EVENT" EntityType="Self.EVENT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MaNghanh" EntityType="Self.MaNghanh" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SinhVien" EntityType="Self.SinhVien" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
+            <End Role="EVENT" EntitySet="EVENT" />
+            <End Role="DangKySuKien" EntitySet="DangKySuKien" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DangKy_SinhVien" Association="Self.FK_DangKy_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhVien" />
+            <End Role="DangKySuKien" EntitySet="DangKySuKien" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_USER" Association="Self.FK_EVENT_USER">
+            <End Role="SinhVien" EntitySet="SinhVien" />
+            <End Role="EVENT" EntitySet="EVENT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
+            <End Role="MaNghanh" EntitySet="MaNghanh" />
+            <End Role="SinhVien" EntitySet="SinhVien" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="school_event_managementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="DangKySuKien">
+          <Key>
+            <PropertyRef Name="MaEvent" />
+            <PropertyRef Name="IDSinhVien" />
+          </Key>
+          <Property Name="MaEvent" Type="Int32" Nullable="false" />
+          <Property Name="IDSinhVien" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="EVENT" Relationship="Self.FK_DangKy_Event" FromRole="DangKySuKien" ToRole="EVENT" />
+          <NavigationProperty Name="SinhVien" Relationship="Self.FK_DangKy_SinhVien" FromRole="DangKySuKien" ToRole="SinhVien" />
+        </EntityType>
+        <EntityType Name="EVENT">
+          <Key>
+            <PropertyRef Name="MaEnven" />
+          </Key>
+          <Property Name="MaEnven" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenEvent" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="0" />
+          <Property Name="NgayHetHan" Type="DateTime" Precision="0" />
+          <Property Name="ChiTiet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NguoiDang" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="LuotXem" Type="Int32" />
+          <Property Name="SoLuongDangKy" Type="Int32" />
+          <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_Event" FromRole="EVENT" ToRole="DangKySuKien" />
+          <NavigationProperty Name="SinhVien" Relationship="Self.FK_EVENT_USER" FromRole="EVENT" ToRole="SinhVien" />
+        </EntityType>
+        <EntityType Name="MaNghanh">
+          <Key>
+            <PropertyRef Name="MaNghanh1" />
+          </Key>
+          <Property Name="MaNghanh1" Type="String" MaxLength="6" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TenNghanh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="SinhViens" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="MaNghanh" ToRole="SinhVien" />
+        </EntityType>
+        <EntityType Name="SinhVien">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Ten" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
+          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="Vien" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
+          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_USER" FromRole="SinhVien" ToRole="EVENT" />
+          <NavigationProperty Name="MaNghanh1" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
+        </EntityType>
+        <Association Name="FK_DangKy_Event">
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
+          <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EVENT">
+              <PropertyRef Name="MaEnven" />
+            </Principal>
+            <Dependent Role="DangKySuKien">
+              <PropertyRef Name="MaEvent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DangKy_SinhVien">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="1" />
+          <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DangKySuKien">
+              <PropertyRef Name="IDSinhVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_USER">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="NguoiDang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SINHVIEN_NGHANH">
+          <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="0..1" />
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaNghanh">
+              <PropertyRef Name="MaNghanh1" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaNghanh" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="school_event_managementEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="DangKySuKiens" EntityType="Self.DangKySuKien" />
+          <EntitySet Name="EVENTs" EntityType="Self.EVENT" />
+          <EntitySet Name="MaNghanhs" EntityType="Self.MaNghanh" />
+          <EntitySet Name="SinhViens" EntityType="Self.SinhVien" />
+          <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
+            <End Role="EVENT" EntitySet="EVENTs" />
+            <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DangKy_SinhVien" Association="Self.FK_DangKy_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_USER" Association="Self.FK_EVENT_USER">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="EVENT" EntitySet="EVENTs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
+            <End Role="MaNghanh" EntitySet="MaNghanhs" />
+            <End Role="SinhVien" EntitySet="SinhViens" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="school_event_managementModelStoreContainer" CdmEntityContainer="school_event_managementEntities">
+          <EntitySetMapping Name="DangKySuKiens">
+            <EntityTypeMapping TypeName="school_event_managementModel.DangKySuKien">
+              <MappingFragment StoreEntitySet="DangKySuKien">
+                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
+                <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EVENTs">
+            <EntityTypeMapping TypeName="school_event_managementModel.EVENT">
+              <MappingFragment StoreEntitySet="EVENT">
+                <ScalarProperty Name="MaEnven" ColumnName="MaEnven" />
+                <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
+                <ScalarProperty Name="ChiTiet" ColumnName="ChiTiet" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="NguoiDang" ColumnName="NguoiDang" />
+                <ScalarProperty Name="LuotXem" ColumnName="LuotXem" />
+                <ScalarProperty Name="SoLuongDangKy" ColumnName="SoLuongDangKy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MaNghanhs">
+            <EntityTypeMapping TypeName="school_event_managementModel.MaNghanh">
+              <MappingFragment StoreEntitySet="MaNghanh">
+                <ScalarProperty Name="MaNghanh1" ColumnName="MaNghanh" />
+                <ScalarProperty Name="TenNghanh" ColumnName="TenNghanh" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SinhViens">
+            <EntityTypeMapping TypeName="school_event_managementModel.SinhVien">
+              <MappingFragment StoreEntitySet="SinhVien">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Ten" ColumnName="Ten" />
+                <ScalarProperty Name="NgayThangNamSinh" ColumnName="NgayThangNamSinh" />
+                <ScalarProperty Name="SDT" ColumnName="SDT" />
+                <ScalarProperty Name="MaNghanh" ColumnName="MaNghanh" />
+                <ScalarProperty Name="Vien" ColumnName="Vien" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
