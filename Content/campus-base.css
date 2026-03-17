@@ -1,0 +1,151 @@
+/* ============================================================
+   Content/campus-base.css
+   Reset · Typography · Layout helpers · Badges
+   ============================================================ */
+
+/* ── Reset nhẹ (Bootstrap đã có, chỉ bổ sung) ─────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--transition), color var(--transition);
+}
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+/* ── Page shell ─────────────────────────────────────────────── */
+.ce-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: var(--navbar-h);
+}
+.ce-main { flex: 1; }
+
+/* ── Badges ─────────────────────────────────────────────────── */
+.ce-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px; font-weight: var(--fw-semibold);
+  letter-spacing: .04em; text-transform: uppercase;
+  line-height: 1.5;
+}
+.ce-badge-primary { background: var(--primary-light); color: var(--primary); }
+.ce-badge-success { background: #dcfce7; color: #16a34a; }
+.ce-badge-warning { background: #fef9c3; color: #ca8a04; }
+.ce-badge-danger  { background: #fee2e2; color: #dc2626; }
+.ce-badge-neutral { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+
+[data-theme="dark"] .ce-badge-success { background: rgba(34,197,94,.12); color: #4ade80; }
+[data-theme="dark"] .ce-badge-warning { background: rgba(245,158,11,.12); color: #fbbf24; }
+[data-theme="dark"] .ce-badge-danger  { background: rgba(239,68,68,.12);  color: #f87171; }
+
+/* ── Cards chung ─────────────────────────────────────────────── */
+.ce-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Section title ───────────────────────────────────────────── */
+.ce-section-title {
+  font-size: 1.2rem; font-weight: var(--fw-bold); color: var(--text);
+  display: flex; align-items: center; gap: .5rem;
+}
+.ce-section-title::before {
+  content: ''; display: block;
+  width: 4px; height: 20px;
+  background: var(--primary); border-radius: 999px;
+}
+
+/* ── Filter chips ────────────────────────────────────────────── */
+.ce-chips {
+  display: flex; align-items: center; gap: .5rem;
+  flex-wrap: nowrap; overflow-x: auto;
+  padding-bottom: 2px; scrollbar-width: none;
+}
+.ce-chips::-webkit-scrollbar { display: none; }
+
+.ce-chip {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .35rem .875rem;
+  border-radius: var(--radius-full);
+  font-size: .8rem; font-weight: var(--fw-semibold);
+  border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text-muted);
+  cursor: pointer; white-space: nowrap;
+  transition: all var(--transition); user-select: none;
+  font-family: var(--font-main);
+}
+.ce-chip:hover,
+.ce-chip.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.ce-chip .material-symbols-outlined { font-size: 15px; }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.ce-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 3rem 1rem; text-align: center; gap: .75rem;
+}
+.ce-empty .material-symbols-outlined { font-size: 3rem; color: var(--text-light); }
+.ce-empty__title { font-size: 1.1rem; font-weight: var(--fw-bold); }
+.ce-empty__sub { font-size: .875rem; color: var(--text-muted); max-width: 300px; }
+
+/* ── Toast container ─────────────────────────────────────────── */
+.ce-toast-wrap {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  z-index: 9999; display: flex; flex-direction: column; gap: .5rem;
+}
+.ce-toast {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: .8rem 1.1rem;
+  display: flex; align-items: center; gap: .75rem;
+  box-shadow: var(--shadow-md); min-width: 240px; max-width: 320px;
+  font-size: .875rem; font-weight: var(--fw-medium); color: var(--text);
+  animation: ceToastIn .3s ease;
+}
+.ce-toast-success { border-left: 4px solid var(--success); }
+.ce-toast-error   { border-left: 4px solid var(--danger); }
+.ce-toast-info    { border-left: 4px solid var(--primary); }
+.ce-toast .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
+.ce-toast-success .material-symbols-outlined { color: var(--success); }
+.ce-toast-error   .material-symbols-outlined { color: var(--danger); }
+.ce-toast-info    .material-symbols-outlined { color: var(--primary); }
+
+@keyframes ceToastIn {
+  from { opacity: 0; transform: translateX(1rem); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+.ce-tabs {
+  display: flex; border-bottom: 2px solid var(--border);
+  gap: .25rem; overflow-x: auto; scrollbar-width: none;
+}
+.ce-tabs::-webkit-scrollbar { display: none; }
+.ce-tab-btn {
+  padding: .6rem 1rem; font-family: var(--font-main);
+  font-size: .875rem; font-weight: var(--fw-semibold);
+  color: var(--text-muted); border: none; border-bottom: 2px solid transparent;
+  background: none; cursor: pointer; white-space: nowrap;
+  transition: all var(--transition); margin-bottom: -2px;
+}
+.ce-tab-btn:hover { color: var(--primary); }
+.ce-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.ce-tab-pane { display: none; }
+.ce-tab-pane.active { display: block; }
+
+/* ── Reveal animation (scroll) ───────────────────────────────── */
+.ce-reveal {
+  opacity: 0; transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.ce-reveal.visible { opacity: 1; transform: none; }

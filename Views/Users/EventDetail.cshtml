@@ -1,0 +1,250 @@
+@* Views/Users/EventDetail.cshtml — Chi tiết sự kiện + đăng ký *@
+@{
+    ViewBag.Title      = "Chi tiết Sự kiện";
+    ViewBag.ActivePage = "events";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+}
+
+<div class="container py-4">
+
+    @* Back *@
+    <a href="@Url.Action("Index","Users")"
+       style="display:inline-flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:600;color:var(--text-muted);margin-bottom:1.25rem">
+        <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
+        Quay lại danh sách
+    </a>
+
+    <div class="row g-4">
+
+        @* ── LEFT: Event info ── *@
+        <div class="col-lg-8">
+
+            @* Banner *@
+            <div class="ce-event-banner ce-reveal mb-4">
+                <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0e2a44,#137fec 55%,#38bdf8)"></div>
+                <div class="ce-event-banner__overlay"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);opacity:.1">
+                    <span class="material-symbols-outlined" style="font-size:140px;color:#fff">computer</span>
+                </div>
+                <div class="ce-event-banner__content">
+                    <div class="d-flex gap-2 mb-2 flex-wrap">
+                        <span class="ce-badge ce-badge-primary">Học thuật</span>
+                        <span class="ce-badge ce-badge-warning">Sắp đầy</span>
+                    </div>
+                    <h1>Annual Tech Symposium 2025</h1>
+                    <p style="opacity:.82;font-size:.88rem;margin-top:.4rem">
+                        Tổ chức bởi <strong>Khoa Công nghệ Thông tin</strong>
+                    </p>
+                </div>
+            </div>
+
+            @* Info grid *@
+            <div class="ce-info-grid ce-reveal mb-4">
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">calendar_today</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Ngày tổ chức</div>
+                        <div class="ce-info-item__val">Thứ Sáu, 21/03/2025</div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">schedule</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Thời gian</div>
+                        <div class="ce-info-item__val">08:00 – 17:00</div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">location_on</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Địa điểm</div>
+                        <div class="ce-info-item__val">Hội trường A – Cơ sở 1</div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">person</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Người phụ trách</div>
+                        <div class="ce-info-item__val">Nguyễn Văn An</div>
+                    </div>
+                </div>
+            </div>
+
+            @* Description *@
+            <div class="ce-card p-4 ce-reveal mb-4">
+                <h3 class="ce-section-title mb-3">Mô tả sự kiện</h3>
+                <div style="font-size:.875rem;color:var(--text-muted);line-height:1.85">
+                    <p>Tech Symposium 2025 là sự kiện học thuật thường niên lớn nhất của Khoa Công nghệ Thông tin.</p>
+                    <p class="mt-2">Chủ đề năm nay: <strong style="color:var(--text)">Trí tuệ nhân tạo &amp; Tương lai số</strong> – bao gồm Machine Learning, Cloud, Cybersecurity và Blockchain.</p>
+                    <p class="mt-2">Cơ hội kết nối với chuyên gia, tìm hiểu thực tập và tham gia thi hackathon.</p>
+                </div>
+
+                <div class="mt-4">
+                    <h5 style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">Chương trình</h5>
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var s in new[] {
+                            new { Time="08:00", Label="Đón tiếp & Check-in" },
+                            new { Time="08:30", Label="Khai mạc & Phát biểu chào mừng" },
+                            new { Time="09:00", Label="Keynote: AI trong kỷ nguyên số" },
+                            new { Time="10:30", Label="Phiên workshop song song (4 chủ đề)" },
+                            new { Time="12:00", Label="Nghỉ trưa & Networking" },
+                            new { Time="13:30", Label="Cuộc thi Hackathon 4 tiếng" },
+                            new { Time="17:00", Label="Trao giải & Bế mạc" },
+                        }) {
+                        <div style="display:flex;align-items:center;gap:.875rem;padding:.55rem .875rem;background:var(--surface-2);border-radius:var(--radius);font-size:.83rem">
+                            <span style="font-weight:700;color:var(--primary);min-width:38px">@s.Time</span>
+                            <span style="color:var(--text)">@s.Label</span>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        @* ── RIGHT: Registration card ── *@
+        <div class="col-lg-4">
+            <div class="ce-sticky-reg ce-reveal">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 style="font-size:1.05rem;font-weight:800;margin:0">Đăng ký tham dự</h4>
+                    <span class="ce-badge ce-badge-primary">Miễn phí</span>
+                </div>
+
+                @* Capacity *@
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span style="font-size:.78rem;color:var(--text-muted)">Số chỗ</span>
+                        <span style="font-size:.78rem;font-weight:700;color:var(--danger)">158 / 200</span>
+                    </div>
+                    <div class="ce-cap-bar">
+                        <div class="ce-cap-bar__fill high" style="width:79%"></div>
+                    </div>
+                    <p style="font-size:.73rem;color:var(--text-muted);margin-top:.35rem">⚠️ Chỉ còn 42 chỗ – Đăng ký sớm!</p>
+                </div>
+
+                @* Deadline *@
+                <div style="background:var(--surface-2);border-radius:var(--radius);padding:.8rem;margin-bottom:1.1rem">
+                    <div style="display:flex;align-items:center;gap:.5rem;font-size:.83rem">
+                        <span class="material-symbols-outlined" style="font-size:17px;color:var(--accent)">timer</span>
+                        <div>
+                            <div style="font-weight:600;color:var(--text)">Hạn đăng ký: 19/03/2025</div>
+                            <div style="font-size:.73rem;color:var(--text-muted)">Còn 2 ngày</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg mb-2"
+                        type="button" onclick="ceOpenModal('modal-register')">
+                    <span class="material-symbols-outlined">how_to_reg</span> Đăng ký ngay
+                </button>
+                <button class="ce-btn ce-btn-ghost ce-btn-block" type="button"
+                        onclick="CeToast.show('Đã lưu sự kiện','success')">
+                    <span class="material-symbols-outlined" style="font-size:16px">favorite_border</span> Lưu sự kiện
+                </button>
+
+                @* Share *@
+                <div class="mt-3 pt-3" style="border-top:1px solid var(--border)">
+                    <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.55rem">Chia sẻ</p>
+                    <div class="d-flex gap-2">
+                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1"
+                                onclick="CeToast.show('Đã sao chép liên kết!','success')">
+                            <span class="material-symbols-outlined" style="font-size:14px">link</span> Link
+                        </button>
+                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1">
+                            <span class="material-symbols-outlined" style="font-size:14px">mail</span> Email
+                        </button>
+                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1"
+                                onclick="ceOpenModal('modal-qr-view')">
+                            <span class="material-symbols-outlined" style="font-size:14px">qr_code</span> QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@* ══════════ REGISTER MODAL ══════════ *@
+<div class="ce-modal-overlay" id="modal-register">
+    <div class="ce-modal-box">
+        <div class="ce-modal-header">
+            <h5>Xác nhận đăng ký</h5>
+            <button class="ce-modal-close" onclick="ceCloseModal('modal-register')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body">
+            <div style="background:var(--primary-light);border-radius:var(--radius);padding:.875rem;margin-bottom:1.1rem;border:1px solid rgba(19,127,236,.18)">
+                <div style="font-weight:700;color:var(--text);margin-bottom:.25rem">Annual Tech Symposium 2025</div>
+                <div style="font-size:.78rem;color:var(--text-muted)">📅 Thứ Sáu, 21/03/2025 · 08:00–17:00 · Hội trường A</div>
+            </div>
+
+            @using (Html.BeginForm("Register", "Users", FormMethod.Post)) {
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="ce-form-label">Họ và tên</label>
+                    <div class="ce-input-icon">
+                        <span class="material-symbols-outlined icon">person</span>
+                        <input class="ce-form-control" value="Nguyễn Văn Bình" readonly
+                               style="background:var(--surface-2)" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="ce-form-label">Mã sinh viên</label>
+                    <div class="ce-input-icon">
+                        <span class="material-symbols-outlined icon">badge</span>
+                        <input class="ce-form-control" value="SV2021001234" readonly
+                               style="background:var(--surface-2)" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="ce-form-label">Email thông báo</label>
+                    <div class="ce-input-icon">
+                        <span class="material-symbols-outlined icon">mail</span>
+                        <input class="ce-form-control" type="email"
+                               value="nguyenvanbinh@student.abc.edu.vn" />
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <label class="ce-form-label">Ghi chú (tuỳ chọn)</label>
+                    <textarea class="ce-form-control" rows="2"
+                              placeholder="Yêu cầu đặc biệt…"></textarea>
+                </div>
+            }
+        </div>
+        <div class="ce-modal-footer">
+            <button class="ce-btn ce-btn-ghost" onclick="ceCloseModal('modal-register')">Huỷ</button>
+            <button class="ce-btn ce-btn-primary" type="button"
+                    onclick="ceCloseModal('modal-register');setTimeout(function(){ceOpenModal('modal-success')},200)">
+                <span class="material-symbols-outlined" style="font-size:17px">how_to_reg</span> Xác nhận
+            </button>
+        </div>
+    </div>
+</div>
+
+@* ══════════ SUCCESS MODAL ══════════ *@
+<div class="ce-modal-overlay" id="modal-success">
+    <div class="ce-modal-box" style="max-width:400px;text-align:center">
+        <div class="ce-modal-body" style="padding:2.25rem 1.75rem">
+            <div style="width:68px;height:68px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;color:#16a34a">
+                <span class="material-symbols-outlined" style="font-size:34px">check_circle</span>
+            </div>
+            <h4 style="font-weight:800;margin-bottom:.4rem">Đăng ký thành công!</h4>
+            <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.4rem">
+                Bạn đã đăng ký <strong>Annual Tech Symposium 2025</strong>.<br />Email xác nhận đã được gửi.
+            </p>
+            <div style="background:var(--surface-2);border-radius:var(--radius-lg);padding:1.1rem;margin-bottom:1.25rem;text-align:center">
+                <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.65rem">Mã QR Check-in</p>
+                <div style="width:110px;height:110px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto">
+                    <span class="material-symbols-outlined" style="font-size:78px;color:#111">qr_code_2</span>
+                </div>
+                <p style="font-size:.73rem;color:var(--text-muted);margin-top:.55rem">Xuất trình khi check-in</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Registrations","Users")" class="ce-btn ce-btn-outline" style="flex:1">Xem đăng ký</a>
+                <button class="ce-btn ce-btn-primary" style="flex:1" onclick="ceCloseModal('modal-success')">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

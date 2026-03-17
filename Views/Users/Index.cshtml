@@ -1,0 +1,414 @@
+@* Views/Users/Index.cshtml — Trang chủ sinh viên *@
+@{
+    ViewBag.Title      = "Khám phá Sự kiện";
+    ViewBag.ActivePage = "home";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+}
+
+@* ══════════ HERO ══════════ *@
+<section class="ce-hero">
+    <div class="container position-relative">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="ce-hero__eyebrow">
+                    <span class="material-symbols-outlined" style="font-size:13px">celebration</span>
+                    Trường Đại học ABC · Năm học 2025–2026
+                </div>
+                <h1 class="ce-hero__title">
+                    Khám phá &amp;<br />tham gia sự kiện<br />campus của bạn
+                </h1>
+                <p class="ce-hero__sub">
+                    Tìm kiếm hàng trăm sự kiện học thuật, thể thao, văn hóa và workshop đang chờ bạn tham gia.
+                </p>
+
+                <div class="ce-hero__search">
+                    <span class="material-symbols-outlined si">search</span>
+                    <input type="search" id="hero-search" placeholder="Tìm sự kiện, CLB, workshop…" />
+                    <button class="ce-hero__search-btn" type="button">Tìm kiếm</button>
+                </div>
+
+                <div class="ce-hero__stats">
+                    <div class="ce-hero__stat">
+                        <div>
+                            <div class="ce-hero__stat-val" id="cnt-ev">0</div>
+                            <div style="font-size:.73rem;opacity:.8">Sự kiện</div>
+                        </div>
+                    </div>
+                    <div class="ce-hero__sep"></div>
+                    <div class="ce-hero__stat">
+                        <div>
+                            <div class="ce-hero__stat-val" id="cnt-sv">0</div>
+                            <div style="font-size:.73rem;opacity:.8">Sinh viên</div>
+                        </div>
+                    </div>
+                    <div class="ce-hero__sep"></div>
+                    <div class="ce-hero__stat">
+                        <div>
+                            <div class="ce-hero__stat-val" id="cnt-clb">0</div>
+                            <div style="font-size:.73rem;opacity:.8">CLB &amp; Nhóm</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* ══════════ CONTENT ══════════ *@
+<div class="container py-4">
+    <div class="row g-4">
+
+        @* ── Sidebar filter (desktop) ── *@
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="ce-filter-sidebar">
+                <div class="ce-filter-title">Bộ lọc</div>
+
+                <div class="ce-filter-group">
+                    <div class="ce-filter-group__label">Danh mục</div>
+                    <label class="ce-filter-check"><input type="checkbox" checked /> Tất cả</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> Học thuật</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> Thể thao</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> Workshop</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> Văn hóa</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> CLB &amp; Hội nhóm</label>
+                </div>
+
+                <div class="ce-filter-hr"></div>
+
+                <div class="ce-filter-group">
+                    <div class="ce-filter-group__label">Thời gian</div>
+                    <label class="ce-filter-check"><input type="radio" name="time" checked /> Tất cả</label>
+                    <label class="ce-filter-check"><input type="radio" name="time" /> Hôm nay</label>
+                    <label class="ce-filter-check"><input type="radio" name="time" /> Tuần này</label>
+                    <label class="ce-filter-check"><input type="radio" name="time" /> Tháng này</label>
+                </div>
+
+                <div class="ce-filter-hr"></div>
+
+                <div class="ce-filter-group">
+                    <div class="ce-filter-group__label">Trạng thái</div>
+                    <label class="ce-filter-check"><input type="checkbox" checked /> Còn chỗ</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> Sắp đầy</label>
+                    <label class="ce-filter-check"><input type="checkbox" /> Miễn phí</label>
+                </div>
+
+                <div class="ce-filter-hr"></div>
+                <button class="ce-btn ce-btn-ghost ce-btn-sm ce-btn-block">
+                    <span class="material-symbols-outlined">refresh</span> Xóa bộ lọc
+                </button>
+            </div>
+        </div>
+
+        @* ── Main events column ── *@
+        <div class="col-lg-9">
+
+            @* Upcoming alert *@
+            <div class="ce-upcoming mb-4 ce-reveal">
+                <div class="ce-upcoming__icon">
+                    <span class="material-symbols-outlined">notifications_active</span>
+                </div>
+                <div style="flex:1;min-width:0">
+                    <div class="ce-upcoming__title">🎉 Tech Symposium 2025 diễn ra vào thứ Sáu này!</div>
+                    <div class="ce-upcoming__sub">Hội trường A · 08:00 – 17:00 · Còn 42 chỗ đăng ký</div>
+                </div>
+                <a href="@Url.Action("EventDetail","Users")" class="ce-btn ce-btn-primary ce-btn-sm d-none d-sm-flex">
+                    Đăng ký ngay
+                </a>
+            </div>
+
+            @* Filter chips *@
+            <div class="ce-chips mb-4">
+                <span class="ce-chip active" data-value="all">
+                    <span class="material-symbols-outlined">apps</span> Tất cả
+                </span>
+                <span class="ce-chip" data-value="academic">
+                    <span class="material-symbols-outlined">school</span> Học thuật
+                </span>
+                <span class="ce-chip" data-value="sports">
+                    <span class="material-symbols-outlined">sports_soccer</span> Thể thao
+                </span>
+                <span class="ce-chip" data-value="workshop">
+                    <span class="material-symbols-outlined">build</span> Workshop
+                </span>
+                <span class="ce-chip" data-value="cultural">
+                    <span class="material-symbols-outlined">palette</span> Văn hóa
+                </span>
+                <span class="ce-chip" data-value="club">
+                    <span class="material-symbols-outlined">groups</span> CLB
+                </span>
+            </div>
+
+            @* Sort row *@
+            <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+                <h2 class="ce-section-title mb-0">Sự kiện sắp diễn ra</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size:.78rem;color:var(--text-muted);white-space:nowrap;font-weight:600">Sắp xếp:</span>
+                    <select class="ce-form-select" style="width:auto;height:34px;font-size:.78rem">
+                        <option>Sắp diễn ra</option>
+                        <option>Phổ biến nhất</option>
+                        <option>Mới nhất</option>
+                    </select>
+                </div>
+            </div>
+
+            @* ── Event Grid ── *@
+            <div class="row g-3" id="events-grid">
+
+                @* Trong thực tế đây sẽ là @foreach (var ev in Model.Events) *@
+
+                @* Card 1 *@
+                <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
+                    <a href="@Url.Action("EventDetail","Users")" class="ce-event-card">
+                        <div class="ce-event-card__img">
+                            <div class="ce-event-card__img-placeholder">
+                                <span class="material-symbols-outlined">computer</span>
+                            </div>
+                            <div class="ce-event-card__badges">
+                                <span class="ce-badge ce-badge-primary">Học thuật</span>
+                                <span class="ce-badge ce-badge-warning">Sắp đầy</span>
+                            </div>
+                            <button class="ce-event-card__save" type="button">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
+                        </div>
+                        <div class="ce-event-card__body">
+                            <div class="ce-event-card__title">Annual Tech Symposium 2025</div>
+                            <div class="ce-event-card__meta">
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">calendar_today</span>
+                                    Thứ Sáu, 21/03/2025
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    08:00 – 17:00
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    Hội trường A – Cơ sở 1
+                                </div>
+                            </div>
+                            <div class="ce-event-card__footer">
+                                <div class="ce-event-card__slots">
+                                    <span class="material-symbols-outlined">group</span>
+                                    42 / 200 chỗ còn lại
+                                </div>
+                                <span class="ce-badge ce-badge-primary">Miễn phí</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                @* Card 2 *@
+                <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
+                    <a href="@Url.Action("EventDetail","Users")" class="ce-event-card">
+                        <div class="ce-event-card__img" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">
+                            <div class="ce-event-card__img-placeholder">
+                                <span class="material-symbols-outlined" style="color:#ca8a04">palette</span>
+                            </div>
+                            <div class="ce-event-card__badges">
+                                <span class="ce-badge ce-badge-warning">Văn hóa</span>
+                            </div>
+                            <button class="ce-event-card__save" type="button">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
+                        </div>
+                        <div class="ce-event-card__body">
+                            <div class="ce-event-card__title">Đêm Văn hóa Các Dân tộc 2025</div>
+                            <div class="ce-event-card__meta">
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">calendar_today</span> Thứ Bảy, 22/03/2025
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">schedule</span> 19:00 – 22:00
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">location_on</span> Sân khấu ngoài trời
+                                </div>
+                            </div>
+                            <div class="ce-event-card__footer">
+                                <div class="ce-event-card__slots">
+                                    <span class="material-symbols-outlined">group</span> 150 / 500 chỗ còn lại
+                                </div>
+                                <span class="ce-badge ce-badge-success">Còn nhiều chỗ</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                @* Card 3 *@
+                <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
+                    <a href="@Url.Action("EventDetail","Users")" class="ce-event-card">
+                        <div class="ce-event-card__img" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">
+                            <div class="ce-event-card__img-placeholder">
+                                <span class="material-symbols-outlined" style="color:#16a34a">smart_toy</span>
+                            </div>
+                            <div class="ce-event-card__badges">
+                                <span class="ce-badge ce-badge-success">Workshop</span>
+                            </div>
+                            <button class="ce-event-card__save" type="button">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
+                        </div>
+                        <div class="ce-event-card__body">
+                            <div class="ce-event-card__title">Workshop AI &amp; Machine Learning cơ bản</div>
+                            <div class="ce-event-card__meta">
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">calendar_today</span> CN, 23/03/2025
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">schedule</span> 09:00 – 12:00
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">location_on</span> Phòng máy tính B204
+                                </div>
+                            </div>
+                            <div class="ce-event-card__footer">
+                                <div class="ce-event-card__slots">
+                                    <span class="material-symbols-outlined">group</span> 8 / 30 chỗ còn lại
+                                </div>
+                                <span class="ce-badge ce-badge-warning">Sắp đầy</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                @* Card 4 *@
+                <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
+                    <a href="@Url.Action("EventDetail","Users")" class="ce-event-card">
+                        <div class="ce-event-card__img" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
+                            <div class="ce-event-card__img-placeholder">
+                                <span class="material-symbols-outlined" style="color:#dc2626">sports_soccer</span>
+                            </div>
+                            <div class="ce-event-card__badges">
+                                <span class="ce-badge ce-badge-danger">Thể thao</span>
+                            </div>
+                            <button class="ce-event-card__save" type="button">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
+                        </div>
+                        <div class="ce-event-card__body">
+                            <div class="ce-event-card__title">Giải bóng đá Sinh viên Toàn trường 2025</div>
+                            <div class="ce-event-card__meta">
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">calendar_today</span> 26 – 30/03/2025
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">schedule</span> 07:00 – 11:00 hàng ngày
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">location_on</span> Sân vận động trường
+                                </div>
+                            </div>
+                            <div class="ce-event-card__footer">
+                                <div class="ce-event-card__slots">
+                                    <span class="material-symbols-outlined">group</span> 20 / 32 đội còn lại
+                                </div>
+                                <span class="ce-badge ce-badge-primary">Đăng ký đội</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                @* Card 5 *@
+                <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
+                    <a href="@Url.Action("EventDetail","Users")" class="ce-event-card">
+                        <div class="ce-event-card__img" style="background:linear-gradient(135deg,#ede9fe,#c4b5fd)">
+                            <div class="ce-event-card__img-placeholder">
+                                <span class="material-symbols-outlined" style="color:#7c3aed">mic</span>
+                            </div>
+                            <div class="ce-event-card__badges">
+                                <span class="ce-badge ce-badge-neutral">CLB</span>
+                            </div>
+                            <button class="ce-event-card__save" type="button">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
+                        </div>
+                        <div class="ce-event-card__body">
+                            <div class="ce-event-card__title">CLB Hùng biện Tiếng Anh – Phiên tháng 3</div>
+                            <div class="ce-event-card__meta">
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">calendar_today</span> Thứ Tư, 26/03/2025
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">schedule</span> 16:00 – 18:30
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">location_on</span> Phòng Hội thảo 3F
+                                </div>
+                            </div>
+                            <div class="ce-event-card__footer">
+                                <div class="ce-event-card__slots">
+                                    <span class="material-symbols-outlined">group</span> 18 / 25 chỗ còn lại
+                                </div>
+                                <span class="ce-badge ce-badge-success">Còn chỗ</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                @* Card 6 *@
+                <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
+                    <a href="@Url.Action("EventDetail","Users")" class="ce-event-card">
+                        <div class="ce-event-card__img" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
+                            <div class="ce-event-card__img-placeholder">
+                                <span class="material-symbols-outlined" style="color:#059669">eco</span>
+                            </div>
+                            <div class="ce-event-card__badges">
+                                <span class="ce-badge ce-badge-success">Học thuật</span>
+                            </div>
+                            <button class="ce-event-card__save" type="button">
+                                <span class="material-symbols-outlined">favorite_border</span>
+                            </button>
+                        </div>
+                        <div class="ce-event-card__body">
+                            <div class="ce-event-card__title">Seminar Phát triển bền vững &amp; Biến đổi khí hậu</div>
+                            <div class="ce-event-card__meta">
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">calendar_today</span> Thứ Năm, 27/03/2025
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">schedule</span> 13:30 – 16:00
+                                </div>
+                                <div class="ce-event-card__meta-row">
+                                    <span class="material-symbols-outlined">location_on</span> Hội trường B
+                                </div>
+                            </div>
+                            <div class="ce-event-card__footer">
+                                <div class="ce-event-card__slots">
+                                    <span class="material-symbols-outlined">group</span> 80 / 120 chỗ còn lại
+                                </div>
+                                <span class="ce-badge ce-badge-primary">Miễn phí</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>@* /events-grid *@
+
+            @* Load more *@
+            <div class="text-center mt-5">
+                <button class="ce-btn ce-btn-outline">
+                    <span class="material-symbols-outlined">expand_more</span>
+                    Xem thêm sự kiện
+                </button>
+            </div>
+
+        </div>@* /col *@
+    </div>@* /row *@
+</div>@* /container *@
+
+@section scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            ceCountUp(document.getElementById('cnt-ev'),  124);
+            ceCountUp(document.getElementById('cnt-sv'),  8420);
+            ceCountUp(document.getElementById('cnt-clb'), 47);
+        }, 300);
+
+        document.getElementById('hero-search').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') CeToast.show('Đang tìm: ' + e.target.value, 'info');
+        });
+    });
+</script>
+}

@@ -1,0 +1,174 @@
+/* ============================================================
+   Content/campus-pages.css
+   Style riêng từng trang: Hero · Detail · Auth · Profile
+   ============================================================ */
+
+/* ──────────────────────────────────────────────────────────────
+   TRANG CHỦ — Hero banner
+   ────────────────────────────────────────────────────────────── */
+.ce-hero {
+  background: linear-gradient(135deg, #0e2a44 0%, #137fec 55%, #38bdf8 100%);
+  padding: 2.75rem 0 2.25rem; color: #fff; position: relative; overflow: hidden;
+}
+.ce-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.ce-hero__eyebrow {
+  display: inline-flex; align-items: center; gap: .375rem;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+  border-radius: var(--radius-full); padding: .28rem .875rem;
+  font-size: .75rem; font-weight: var(--fw-semibold);
+  letter-spacing: .06em; text-transform: uppercase; margin-bottom: .8rem;
+}
+.ce-hero__title {
+  font-size: clamp(1.65rem, 5vw, 2.6rem);
+  font-weight: var(--fw-black); line-height: 1.15; margin-bottom: .7rem;
+}
+.ce-hero__sub {
+  font-size: .95rem; opacity: .85; max-width: 500px; margin-bottom: 1.4rem;
+}
+.ce-hero__search { position: relative; max-width: 490px; }
+.ce-hero__search input {
+  width: 100%; height: 46px; padding: 0 1rem 0 2.9rem;
+  border-radius: var(--radius-full); border: none;
+  background: rgba(255,255,255,.95);
+  font-family: var(--font-main); font-size: .88rem; color: var(--text); outline: none;
+  box-shadow: var(--shadow-md);
+}
+.ce-hero__search .si {
+  position: absolute; left: .9rem; top: 50%; transform: translateY(-50%);
+  font-size: 20px; color: var(--primary); pointer-events: none;
+}
+.ce-hero__search-btn {
+  position: absolute; right: .35rem; top: 50%; transform: translateY(-50%);
+  height: 36px; padding: 0 1rem;
+  background: var(--primary); color: #fff; border: none;
+  border-radius: var(--radius-full); font-family: var(--font-main);
+  font-size: .82rem; font-weight: var(--fw-semibold); cursor: pointer;
+  transition: all var(--transition);
+}
+.ce-hero__search-btn:hover { background: var(--primary-dark); }
+
+.ce-hero__stats {
+  display: flex; align-items: center; gap: 1.5rem;
+  margin-top: 1.4rem; flex-wrap: wrap;
+}
+.ce-hero__stat { display: flex; align-items: center; gap: .45rem; font-size: .82rem; opacity: .9; }
+.ce-hero__stat-val { font-size: 1.2rem; font-weight: var(--fw-black); line-height: 1; }
+.ce-hero__sep { width: 1px; height: 26px; background: rgba(255,255,255,.3); }
+
+/* ── Upcoming alert banner ───────────────────────────────────── */
+.ce-upcoming {
+  background: linear-gradient(to right, var(--primary-light), #e0f2fe);
+  border: 1px solid rgba(19,127,236,.18); border-radius: var(--radius-lg);
+  padding: .875rem 1.1rem; display: flex; align-items: center; gap: .875rem;
+}
+.ce-upcoming__icon {
+  width: 42px; height: 42px; background: var(--primary); border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0;
+}
+.ce-upcoming__title { font-size: .9rem; font-weight: var(--fw-bold); color: var(--text); }
+.ce-upcoming__sub   { font-size: .78rem; color: var(--text-muted); }
+[data-theme="dark"] .ce-upcoming { background: rgba(19,127,236,.08); }
+
+/* ──────────────────────────────────────────────────────────────
+   CHI TIẾT SỰ KIỆN
+   ────────────────────────────────────────────────────────────── */
+.ce-event-banner {
+  width: 100%; aspect-ratio: 21/8; min-height: 180px;
+  border-radius: var(--radius-xl); overflow: hidden; position: relative;
+  background: linear-gradient(135deg, #0e2a44 0%, #137fec 100%);
+  display: flex; align-items: flex-end;
+}
+.ce-event-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ce-event-banner__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.68) 0%, transparent 55%);
+}
+.ce-event-banner__content { position: relative; z-index: 2; padding: 1.4rem; color: #fff; }
+.ce-event-banner__content h1 {
+  font-size: clamp(1.3rem, 4vw, 2rem); font-weight: var(--fw-black); line-height: 1.2;
+}
+
+.ce-info-grid { display: grid; gap: .875rem; grid-template-columns: 1fr; }
+@media (min-width: 576px) { .ce-info-grid { grid-template-columns: 1fr 1fr; } }
+
+.ce-info-item {
+  display: flex; align-items: flex-start; gap: .7rem;
+  padding: .8rem .95rem; background: var(--surface-2); border-radius: var(--radius);
+}
+.ce-info-item__icon {
+  width: 34px; height: 34px; background: var(--primary-light); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;
+}
+.ce-info-item__icon .material-symbols-outlined { font-size: 17px; }
+.ce-info-item__label { font-size: .72rem; color: var(--text-muted); font-weight: var(--fw-semibold); text-transform: uppercase; letter-spacing: .04em; }
+.ce-info-item__val   { font-size: .875rem; color: var(--text); font-weight: var(--fw-semibold); margin-top: 1px; }
+
+.ce-sticky-reg {
+  position: sticky; top: calc(var(--navbar-h) + 1rem);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 1.4rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TRANG ĐĂNG KÝ CỦA TÔI
+   ────────────────────────────────────────────────────────────── */
+.ce-profile-banner {
+  background: linear-gradient(135deg, #0e2a44 0%, #137fec 100%);
+  border-radius: var(--radius-xl); padding: 1.75rem 1.4rem; color: #fff;
+  position: relative; overflow: hidden;
+}
+.ce-profile-banner::after {
+  content: ''; position: absolute;
+  right: -40px; top: -40px; width: 180px; height: 180px;
+  background: rgba(255,255,255,.05); border-radius: 50%;
+}
+.ce-profile-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; font-weight: var(--fw-black); margin-bottom: .8rem;
+}
+.ce-profile-name { font-size: 1.15rem; font-weight: var(--fw-bold); }
+.ce-profile-id   { font-size: .82rem; opacity: .78; margin-top: .18rem; }
+
+/* ──────────────────────────────────────────────────────────────
+   AUTH — Đăng nhập / Đăng ký
+   ────────────────────────────────────────────────────────────── */
+.ce-auth-page {
+  min-height: 100vh; display: flex; background: var(--bg);
+}
+.ce-auth-hero {
+  flex: 1; display: none;
+  background: linear-gradient(135deg, #0e2a44 0%, #137fec 55%, #38bdf8 100%);
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 3rem 2rem; color: #fff; position: relative; overflow: hidden;
+}
+@media (min-width: 992px) { .ce-auth-hero { display: flex; } }
+
+.ce-auth-form-col {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem 1rem; flex: 1;
+}
+.ce-auth-card {
+  width: 100%; max-width: 420px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 2.25rem 1.75rem;
+  box-shadow: var(--shadow-lg);
+}
+.ce-auth-title { font-size: 1.4rem; font-weight: var(--fw-black); margin-bottom: .3rem; }
+.ce-auth-sub   { font-size: .875rem; color: var(--text-muted); margin-bottom: 1.75rem; }
+.ce-auth-divider {
+  text-align: center; position: relative; margin: 1.1rem 0;
+  color: var(--text-muted); font-size: .78rem;
+}
+.ce-auth-divider::before, .ce-auth-divider::after {
+  content: ''; position: absolute; top: 50%;
+  width: calc(50% - 1.5rem); height: 1px; background: var(--border);
+}
+.ce-auth-divider::before { left: 0; }
+.ce-auth-divider::after  { right: 0; }

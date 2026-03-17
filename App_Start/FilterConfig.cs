@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace shcool_event_management
+namespace school_event_management
 {
     public class FilterConfig
     {

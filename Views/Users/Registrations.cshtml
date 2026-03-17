@@ -1,0 +1,264 @@
+@* Views/Users/Registrations.cshtml — Đăng ký của tôi *@
+@{
+    ViewBag.Title      = "Đăng ký của tôi";
+    ViewBag.ActivePage = "registrations";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+
+        @* ── Sidebar profile ── *@
+        <div class="col-lg-3 col-xl-3">
+
+            @* Profile card *@
+            <div class="ce-profile-banner ce-reveal mb-3">
+                <div class="ce-profile-avatar">NB</div>
+                <div class="ce-profile-name">Nguyễn Văn Bình</div>
+                <div class="ce-profile-id">MSSV: SV2021001234 · CNTT-K21</div>
+            </div>
+
+            @* Quick stats *@
+            <div class="row g-2 mb-3">
+                <div class="col-4">
+                    <div class="ce-card p-2 text-center ce-reveal">
+                        <div style="font-size:1.3rem;font-weight:800;color:var(--primary)" id="cnt-total">0</div>
+                        <div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Đăng ký</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="ce-card p-2 text-center ce-reveal">
+                        <div style="font-size:1.3rem;font-weight:800;color:var(--success)" id="cnt-att">0</div>
+                        <div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Tham dự</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="ce-card p-2 text-center ce-reveal">
+                        <div style="font-size:1.3rem;font-weight:800;color:var(--accent)" id="cnt-up">0</div>
+                        <div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Sắp tới</div>
+                    </div>
+                </div>
+            </div>
+
+            @* Quick actions *@
+            <div class="ce-card p-3 ce-reveal">
+                <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.7rem">Nhanh chóng</div>
+                <div class="d-flex flex-column gap-2">
+                    <a href="@Url.Action("Index","Users")" class="ce-btn ce-btn-ghost" style="justify-content:flex-start">
+                        <span class="material-symbols-outlined" style="font-size:17px">event</span> Tìm sự kiện
+                    </a>
+                    <button class="ce-btn ce-btn-ghost" style="justify-content:flex-start" type="button"
+                            onclick="ceOpenModal('modal-qr-scan')">
+                        <span class="material-symbols-outlined" style="font-size:17px">qr_code_scanner</span> Quét QR
+                    </button>
+                    <button class="ce-btn ce-btn-ghost" style="justify-content:flex-start" type="button"
+                            onclick="CeToast.show('Đang xuất file .ics…','info')">
+                        <span class="material-symbols-outlined" style="font-size:17px">download</span> Xuất lịch
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @* ── Main ── *@
+        <div class="col-lg-9">
+            <h1 class="ce-section-title mb-4 ce-reveal">Đăng ký của tôi</h1>
+
+            <div class="ce-tabs-wrapper ce-reveal">
+                <div class="ce-tabs mb-4">
+                    <button class="ce-tab-btn active" data-tab="tab-upcoming">Sắp diễn ra</button>
+                    <button class="ce-tab-btn"        data-tab="tab-attended">Đã tham dự</button>
+                    <button class="ce-tab-btn"        data-tab="tab-saved">Đã lưu</button>
+                    <button class="ce-tab-btn"        data-tab="tab-cancelled">Đã huỷ</button>
+                </div>
+
+                @* Upcoming *@
+                <div class="ce-tab-pane active" id="tab-upcoming">
+                    <div class="d-flex flex-column gap-3">
+
+                        @foreach (var ev in new[] {
+                            new { Title="Annual Tech Symposium 2025",          Date="Thứ Sáu, 21/03/2025", Time="08:00–17:00", Loc="Hội trường A",   Cat="Học thuật", CatCls="ce-badge-primary", St="Xác nhận", StCls="ce-badge-success", Days=2,  Icon="computer",     Bg="#e8f3fd",  Cl="var(--primary)" },
+                            new { Title="Workshop AI & Machine Learning",       Date="CN, 23/03/2025",       Time="09:00–12:00", Loc="Phòng B204",     Cat="Workshop",   CatCls="ce-badge-success", St="Xác nhận", StCls="ce-badge-success", Days=4,  Icon="smart_toy",    Bg="#dcfce7",  Cl="#16a34a"        },
+                            new { Title="Seminar Phát triển bền vững",          Date="Thứ Năm, 27/03/2025", Time="13:30–16:00", Loc="Hội trường B",   Cat="Học thuật", CatCls="ce-badge-primary", St="Chờ duyệt",StCls="ce-badge-warning", Days=8,  Icon="eco",          Bg="#f0fdf4",  Cl="#059669"        },
+                        }) {
+                        <div class="ce-card p-3">
+                            <div class="d-flex gap-3 align-items-start">
+                                <div style="width:52px;height:52px;border-radius:var(--radius);background:@ev.Bg;display:flex;align-items:center;justify-content:center;color:@ev.Cl;flex-shrink:0">
+                                    <span class="material-symbols-outlined" style="font-size:26px">@ev.Icon</span>
+                                </div>
+                                <div style="flex:1;min-width:0">
+                                    <div class="d-flex align-items-start justify-content-between gap-2 flex-wrap">
+                                        <div>
+                                            <h5 style="font-size:.9rem;font-weight:700;margin-bottom:.3rem;color:var(--text)">@ev.Title</h5>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <span class="ce-badge @ev.CatCls">@ev.Cat</span>
+                                                <span class="ce-badge @ev.StCls">@ev.St</span>
+                                            </div>
+                                        </div>
+                                        <span style="background:var(--primary-light);color:var(--primary);border-radius:var(--radius-full);padding:.18rem .6rem;font-size:.7rem;font-weight:700;white-space:nowrap">
+                                            Còn @ev.Days ngày
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-3 mt-2" style="font-size:.75rem;color:var(--text-muted)">
+                                        <span><span class="material-symbols-outlined" style="font-size:13px;color:var(--primary);vertical-align:middle">calendar_today</span> @ev.Date</span>
+                                        <span><span class="material-symbols-outlined" style="font-size:13px;color:var(--primary);vertical-align:middle">schedule</span> @ev.Time</span>
+                                        <span><span class="material-symbols-outlined" style="font-size:13px;color:var(--primary);vertical-align:middle">location_on</span> @ev.Loc</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 mt-3 pt-3 flex-wrap" style="border-top:1px solid var(--border)">
+                                <button class="ce-btn ce-btn-primary ce-btn-sm" type="button"
+                                        onclick="ceOpenModal('modal-qr')">
+                                    <span class="material-symbols-outlined" style="font-size:14px">qr_code</span> QR Check-in
+                                </button>
+                                <a href="@Url.Action("EventDetail","Users")" class="ce-btn ce-btn-ghost ce-btn-sm">
+                                    <span class="material-symbols-outlined" style="font-size:14px">open_in_new</span> Chi tiết
+                                </a>
+                                <button class="ce-btn ce-btn-ghost ce-btn-sm" type="button"
+                                        onclick="CeToast.show('Đã thêm vào lịch!','success')">
+                                    <span class="material-symbols-outlined" style="font-size:14px">event_add</span> Thêm lịch
+                                </button>
+                                <button class="ce-btn ce-btn-ghost ce-btn-sm ms-auto" type="button"
+                                        style="color:var(--danger);border-color:var(--danger)"
+                                        onclick="CeToast.show('Đã huỷ đăng ký','error')">
+                                    <span class="material-symbols-outlined" style="font-size:14px">cancel</span> Huỷ
+                                </button>
+                            </div>
+                        </div>
+                        }
+
+                    </div>
+                </div>
+
+                @* Attended *@
+                <div class="ce-tab-pane" id="tab-attended">
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var ev in new[] {
+                            new { Title="Đêm Gala Sinh viên Xuân 2025",  Date="15/02/2025", Icon="celebration", Cl="#7c3aed" },
+                            new { Title="Hackathon Mùa Thu 2024",          Date="12/11/2024", Icon="code",        Cl="var(--primary)" },
+                            new { Title="Workshop Design Thinking",         Date="05/10/2024", Icon="design_services", Cl="#059669" },
+                        }) {
+                        <div class="ce-card p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="width:46px;height:46px;border-radius:var(--radius);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:@ev.Cl;flex-shrink:0">
+                                    <span class="material-symbols-outlined" style="font-size:22px">@ev.Icon</span>
+                                </div>
+                                <div style="flex:1;min-width:0">
+                                    <div style="font-size:.875rem;font-weight:700;color:var(--text)">@ev.Title</div>
+                                    <div style="font-size:.75rem;color:var(--text-muted);margin-top:2px">📅 @ev.Date</div>
+                                </div>
+                                <span class="ce-badge ce-badge-success">
+                                    <span class="material-symbols-outlined" style="font-size:12px">verified</span> Đã tham dự
+                                </span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                @* Saved *@
+                <div class="ce-tab-pane" id="tab-saved">
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var ev in new[] {
+                            new { Title="CLB Hùng biện Tiếng Anh – Tháng 3", Date="26/03/2025", Icon="mic",          Cl="#7c3aed" },
+                            new { Title="Giải bóng đá Sinh viên Toàn trường", Date="26-30/03/2025", Icon="sports_soccer", Cl="#dc2626" },
+                        }) {
+                        <div class="ce-card p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="width:46px;height:46px;border-radius:var(--radius);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:@ev.Cl;flex-shrink:0">
+                                    <span class="material-symbols-outlined" style="font-size:22px">@ev.Icon</span>
+                                </div>
+                                <div style="flex:1;min-width:0">
+                                    <div style="font-size:.875rem;font-weight:700;color:var(--text)">@ev.Title</div>
+                                    <div style="font-size:.75rem;color:var(--text-muted);margin-top:2px">📅 @ev.Date</div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="@Url.Action("EventDetail","Users")" class="ce-btn ce-btn-primary ce-btn-sm">Đăng ký</a>
+                                    <button class="ce-btn ce-btn-ghost ce-btn-sm" type="button"
+                                            onclick="CeToast.show('Đã bỏ lưu','info')">
+                                        <span class="material-symbols-outlined" style="font-size:14px">bookmark_remove</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                @* Cancelled *@
+                <div class="ce-tab-pane" id="tab-cancelled">
+                    <div class="ce-empty">
+                        <span class="material-symbols-outlined">event_busy</span>
+                        <div class="ce-empty__title">Không có đăng ký đã huỷ</div>
+                        <div class="ce-empty__sub">Các sự kiện bạn đã huỷ sẽ hiển thị ở đây.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* QR Modal *@
+<div class="ce-modal-overlay" id="modal-qr">
+    <div class="ce-modal-box" style="max-width:360px">
+        <div class="ce-modal-header">
+            <h5>QR Check-in</h5>
+            <button class="ce-modal-close" onclick="ceCloseModal('modal-qr')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body" style="text-align:center">
+            <div style="background:var(--surface-2);border-radius:var(--radius-lg);padding:1.1rem">
+                <div style="width:140px;height:140px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto">
+                    <span class="material-symbols-outlined" style="font-size:105px;color:#111">qr_code_2</span>
+                </div>
+                <p style="font-size:.73rem;color:var(--text-muted);margin-top:.6rem">Mã: <strong>CE-2025-001234-TSY</strong></p>
+            </div>
+            <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem">Xuất trình tại cổng check-in</p>
+        </div>
+        <div class="ce-modal-footer">
+            <button class="ce-btn ce-btn-ghost" onclick="CeToast.show('Đang tải xuống…','info')">
+                <span class="material-symbols-outlined" style="font-size:15px">download</span> Lưu ảnh
+            </button>
+            <button class="ce-btn ce-btn-primary" onclick="ceCloseModal('modal-qr')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+@* QR Scanner *@
+<div class="ce-modal-overlay" id="modal-qr-scan">
+    <div class="ce-modal-box" style="max-width:360px">
+        <div class="ce-modal-header">
+            <h5>Quét QR Check-in</h5>
+            <button class="ce-modal-close" onclick="ceCloseModal('modal-qr-scan')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body" style="text-align:center">
+            <div style="width:100%;aspect-ratio:1;background:#111;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:.875rem">
+                <span class="material-symbols-outlined" style="font-size:60px;color:rgba(255,255,255,.25)">qr_code_scanner</span>
+                <div style="position:absolute;inset:14px;border:2px solid var(--primary);border-radius:8px;opacity:.7"></div>
+                <div style="position:absolute;top:14px;left:14px;width:22px;height:22px;border-top:3px solid var(--primary);border-left:3px solid var(--primary);border-radius:4px 0 0 0"></div>
+                <div style="position:absolute;top:14px;right:14px;width:22px;height:22px;border-top:3px solid var(--primary);border-right:3px solid var(--primary);border-radius:0 4px 0 0"></div>
+                <div style="position:absolute;bottom:14px;left:14px;width:22px;height:22px;border-bottom:3px solid var(--primary);border-left:3px solid var(--primary);border-radius:0 0 0 4px"></div>
+                <div style="position:absolute;bottom:14px;right:14px;width:22px;height:22px;border-bottom:3px solid var(--primary);border-right:3px solid var(--primary);border-radius:0 0 4px 0"></div>
+            </div>
+            <p style="font-size:.83rem;color:var(--text-muted)">Hướng camera vào mã QR để check-in</p>
+        </div>
+        <div class="ce-modal-footer">
+            <button class="ce-btn ce-btn-ghost" onclick="ceCloseModal('modal-qr-scan')">Huỷ</button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            ceCountUp(document.getElementById('cnt-total'), 6);
+            ceCountUp(document.getElementById('cnt-att'),   3);
+            ceCountUp(document.getElementById('cnt-up'),    3);
+        }, 350);
+    });
+</script>
+}
