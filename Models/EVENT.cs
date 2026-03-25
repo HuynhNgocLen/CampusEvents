@@ -20,18 +20,33 @@ namespace shcool_event_management.Models
             this.DangKySuKiens = new HashSet<DangKySuKien>();
         }
     
-        public int MaEnven { get; set; }
+        public int MaEvent { get; set; }
+        public string MaVien { get; set; }
         public string TenEvent { get; set; }
-        public Nullable<System.DateTime> NgayCapNhat { get; set; }
-        public Nullable<System.DateTime> NgayHetHan { get; set; }
-        public string ChiTiet { get; set; }
+        public string MaDanhMuc { get; set; }
+        public Nullable<int> MaDiaDiem { get; set; }
+        public System.DateTime NgayBatDau { get; set; }
+        public Nullable<System.DateTime> NgayKetThuc { get; set; }
+        public Nullable<System.DateTime> NgayHetHanDangKy { get; set; }
+        public int SoLuongToiDa { get; set; }
+        public int SoLuongDaDangKy { get; set; }
+        public Nullable<decimal> GiaVe { get; set; }
         public string MoTa { get; set; }
+        public string ChiTiet { get; set; }
         public string NguoiDang { get; set; }
-        public Nullable<int> LuotXem { get; set; }
-        public Nullable<int> SoLuongDangKy { get; set; }
+        public int LuotXem { get; set; }
+        public string TrangThai { get; set; }
+        public System.DateTime NgayTao { get; set; }
+        public Nullable<System.DateTime> NgayCapNhat { get; set; }
+        public Nullable<System.TimeSpan> GioBatDau { get; set; }
+        public Nullable<System.TimeSpan> GioKetThuc { get; set; }
+        public string Email { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }
+        public virtual DanhMuc DanhMuc { get; set; }
+        public virtual DiaDiem DiaDiem { get; set; }
         public virtual SinhVien SinhVien { get; set; }
+        public virtual Vien Vien { get; set; }
     }
 }

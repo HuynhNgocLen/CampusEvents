@@ -13,10 +13,10 @@ namespace shcool_event_management.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class school_event_managementEntities : DbContext
+    public partial class SchoolEventManagementEntities : DbContext
     {
-        public school_event_managementEntities()
-            : base("name=school_event_managementEntities")
+        public SchoolEventManagementEntities()
+            : base("name=SchoolEventManagementEntities")
         {
         }
     
@@ -26,8 +26,11 @@ namespace shcool_event_management.Models
         }
     
         public virtual DbSet<DangKySuKien> DangKySuKiens { get; set; }
+        public virtual DbSet<DanhMuc> DanhMucs { get; set; }
+        public virtual DbSet<DiaDiem> DiaDiems { get; set; }
         public virtual DbSet<EVENT> EVENTs { get; set; }
         public virtual DbSet<MaNghanh> MaNghanhs { get; set; }
         public virtual DbSet<SinhVien> SinhViens { get; set; }
+        public virtual DbSet<Vien> Viens { get; set; }
     }
 }

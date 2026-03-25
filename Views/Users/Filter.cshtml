@@ -1,0 +1,165 @@
+﻿@* Filter.cshtml *@
+@using System.Linq
+
+<div class="col-lg-3 d-none d-lg-block">
+    <form method="get" action="@Url.Action("Events","Users")" id="filter-form">
+        <div class="ce-filter-sidebar">
+
+            <div class="ce-filter-title">Bộ lọc</div>
+
+            @{
+                var qVien = (Request.QueryString.GetValues("vien") ?? new string[0]).ToList();
+                var qDM = (Request.QueryString.GetValues("danhmuc") ?? new string[0]).ToList();
+                var qTime = Request.QueryString["time"] ?? "all";
+                var qStatus = (Request.QueryString.GetValues("status") ?? new string[0]).ToList();
+            }
+
+            @* ===== VIỆN / KHOA ===== *@
+            <div class="ce-filter-group">
+                <div class="ce-filter-group__label">Viện / Khoa</div>
+
+                <label class="ce-filter-check">
+                    <input type="checkbox" name="vien" value="all" class="check-all"
+                           @(qVien.Count == 0 || qVien.Contains("all") ? "checked" : "") />
+                    Tất cả
+                </label>
+
+                @if (ViewBag.ListVien != null)
+                {
+                    foreach (var v in ViewBag.ListVien)
+                    {
+                        <label class="ce-filter-check">
+                            <input type="checkbox" name="vien" value="@v.MaVien" class="check-item"
+                                   @(qVien.Contains(v.MaVien.ToString()) ? "checked" : "") />
+                            @v.TenVien
+                        </label>
+                    }
+                }
+            </div>
+
+            <div class="ce-filter-hr"></div>
+
+            @* ===== DANH MỤC ===== *@
+            <div class="ce-filter-group">
+                <div class="ce-filter-group__label">Danh mục</div>
+
+                <label class="ce-filter-check">
+                    <input type="checkbox" name="danhmuc" value="all" class="check-all"
+                           @(qDM.Count == 0 || qDM.Contains("all") ? "checked" : "") />
+                    Tất cả
+                </label>
+
+                @if (ViewBag.ListDanhMuc != null)
+                {
+                    foreach (var d in ViewBag.ListDanhMuc)
+                    {
+                        <label class="ce-filter-check">
+                            <input type="checkbox" name="danhmuc" value="@d.MaDanhMuc" class="check-item"
+                                   @(qDM.Contains(d.MaDanhMuc.ToString()) ? "checked" : "") />
+                            @d.TenDanhMuc
+                        </label>
+                    }
+                }
+            </div>
+
+            <div class="ce-filter-hr"></div>
+
+            @* ===== THỜI GIAN ===== *@
+            <div class="ce-filter-group">
+                <div class="ce-filter-group__label">Thời gian</div>
+
+                <label class="ce-filter-check">
+                    <input type="radio" name="time" value="all" @(qTime == "all" ? "checked" : "") />
+                    Tất cả
+                </label>
+                <label class="ce-filter-check">
+                    <input type="radio" name="time" value="today" @(qTime == "today" ? "checked" : "") />
+                    Hôm nay
+                </label>
+                <label class="ce-filter-check">
+                    <input type="radio" name="time" value="week" @(qTime == "week" ? "checked" : "") />
+                    Tuần này
+                </label>
+                <label class="ce-filter-check">
+                    <input type="radio" name="time" value="month" @(qTime == "month" ? "checked" : "") />
+                    Tháng này
+                </label>
+            </div>
+
+            <div class="ce-filter-hr"></div>
+
+            @* ===== TRẠNG THÁI ===== *@
+            <div class="ce-filter-group">
+                <div class="ce-filter-group__label">Trạng thái</div>
+
+                <label class="ce-filter-check">
+                    <input type="checkbox" name="status" value="all" class="check-all"
+                           @(qStatus.Count == 0 || qStatus.Contains("all") ? "checked" : "") />
+                    Tất cả
+                </label>
+                <label class="ce-filter-check">
+                    <input type="checkbox" name="status" value="available" class="check-item"
+                           @(qStatus.Contains("available") ? "checked" : "") />
+                    Còn chỗ
+                </label>
+                <label class="ce-filter-check">
+                    <input type="checkbox" name="status" value="almost" class="check-item"
+                           @(qStatus.Contains("almost") ? "checked" : "") />
+                    Sắp đầy
+                </label>
+                <label class="ce-filter-check">
+                    <input type="checkbox" name="status" value="free" class="check-item"
+                           @(qStatus.Contains("free") ? "checked" : "") />
+                    Miễn phí
+                </label>
+            </div>
+
+            <div class="ce-filter-hr"></div>
+
+            <!-- Nút hành động - cách nhau rõ ràng hơn -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="ce-btn ce-btn-primary ce-btn-block">
+                    Áp dụng bộ lọc
+                </button>
+                <a href="@Url.Action("Events","Users")"
+                   class="ce-btn ce-btn-ghost ce-btn-block text-center">
+                    Xóa bộ lọc
+                </a>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.ce-filter-group').forEach(function (group) {
+
+                var allCb = group.querySelector('.check-all');
+                var items = group.querySelectorAll('.check-item');
+
+                if (!allCb) return;
+
+                allCb.addEventListener('change', function () {
+                    if (this.checked) {
+                        items.forEach(i => i.checked = false);
+                    }
+                });
+
+                items.forEach(function (item) {
+                    item.addEventListener('change', function () {
+                        if (this.checked) {
+                            allCb.checked = false;
+                        } else {
+                            var anyChecked = Array.from(items).some(i => i.checked);
+                            if (!anyChecked) allCb.checked = true;
+                        }
+                    });
+                });
+
+            });
+        });
+    </script>
+}

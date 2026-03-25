@@ -55,9 +55,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QRCoder, Version=1.7.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>packages\QRCoder.1.7.0\lib\net40\QRCoder.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -119,6 +126,7 @@
       <Private>True</Private>
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
@@ -134,7 +142,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\QRCodeHelper.cs" />
     <Compile Include="Models\DangKySuKien.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DanhMuc.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DiaDiem.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\EVENT.cs">
@@ -143,17 +158,17 @@
     <Compile Include="Models\MaNghanh.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Model1.Context.cs" />
-    <Compile Include="Models\Model1.cs" />
-    <Compile Include="Models\Model1.Designer.cs">
-      <DependentUpon>Model1.cs</DependentUpon>
+    <Compile Include="Models\Model1.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Model11.cs">
+    <Compile Include="Models\Model1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Model11.Designer.cs">
+    <Compile Include="Models\Model1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -161,13 +176,15 @@
     <Compile Include="Models\SinhVien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Vien.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
-    <Content Include="bin\shcool_event_management.dll" />
-    <Content Include="bin\shcool_event_management.pdb" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -188,16 +205,19 @@
     <Content Include="Content\campus-components.css" />
     <Content Include="Content\campus-navbar.css" />
     <Content Include="Content\campus-pages.css" />
+    <Content Include="Content\campus-variables.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model1.Context1.cs</LastGenOutput>
+      <DependentUpon>Model1.edmx</DependentUpon>
+      <LastGenOutput>Model1.Context.cs</LastGenOutput>
     </Content>
     <Content Include="Models\Model1.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model11.cs</LastGenOutput>
+      <DependentUpon>Model1.edmx</DependentUpon>
+      <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
     <Content Include="packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll" />
     <Content Include="packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.pdb" />
@@ -277,7 +297,7 @@
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.pdb" />
     <EntityDeploy Include="Models\Model1.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model11.Designer.cs</LastGenOutput>
+      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <Content Include="Models\Model1.edmx.diagram">
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -393,6 +413,21 @@
     <Content Include="packages\Newtonsoft.Json.13.0.3\lib\netstandard2.0\Newtonsoft.Json.dll" />
     <Content Include="packages\Newtonsoft.Json.13.0.3\lib\netstandard2.0\Newtonsoft.Json.xml" />
     <Content Include="packages\Newtonsoft.Json.13.0.3\packageIcon.png" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net35\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net35\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net40\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net40\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net5.0\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net5.0\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net6.0\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\net6.0\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\lib\netstandard1.3\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\netstandard1.3\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\lib\netstandard2.0\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\netstandard2.0\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\lib\netstandard2.1\QRCoder.dll" />
+    <Content Include="packages\QRCoder.1.7.0\lib\netstandard2.1\QRCoder.xml" />
+    <Content Include="packages\QRCoder.1.7.0\nuget-icon.png" />
     <Content Include="packages\WebGrease.1.6.0\lib\WebGrease.dll" />
     <Content Include="packages\WebGrease.1.6.0\tools\WG.EXE" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -542,6 +577,9 @@
     <Content Include="packages\Newtonsoft.Json.13.0.3\README.md" />
     <Content Include="packages\WebGrease.1.6.0\.signature.p7s" />
     <Content Include="packages\WebGrease.1.6.0\WebGrease.1.6.0.nupkg" />
+    <Content Include="packages\QRCoder.1.7.0\.signature.p7s" />
+    <Content Include="packages\QRCoder.1.7.0\QRCoder.1.7.0.nupkg" />
+    <Content Include="packages\QRCoder.1.7.0\README.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\campus-app.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -570,10 +608,14 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Users\EventDetail.cshtml" />
     <Content Include="Views\Users\Registrations.cshtml" />
+    <Content Include="Views\Users\Filter.cshtml" />
+    <Content Include="Views\Users\Events.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\" />
+    <Folder Include="Images\" />
+    <Folder Include="Views\QRCodeHelper\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

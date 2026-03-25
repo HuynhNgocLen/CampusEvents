@@ -1,8 +1,12 @@
-@* Views/Users/EventDetail.cshtml — Chi tiết sự kiện + đăng ký *@
+﻿@* Views/Users/EventDetail.cshtml — Chi tiết sự kiện + đăng ký *@
+@model shcool_event_management.Models.EVENT
 @{
-    ViewBag.Title      = "Chi tiết Sự kiện";
+    ViewBag.Title = "Chi tiết Sự kiện";
     ViewBag.ActivePage = "events";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+
+    var conLai = @Model.SoLuongToiDa - @Model.SoLuongDaDangKy;
+    var phanTram = (Model.SoLuongDaDangKy * 100 / Model.SoLuongToiDa);
 }
 
 <div class="container py-4">
@@ -28,12 +32,15 @@
                 </div>
                 <div class="ce-event-banner__content">
                     <div class="d-flex gap-2 mb-2 flex-wrap">
-                        <span class="ce-badge ce-badge-primary">Học thuật</span>
-                        <span class="ce-badge ce-badge-warning">Sắp đầy</span>
+                        < span class= "ce-badge ce-badge-primary" >@(Model.DanhMuc.TenDanhMuc) </ span >
+                        @if (conLai <= 0)
+                        {< span class= "ce-badge ce-badge-danger" > Hết chỗ </ span >}
+                        else if (conLai <= 10)
+                        {< span class= "ce-badge ce-badge-warning" > Sắp đầy </ span >}
                     </div>
-                    <h1>Annual Tech Symposium 2025</h1>
+                    <h1>@(Model?.TenEvent)</h1>
                     <p style="opacity:.82;font-size:.88rem;margin-top:.4rem">
-                        Tổ chức bởi <strong>Khoa Công nghệ Thông tin</strong>
+                        Tổ chức bởi <strong>@(Model.Vien.TenVien)</strong>
                     </p>
                 </div>
             </div>
@@ -44,28 +51,33 @@
                     <div class="ce-info-item__icon"><span class="material-symbols-outlined">calendar_today</span></div>
                     <div>
                         <div class="ce-info-item__label">Ngày tổ chức</div>
-                        <div class="ce-info-item__val">Thứ Sáu, 21/03/2025</div>
+                        <div class="ce-info-item__val">@Model.NgayBatDau.ToString("dddd, dd/MM/yyyy")</div>
                     </div>
                 </div>
                 <div class="ce-info-item">
                     <div class="ce-info-item__icon"><span class="material-symbols-outlined">schedule</span></div>
                     <div>
                         <div class="ce-info-item__label">Thời gian</div>
-                        <div class="ce-info-item__val">08:00 – 17:00</div>
+                        <div class="ce-info-item__val">
+                            @if (Model.GioBatDau.HasValue && Model.GioKetThuc.HasValue)
+                            {@($"{Model.GioBatDau.Value.ToString(@"hh\:mm")} – {Model.GioKetThuc.Value.ToString(@"hh\:mm")}") }
+                            else
+                            { < text > Chưa cập nhật</ text >}
+                        </div>
                     </div>
                 </div>
                 <div class="ce-info-item">
                     <div class="ce-info-item__icon"><span class="material-symbols-outlined">location_on</span></div>
                     <div>
                         <div class="ce-info-item__label">Địa điểm</div>
-                        <div class="ce-info-item__val">Hội trường A – Cơ sở 1</div>
+                        <div class="ce-info-item__val">@(Model.DiaDiem.TenDiaDiem) </div>
                     </div>
                 </div>
                 <div class="ce-info-item">
                     <div class="ce-info-item__icon"><span class="material-symbols-outlined">person</span></div>
                     <div>
                         <div class="ce-info-item__label">Người phụ trách</div>
-                        <div class="ce-info-item__val">Nguyễn Văn An</div>
+                        <div class="ce-info-item__val">@(Model.NguoiDang)</div>
                     </div>
                 </div>
             </div>
@@ -90,11 +102,12 @@
                             new { Time="12:00", Label="Nghỉ trưa & Networking" },
                             new { Time="13:30", Label="Cuộc thi Hackathon 4 tiếng" },
                             new { Time="17:00", Label="Trao giải & Bế mạc" },
-                        }) {
-                        <div style="display:flex;align-items:center;gap:.875rem;padding:.55rem .875rem;background:var(--surface-2);border-radius:var(--radius);font-size:.83rem">
-                            <span style="font-weight:700;color:var(--primary);min-width:38px">@s.Time</span>
-                            <span style="color:var(--text)">@s.Label</span>
-                        </div>
+                        })
+                        {
+                            <div style="display:flex;align-items:center;gap:.875rem;padding:.55rem .875rem;background:var(--surface-2);border-radius:var(--radius);font-size:.83rem">
+                                <span style="font-weight:700;color:var(--primary);min-width:38px">@s.Time</span>
+                                <span style="color:var(--text)">@s.Label</span>
+                            </div>
                         }
                     </div>
                 </div>
@@ -114,12 +127,12 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between mb-1">
                         <span style="font-size:.78rem;color:var(--text-muted)">Số chỗ</span>
-                        <span style="font-size:.78rem;font-weight:700;color:var(--danger)">158 / 200</span>
+                        <span style="font-size:.78rem;font-weight:700;color:var(--danger)">@conLai</span>
                     </div>
                     <div class="ce-cap-bar">
                         <div class="ce-cap-bar__fill high" style="width:79%"></div>
                     </div>
-                    <p style="font-size:.73rem;color:var(--text-muted);margin-top:.35rem">⚠️ Chỉ còn 42 chỗ – Đăng ký sớm!</p>
+                    <p style="font-size:.73rem;color:var(--text-muted);margin-top:.35rem">@conLai</p>
                 </div>
 
                 @* Deadline *@
@@ -150,7 +163,7 @@
                                 onclick="CeToast.show('Đã sao chép liên kết!','success')">
                             <span class="material-symbols-outlined" style="font-size:14px">link</span> Link
                         </button>
-                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1">
+                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1" onclick="openEmailDialog('@Model.Email')">
                             <span class="material-symbols-outlined" style="font-size:14px">mail</span> Email
                         </button>
                         <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1"
@@ -180,7 +193,8 @@
                 <div style="font-size:.78rem;color:var(--text-muted)">📅 Thứ Sáu, 21/03/2025 · 08:00–17:00 · Hội trường A</div>
             </div>
 
-            @using (Html.BeginForm("Register", "Users", FormMethod.Post)) {
+            @using (Html.BeginForm("Register", "Users", FormMethod.Post))
+            {
                 @Html.AntiForgeryToken()
                 <div class="mb-3">
                     <label class="ce-form-label">Họ và tên</label>
@@ -248,3 +262,52 @@
         </div>
     </div>
 </div>
+
+@* ══════════ MODAL EMAIL DIALOG ══════════ *@
+<div class="ce-modal-overlay" id="modal-email-dialog">
+    <div class="ce-modal-box" style="max-width:400px">
+        <div class="ce-modal-header">
+            <h5>Email liên hệ BTC</h5>
+            <button class="ce-modal-close" onclick="ceCloseModal('modal-email-dialog')"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="ce-modal-body">
+            <div class="d-flex gap-2 p-2" style="background:var(--surface-2); border-radius:8px; border:1px solid var(--border)">
+                <input type="text" id="email-input" value="" readonly style="flex:1; border:none; background:transparent; font-size:.85rem; outline:none">
+                <button class="ce-btn ce-btn-primary ce-btn-sm" onclick="copyToClipboard('email-input', 'Đã copy email!')">Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Tự động điền link hiện tại vào ô input khi trang load
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.getElementById('url-input')) {
+                document.getElementById('url-input').value = window.location.href;
+            }
+        });
+
+        // Hàm mở dialog email
+        function openEmailDialog(email) {
+            document.getElementById('email-input').value = email;
+            ceOpenModal('modal-email-dialog');
+        }
+
+        // Hàm copy dùng chung
+        function copyToClipboard(inputId, message) {
+            var copyText = document.getElementById(inputId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value).then(function () {
+                if (typeof CeToast !== 'undefined') {
+                    CeToast.show(message, 'success');
+                } else {
+                    alert(message);
+                }
+                // Đóng modal sau khi copy
+                ceCloseModal(inputId === 'url-input' ? 'modal-copy-link' : 'modal-email-dialog');
+            });
+        }
+    </script>
+}

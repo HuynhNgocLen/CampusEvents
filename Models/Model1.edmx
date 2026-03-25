@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="DangKySuKien">
           <Key>
             <PropertyRef Name="MaEvent" />
@@ -12,47 +12,83 @@
           </Key>
           <Property Name="MaEvent" Type="int" Nullable="false" />
           <Property Name="IDSinhVien" Type="varchar" MaxLength="13" Nullable="false" />
-          <Property Name="NgayDangKy" Type="datetime" />
-          <Property Name="TrangThai" Type="nvarchar" MaxLength="50" />
+          <Property Name="NgayDangKy" Type="datetime" Nullable="false" />
+          <Property Name="TrangThai" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DanhMuc">
+          <Key>
+            <PropertyRef Name="MaDanhMuc" />
+          </Key>
+          <Property Name="MaDanhMuc" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="TenDanhMuc" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="MauSac" Type="nvarchar" MaxLength="50" />
+          <Property Name="Icon" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="DiaDiem">
+          <Key>
+            <PropertyRef Name="MaDiaDiem" />
+          </Key>
+          <Property Name="MaDiaDiem" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenDiaDiem" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="DiaChiChiTiet" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="EVENT">
           <Key>
-            <PropertyRef Name="MaEnven" />
+            <PropertyRef Name="MaEvent" />
           </Key>
-          <Property Name="MaEnven" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TenEvent" Type="nvarchar" MaxLength="250" />
-          <Property Name="NgayCapNhat" Type="date" />
-          <Property Name="NgayHetHan" Type="date" />
-          <Property Name="ChiTiet" Type="nvarchar(max)" />
+          <Property Name="MaEvent" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaVien" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="TenEvent" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="MaDanhMuc" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="MaDiaDiem" Type="int" />
+          <Property Name="NgayBatDau" Type="datetime" Nullable="false" />
+          <Property Name="NgayKetThuc" Type="datetime" />
+          <Property Name="NgayHetHanDangKy" Type="date" />
+          <Property Name="SoLuongToiDa" Type="int" Nullable="false" />
+          <Property Name="SoLuongDaDangKy" Type="int" Nullable="false" />
+          <Property Name="GiaVe" Type="decimal" Precision="12" Scale="2" />
           <Property Name="MoTa" Type="nvarchar(max)" />
+          <Property Name="ChiTiet" Type="nvarchar(max)" />
           <Property Name="NguoiDang" Type="varchar" MaxLength="13" />
-          <Property Name="LuotXem" Type="int" />
-          <Property Name="SoLuongDangKy" Type="int" />
+          <Property Name="LuotXem" Type="int" Nullable="false" />
+          <Property Name="TrangThai" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="NgayTao" Type="datetime" Nullable="false" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="GioBatDau" Type="time" Precision="0" />
+          <Property Name="GioKetThuc" Type="time" Precision="0" />
+          <Property Name="Email" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
             <PropertyRef Name="MaNghanh" />
           </Key>
           <Property Name="MaNghanh" Type="varchar" MaxLength="6" Nullable="false" />
-          <Property Name="TenNghanh" Type="nvarchar" MaxLength="100" />
+          <Property Name="TenNghanh" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="SinhVien">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="varchar" MaxLength="13" Nullable="false" />
-          <Property Name="Ten" Type="nvarchar" MaxLength="100" />
+          <Property Name="Ten" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="NgayThangNamSinh" Type="date" />
           <Property Name="SDT" Type="varchar" MaxLength="10" />
           <Property Name="MaNghanh" Type="varchar" MaxLength="6" />
-          <Property Name="Vien" Type="nvarchar" MaxLength="100" />
+          <Property Name="MaVien" Type="char" MaxLength="12" />
+        </EntityType>
+        <EntityType Name="Vien">
+          <Key>
+            <PropertyRef Name="MaVien" />
+          </Key>
+          <Property Name="MaVien" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="TenVien" Type="nvarchar" MaxLength="150" Nullable="false" />
         </EntityType>
         <Association Name="FK_DangKy_Event">
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
           <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EVENT">
-              <PropertyRef Name="MaEnven" />
+              <PropertyRef Name="MaEvent" />
             </Principal>
             <Dependent Role="DangKySuKien">
               <PropertyRef Name="MaEvent" />
@@ -71,7 +107,31 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_EVENT_USER">
+        <Association Name="FK_EVENT_DANHMUC">
+          <End Role="DanhMuc" Type="Self.DanhMuc" Multiplicity="1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DanhMuc">
+              <PropertyRef Name="MaDanhMuc" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="MaDanhMuc" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_DIADIEM">
+          <End Role="DiaDiem" Type="Self.DiaDiem" Multiplicity="0..1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiaDiem">
+              <PropertyRef Name="MaDiaDiem" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="MaDiaDiem" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_NGUOIDANG">
           <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
           <ReferentialConstraint>
@@ -80,6 +140,18 @@
             </Principal>
             <Dependent Role="EVENT">
               <PropertyRef Name="NguoiDang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_VIEN">
+          <End Role="Vien" Type="Self.Vien" Multiplicity="1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="MaVien" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -97,9 +169,12 @@
         </Association>
         <EntityContainer Name="school_event_managementModelStoreContainer">
           <EntitySet Name="DangKySuKien" EntityType="Self.DangKySuKien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DiaDiem" EntityType="Self.DiaDiem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EVENT" EntityType="Self.EVENT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaNghanh" EntityType="Self.MaNghanh" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SinhVien" EntityType="Self.SinhVien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vien" EntityType="Self.Vien" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
             <End Role="EVENT" EntitySet="EVENT" />
             <End Role="DangKySuKien" EntitySet="DangKySuKien" />
@@ -108,8 +183,20 @@
             <End Role="SinhVien" EntitySet="SinhVien" />
             <End Role="DangKySuKien" EntitySet="DangKySuKien" />
           </AssociationSet>
-          <AssociationSet Name="FK_EVENT_USER" Association="Self.FK_EVENT_USER">
+          <AssociationSet Name="FK_EVENT_DANHMUC" Association="Self.FK_EVENT_DANHMUC">
+            <End Role="DanhMuc" EntitySet="DanhMuc" />
+            <End Role="EVENT" EntitySet="EVENT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_DIADIEM" Association="Self.FK_EVENT_DIADIEM">
+            <End Role="DiaDiem" EntitySet="DiaDiem" />
+            <End Role="EVENT" EntitySet="EVENT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_NGUOIDANG" Association="Self.FK_EVENT_NGUOIDANG">
             <End Role="SinhVien" EntitySet="SinhVien" />
+            <End Role="EVENT" EntitySet="EVENT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_VIEN" Association="Self.FK_EVENT_VIEN">
+            <End Role="Vien" EntitySet="Vien" />
             <End Role="EVENT" EntitySet="EVENT" />
           </AssociationSet>
           <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
@@ -117,8 +204,7 @@
             <End Role="SinhVien" EntitySet="SinhVien" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="school_event_managementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -129,33 +215,67 @@
           </Key>
           <Property Name="MaEvent" Type="Int32" Nullable="false" />
           <Property Name="IDSinhVien" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
-          <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NgayDangKy" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENT" Relationship="Self.FK_DangKy_Event" FromRole="DangKySuKien" ToRole="EVENT" />
           <NavigationProperty Name="SinhVien" Relationship="Self.FK_DangKy_SinhVien" FromRole="DangKySuKien" ToRole="SinhVien" />
         </EntityType>
+        <EntityType Name="DanhMuc">
+          <Key>
+            <PropertyRef Name="MaDanhMuc" />
+          </Key>
+          <Property Name="MaDanhMuc" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TenDanhMuc" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MauSac" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Icon" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_DANHMUC" FromRole="DanhMuc" ToRole="EVENT" />
+        </EntityType>
+        <EntityType Name="DiaDiem">
+          <Key>
+            <PropertyRef Name="MaDiaDiem" />
+          </Key>
+          <Property Name="MaDiaDiem" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenDiaDiem" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DiaChiChiTiet" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_DIADIEM" FromRole="DiaDiem" ToRole="EVENT" />
+        </EntityType>
         <EntityType Name="EVENT">
           <Key>
-            <PropertyRef Name="MaEnven" />
+            <PropertyRef Name="MaEvent" />
           </Key>
-          <Property Name="MaEnven" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TenEvent" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="NgayCapNhat" Type="DateTime" Precision="0" />
-          <Property Name="NgayHetHan" Type="DateTime" Precision="0" />
-          <Property Name="ChiTiet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MaEvent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="TenEvent" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaDanhMuc" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MaDiaDiem" Type="Int32" />
+          <Property Name="NgayBatDau" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="NgayKetThuc" Type="DateTime" Precision="3" />
+          <Property Name="NgayHetHanDangKy" Type="DateTime" Precision="0" />
+          <Property Name="SoLuongToiDa" Type="Int32" Nullable="false" />
+          <Property Name="SoLuongDaDangKy" Type="Int32" Nullable="false" />
+          <Property Name="GiaVe" Type="Decimal" Precision="12" Scale="2" />
           <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ChiTiet" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="NguoiDang" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
-          <Property Name="LuotXem" Type="Int32" />
-          <Property Name="SoLuongDangKy" Type="Int32" />
+          <Property Name="LuotXem" Type="Int32" Nullable="false" />
+          <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgayTao" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_Event" FromRole="EVENT" ToRole="DangKySuKien" />
-          <NavigationProperty Name="SinhVien" Relationship="Self.FK_EVENT_USER" FromRole="EVENT" ToRole="SinhVien" />
+          <NavigationProperty Name="DanhMuc" Relationship="Self.FK_EVENT_DANHMUC" FromRole="EVENT" ToRole="DanhMuc" />
+          <NavigationProperty Name="DiaDiem" Relationship="Self.FK_EVENT_DIADIEM" FromRole="EVENT" ToRole="DiaDiem" />
+          <NavigationProperty Name="SinhVien" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="EVENT" ToRole="SinhVien" />
+          <NavigationProperty Name="Vien" Relationship="Self.FK_EVENT_VIEN" FromRole="EVENT" ToRole="Vien" />
+          <Property Name="GioBatDau" Type="Time" Precision="0" />
+          <Property Name="GioKetThuc" Type="Time" Precision="0" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
             <PropertyRef Name="MaNghanh1" />
           </Key>
           <Property Name="MaNghanh1" Type="String" MaxLength="6" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="TenNghanh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TenNghanh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="SinhViens" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="MaNghanh" ToRole="SinhVien" />
         </EntityType>
         <EntityType Name="SinhVien">
@@ -163,21 +283,29 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Ten" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Ten" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
           <Property Name="SDT" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="Vien" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
-          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_USER" FromRole="SinhVien" ToRole="EVENT" />
+          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="SinhVien" ToRole="EVENT" />
           <NavigationProperty Name="MaNghanh1" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
+        </EntityType>
+        <EntityType Name="Vien">
+          <Key>
+            <PropertyRef Name="MaVien" />
+          </Key>
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="TenVien" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_VIEN" FromRole="Vien" ToRole="EVENT" />
         </EntityType>
         <Association Name="FK_DangKy_Event">
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
           <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EVENT">
-              <PropertyRef Name="MaEnven" />
+              <PropertyRef Name="MaEvent" />
             </Principal>
             <Dependent Role="DangKySuKien">
               <PropertyRef Name="MaEvent" />
@@ -196,7 +324,31 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_EVENT_USER">
+        <Association Name="FK_EVENT_DANHMUC">
+          <End Role="DanhMuc" Type="Self.DanhMuc" Multiplicity="1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DanhMuc">
+              <PropertyRef Name="MaDanhMuc" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="MaDanhMuc" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_DIADIEM">
+          <End Role="DiaDiem" Type="Self.DiaDiem" Multiplicity="0..1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiaDiem">
+              <PropertyRef Name="MaDiaDiem" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="MaDiaDiem" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_NGUOIDANG">
           <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
           <ReferentialConstraint>
@@ -205,6 +357,18 @@
             </Principal>
             <Dependent Role="EVENT">
               <PropertyRef Name="NguoiDang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_VIEN">
+          <End Role="Vien" Type="Self.Vien" Multiplicity="1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="MaVien" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -220,11 +384,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="school_event_managementEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="SchoolEventManagementEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="DangKySuKiens" EntityType="Self.DangKySuKien" />
+          <EntitySet Name="DanhMucs" EntityType="Self.DanhMuc" />
+          <EntitySet Name="DiaDiems" EntityType="Self.DiaDiem" />
           <EntitySet Name="EVENTs" EntityType="Self.EVENT" />
           <EntitySet Name="MaNghanhs" EntityType="Self.MaNghanh" />
           <EntitySet Name="SinhViens" EntityType="Self.SinhVien" />
+          <EntitySet Name="Viens" EntityType="Self.Vien" />
           <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
             <End Role="EVENT" EntitySet="EVENTs" />
             <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
@@ -233,8 +400,20 @@
             <End Role="SinhVien" EntitySet="SinhViens" />
             <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
           </AssociationSet>
-          <AssociationSet Name="FK_EVENT_USER" Association="Self.FK_EVENT_USER">
+          <AssociationSet Name="FK_EVENT_DANHMUC" Association="Self.FK_EVENT_DANHMUC">
+            <End Role="DanhMuc" EntitySet="DanhMucs" />
+            <End Role="EVENT" EntitySet="EVENTs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_DIADIEM" Association="Self.FK_EVENT_DIADIEM">
+            <End Role="DiaDiem" EntitySet="DiaDiems" />
+            <End Role="EVENT" EntitySet="EVENTs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_NGUOIDANG" Association="Self.FK_EVENT_NGUOIDANG">
             <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="EVENT" EntitySet="EVENTs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_VIEN" Association="Self.FK_EVENT_VIEN">
+            <End Role="Vien" EntitySet="Viens" />
             <End Role="EVENT" EntitySet="EVENTs" />
           </AssociationSet>
           <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
@@ -247,7 +426,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="school_event_managementModelStoreContainer" CdmEntityContainer="school_event_managementEntities">
+        <EntityContainerMapping StorageEntityContainer="school_event_managementModelStoreContainer" CdmEntityContainer="SchoolEventManagementEntities">
           <EntitySetMapping Name="DangKySuKiens">
             <EntityTypeMapping TypeName="school_event_managementModel.DangKySuKien">
               <MappingFragment StoreEntitySet="DangKySuKien">
@@ -258,18 +437,49 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="DanhMucs">
+            <EntityTypeMapping TypeName="school_event_managementModel.DanhMuc">
+              <MappingFragment StoreEntitySet="DanhMuc">
+                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
+                <ScalarProperty Name="TenDanhMuc" ColumnName="TenDanhMuc" />
+                <ScalarProperty Name="MauSac" ColumnName="MauSac" />
+                <ScalarProperty Name="Icon" ColumnName="Icon" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DiaDiems">
+            <EntityTypeMapping TypeName="school_event_managementModel.DiaDiem">
+              <MappingFragment StoreEntitySet="DiaDiem">
+                <ScalarProperty Name="MaDiaDiem" ColumnName="MaDiaDiem" />
+                <ScalarProperty Name="TenDiaDiem" ColumnName="TenDiaDiem" />
+                <ScalarProperty Name="DiaChiChiTiet" ColumnName="DiaChiChiTiet" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="EVENTs">
             <EntityTypeMapping TypeName="school_event_managementModel.EVENT">
               <MappingFragment StoreEntitySet="EVENT">
-                <ScalarProperty Name="MaEnven" ColumnName="MaEnven" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="GioKetThuc" ColumnName="GioKetThuc" />
+                <ScalarProperty Name="GioBatDau" ColumnName="GioBatDau" />
+                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
+                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
                 <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
-                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
-                <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
-                <ScalarProperty Name="ChiTiet" ColumnName="ChiTiet" />
+                <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
+                <ScalarProperty Name="MaDiaDiem" ColumnName="MaDiaDiem" />
+                <ScalarProperty Name="NgayBatDau" ColumnName="NgayBatDau" />
+                <ScalarProperty Name="NgayKetThuc" ColumnName="NgayKetThuc" />
+                <ScalarProperty Name="NgayHetHanDangKy" ColumnName="NgayHetHanDangKy" />
+                <ScalarProperty Name="SoLuongToiDa" ColumnName="SoLuongToiDa" />
+                <ScalarProperty Name="SoLuongDaDangKy" ColumnName="SoLuongDaDangKy" />
+                <ScalarProperty Name="GiaVe" ColumnName="GiaVe" />
                 <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="ChiTiet" ColumnName="ChiTiet" />
                 <ScalarProperty Name="NguoiDang" ColumnName="NguoiDang" />
                 <ScalarProperty Name="LuotXem" ColumnName="LuotXem" />
-                <ScalarProperty Name="SoLuongDangKy" ColumnName="SoLuongDangKy" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="NgayTao" ColumnName="NgayTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -289,7 +499,15 @@
                 <ScalarProperty Name="NgayThangNamSinh" ColumnName="NgayThangNamSinh" />
                 <ScalarProperty Name="SDT" ColumnName="SDT" />
                 <ScalarProperty Name="MaNghanh" ColumnName="MaNghanh" />
-                <ScalarProperty Name="Vien" ColumnName="Vien" />
+                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Viens">
+            <EntityTypeMapping TypeName="school_event_managementModel.Vien">
+              <MappingFragment StoreEntitySet="Vien">
+                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
+                <ScalarProperty Name="TenVien" ColumnName="TenVien" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

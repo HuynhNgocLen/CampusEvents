@@ -1,0 +1,178 @@
+﻿@model IEnumerable<shcool_event_management.Models.EVENT>
+@using System.Linq
+
+@{
+    ViewBag.Title = "Sự kiện";
+    ViewBag.ActivePage = "events";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+
+        <!-- Sidebar Filter -->
+        @Html.Partial("Filter")
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+
+            @* Upcoming alert *@
+            <div class="ce-upcoming mb-4 ce-reveal">
+                <div class="ce-upcoming__icon">
+                    <span class="material-symbols-outlined">notifications_active</span>
+                </div>
+                <div style="flex:1;min-width:0">
+                    <div class="ce-upcoming__title">🎉 Khám phá sự kiện mới nhất của trường!</div>
+                    <div class="ce-upcoming__sub">Đăng ký tham dự và nhận QR check-in tự động</div>
+                </div>
+                <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary ce-btn-sm d-none d-sm-flex">
+                    Xem tất cả
+                </a>
+            </div>
+
+            @* Filter chips theo DanhMuc *@
+            <div class="ce-chips mb-4">
+                <span class="ce-chip active" data-value="all">
+                    <span class="material-symbols-outlined">apps</span> Tất cả
+                </span>
+                @if (ViewBag.DanhMucs != null)
+                {
+                    foreach (var dm in ViewBag.DanhMucs)
+                    {
+                        <span class="ce-chip" data-value="@dm.MaDanhMuc">
+                            @if (!string.IsNullOrEmpty(dm.Icon))
+                            {
+                                <span class="material-symbols-outlined">@dm.Icon</span>
+                            }
+                            @dm.TenDanhMuc
+                        </span>
+                    }
+                }
+            </div>
+
+            @* Sort row *@
+            <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+                <h2 class="ce-section-title mb-0">Sự kiện sắp diễn ra</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size:.78rem;color:var(--text-muted);white-space:nowrap;font-weight:600">Sắp xếp:</span>
+                    <select class="ce-form-select" style="width:auto;height:34px;font-size:.78rem">
+                        <option>Sắp diễn ra</option>
+                        <option>Phổ biến nhất</option>
+                        <option>Mới nhất</option>
+                    </select>
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="row g-3" id="events-grid">
+                    @foreach (var item in Model)
+                    {
+                        var conLai = item.SoLuongToiDa - item.SoLuongDaDangKy;
+
+                        <div class="col-12 col-sm-6 col-xl-4 ce-reveal" data-category="@item.MaDanhMuc">
+                            <a href="@Url.Action("EventDetail","Users", new { id = item.MaEvent })" class="ce-event-card">
+                                <div class="ce-event-card__img">
+                                    <div class="ce-event-card__img-placeholder">
+                                        <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "event")</span>
+                                    </div>
+                                    <div class="ce-event-card__badges">
+                                        <span class="ce-badge ce-badge-primary">
+                                            @(item.DanhMuc?.TenDanhMuc ?? "Sự kiện")
+                                        </span>
+                                        @if (conLai <= 0)
+                                        {
+                                            <span class="ce-badge ce-badge-danger">Hết chỗ</span>
+                                        }
+                                        else if (conLai <= 10 && conLai > 0)
+                                        {
+                                            <span class="ce-badge ce-badge-warning">Sắp đầy</span>
+                                        }
+                                    </div>
+                                    <button class="ce-event-card__save" type="button" onclick="event.preventDefault()">
+                                        <span class="material-symbols-outlined">favorite_border</span>
+                                    </button>
+                                </div>
+
+                                <div class="ce-event-card__body">
+                                    <div class="ce-event-card__title">@item.TenEvent</div>
+                                    <div class="ce-event-card__meta">
+                                        <div class="ce-event-card__meta-row">
+                                            <span class="material-symbols-outlined">calendar_today</span>
+                                            @item.NgayBatDau.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("vi-VN"))
+                                        </div>
+                                        @if (item.NgayKetThuc.HasValue)
+                                        {
+                                            <div class="ce-event-card__meta-row">
+                                                <span class="material-symbols-outlined">event_available</span>
+                                                @item.NgayKetThuc.Value.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("vi-VN"))
+                                            </div>
+                                        }
+                                        <div class="ce-event-card__meta-row">
+                                            <span class="material-symbols-outlined">location_on</span>
+                                            @(item.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                                        </div>
+                                        <div class="ce-event-card__meta-row">
+                                            <span class="material-symbols-outlined">group</span>
+                                            @(item.Vien?.TenVien ?? item.MaVien ?? "Ban tổ chức")
+                                        </div>
+                                    </div>
+
+                                    <div class="ce-event-card__footer">
+                                        <div class="ce-event-card__slots">
+                                            <span class="material-symbols-outlined">group</span>
+                                            @(item.SoLuongDaDangKy) / @(item.SoLuongToiDa) chỗ
+                                        </div>
+                                        <span class="ce-badge ce-badge-primary">
+                                            @(item.GiaVe == null || item.GiaVe == 0 ? "Miễn phí" : String.Format("{0:N0}đ", item.GiaVe))
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="ce-empty">
+                    <span class="material-symbols-outlined">search_off</span>
+                    <div class="ce-empty__title">Không tìm thấy sự kiện</div>
+                    <div class="ce-empty__sub">Vui lòng thử thay đổi bộ lọc.</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.ce-filter-group').forEach(function (group) {
+                var allCb = group.querySelector('.check-all');
+                var items = group.querySelectorAll('.check-item');
+
+                if (!allCb) return;
+
+                allCb.addEventListener('change', function () {
+                    if (this.checked) {
+                        items.forEach(i => i.checked = false);
+                    }
+                });
+
+                items.forEach(function (item) {
+                    item.addEventListener('change', function () {
+                        if (this.checked) {
+                            allCb.checked = false;
+                        } else {
+                            var anyChecked = Array.from(items).some(i => i.checked);
+                            if (!anyChecked) allCb.checked = true;
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+}

@@ -12,26 +12,20 @@ namespace shcool_event_management.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class SinhVien
+    public partial class DanhMuc
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public SinhVien()
+        public DanhMuc()
         {
-            this.DangKySuKiens = new HashSet<DangKySuKien>();
             this.EVENTs = new HashSet<EVENT>();
         }
     
-        public string ID { get; set; }
-        public string Ten { get; set; }
-        public Nullable<System.DateTime> NgayThangNamSinh { get; set; }
-        public string SDT { get; set; }
-        public string MaNghanh { get; set; }
-        public string MaVien { get; set; }
+        public string MaDanhMuc { get; set; }
+        public string TenDanhMuc { get; set; }
+        public string MauSac { get; set; }
+        public string Icon { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EVENT> EVENTs { get; set; }
-        public virtual MaNghanh MaNghanh1 { get; set; }
     }
 }
