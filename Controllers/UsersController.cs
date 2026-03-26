@@ -35,7 +35,7 @@ namespace school_event_management.Controllers
         //Users/Events
         public ActionResult Events(string[] vien, string[] danhmuc, string time, string[] status)
         {
-            // 1. Load dữ liệu cho Sidebar
+            // Load dữ liệu cho Sidebar
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
             ViewBag.ListDanhMuc = db.DanhMucs.ToList();
             ViewBag.DanhMucs = db.DanhMucs.ToList();
@@ -97,7 +97,20 @@ namespace school_event_management.Controllers
 
         public ActionResult EventDetail(int? id)
         {
+            //So Cho Con Lai
+             var tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == id);
+             ViewBag.tinhTrang = tinhTrang;
             if (id == null) return RedirectToAction("Events");
+            ViewBag.tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == id);
+            //Phan Tram
+            if (tinhTrang != null && tinhTrang.SoLuongToiDa > 0)
+            {
+                ViewBag.phanTram = (double)(tinhTrang.SoLuongDaDangKy * 100) / (double)tinhTrang.SoLuongToiDa;
+            }
+            else
+            {
+                ViewBag.phanTram = 0;
+            }
 
             db.Configuration.ProxyCreationEnabled = false;
 
@@ -113,8 +126,14 @@ namespace school_event_management.Controllers
 
             // ĐÚNG tên bảng
             bool daDangKy = db.DangKySuKiens.Any(d => d.MaEvent == id && d.IDSinhVien == currentStudentId);
-
             ViewBag.DaDangKy = daDangKy;
+
+            //Time 
+            DateTime ngayHetHan = ev.NgayHetHanDangKy ?? DateTime.Now;
+            DateTime ngayHienTai = DateTime.Now.Date;
+            TimeSpan difference = ngayHetHan - ngayHienTai;
+            int soNgayConLai = difference.Days;
+            ViewBag.SoNgayConLai = soNgayConLai;
 
             if (daDangKy)
             {

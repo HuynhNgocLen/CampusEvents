@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="62361876da0749d8b2f9cf2d9b8db425" Name="Diagram1">
+      <Diagram DiagramId="62361876da0749d8b2f9cf2d9b8db425" Name="Diagram1" ZoomLevel="64">
         <EntityTypeShape EntityType="school_event_managementModel.DangKySuKien" Width="1.5" PointX="5.25" PointY="4.375" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.DanhMuc" Width="1.5" PointX="6" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.DiaDiem" Width="1.5" PointX="6" PointY="7.75" IsExpanded="true" />
@@ -19,6 +19,7 @@
         <AssociationConnector Association="school_event_managementModel.FK_EVENT_NGUOIDANG" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_EVENT_VIEN" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_NGHANH" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_SoChoConLai" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

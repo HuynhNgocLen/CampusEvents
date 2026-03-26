@@ -83,6 +83,23 @@
           <Property Name="MaVien" Type="char" MaxLength="12" Nullable="false" />
           <Property Name="TenVien" Type="nvarchar" MaxLength="150" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_SoChoConLai">
+          <Key>
+            <PropertyRef Name="MaEvent" />
+            <PropertyRef Name="TenEvent" />
+            <PropertyRef Name="SoLuongToiDa" />
+            <PropertyRef Name="SoLuongDaDangKy" />
+            <PropertyRef Name="TrangThaiCho" />
+          </Key>
+          <Property Name="MaEvent" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenEvent" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="SoLuongToiDa" Type="int" Nullable="false" />
+          <Property Name="SoLuongDaDangKy" Type="int" Nullable="false" />
+          <Property Name="SoChoConLai" Type="int" />
+          <Property Name="TrangThaiCho" Type="nvarchar" MaxLength="7" Nullable="false" />
+        </EntityType>
         <Association Name="FK_DangKy_Event">
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
           <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
@@ -175,6 +192,16 @@
           <EntitySet Name="MaNghanh" EntityType="Self.MaNghanh" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SinhVien" EntityType="Self.SinhVien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vien" EntityType="Self.Vien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vw_SoChoConLai" EntityType="Self.vw_SoChoConLai" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_SoChoConLai].[MaEvent] AS [MaEvent], 
+    [vw_SoChoConLai].[TenEvent] AS [TenEvent], 
+    [vw_SoChoConLai].[SoLuongToiDa] AS [SoLuongToiDa], 
+    [vw_SoChoConLai].[SoLuongDaDangKy] AS [SoLuongDaDangKy], 
+    [vw_SoChoConLai].[SoChoConLai] AS [SoChoConLai], 
+    [vw_SoChoConLai].[TrangThaiCho] AS [TrangThaiCho]
+    FROM [dbo].[vw_SoChoConLai] AS [vw_SoChoConLai]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
             <End Role="EVENT" EntitySet="EVENT" />
             <End Role="DangKySuKien" EntitySet="DangKySuKien" />
@@ -420,7 +447,23 @@
             <End Role="MaNghanh" EntitySet="MaNghanhs" />
             <End Role="SinhVien" EntitySet="SinhViens" />
           </AssociationSet>
+          <EntitySet Name="vw_SoChoConLai" EntityType="school_event_managementModel.vw_SoChoConLai" />
         </EntityContainer>
+        <EntityType Name="vw_SoChoConLai">
+          <Key>
+            <PropertyRef Name="MaEvent" />
+            <PropertyRef Name="TenEvent" />
+            <PropertyRef Name="SoLuongToiDa" />
+            <PropertyRef Name="SoLuongDaDangKy" />
+            <PropertyRef Name="TrangThaiCho" />
+          </Key>
+          <Property Name="MaEvent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenEvent" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="SoLuongToiDa" Type="Int32" Nullable="false" />
+          <Property Name="SoLuongDaDangKy" Type="Int32" Nullable="false" />
+          <Property Name="SoChoConLai" Type="Int32" />
+          <Property Name="TrangThaiCho" Type="String" Nullable="false" MaxLength="7" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -508,6 +551,18 @@
               <MappingFragment StoreEntitySet="Vien">
                 <ScalarProperty Name="MaVien" ColumnName="MaVien" />
                 <ScalarProperty Name="TenVien" ColumnName="TenVien" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_SoChoConLai">
+            <EntityTypeMapping TypeName="school_event_managementModel.vw_SoChoConLai">
+              <MappingFragment StoreEntitySet="vw_SoChoConLai">
+                <ScalarProperty Name="TrangThaiCho" ColumnName="TrangThaiCho" />
+                <ScalarProperty Name="SoChoConLai" ColumnName="SoChoConLai" />
+                <ScalarProperty Name="SoLuongDaDangKy" ColumnName="SoLuongDaDangKy" />
+                <ScalarProperty Name="SoLuongToiDa" ColumnName="SoLuongToiDa" />
+                <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
+                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

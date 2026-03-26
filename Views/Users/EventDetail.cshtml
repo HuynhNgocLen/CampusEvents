@@ -4,9 +4,6 @@
     ViewBag.Title = "Chi tiết Sự kiện";
     ViewBag.ActivePage = "events";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
-
-    var conLai = @Model.SoLuongToiDa - @Model.SoLuongDaDangKy;
-    var phanTram = (Model.SoLuongDaDangKy * 100 / Model.SoLuongToiDa);
 }
 
 <div class="container py-4">
@@ -33,10 +30,19 @@
                 <div class="ce-event-banner__content">
                     <div class="d-flex gap-2 mb-2 flex-wrap">
                         < span class= "ce-badge ce-badge-primary" >@(Model.DanhMuc.TenDanhMuc) </ span >
-                        @if (conLai <= 0)
-                        {< span class= "ce-badge ce-badge-danger" > Hết chỗ </ span >}
-                        else if (conLai <= 10)
-                        {< span class= "ce-badge ce-badge-warning" > Sắp đầy </ span >}
+                        @if (ViewBag.tinhTrang.SoChoConLai != null) {
+                            var tt = ViewBag.tinhTrang;
+
+                            if (@tt.SoChoConLai == 0) {
+                                <span class="ce-badge ce-badge-danger">Hết chỗ</span>
+                            }
+                            else if (@tt.SoChoConLai <= 10) {
+                                <span class="ce-badge ce-badge-warning">Sắp đầy (Còn @tt.SoChoConLai chỗ)</span>
+                            }
+                            else {
+                                <span class="ce-badge ce-badge-success">Còn chỗ</span>
+                            }
+                        }
                     </div>
                     <h1>@(Model?.TenEvent)</h1>
                     <p style="opacity:.82;font-size:.88rem;margin-top:.4rem">
@@ -127,12 +133,12 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between mb-1">
                         <span style="font-size:.78rem;color:var(--text-muted)">Số chỗ</span>
-                        <span style="font-size:.78rem;font-weight:700;color:var(--danger)">@conLai</span>
+                        <span style="font-size:.78rem;font-weight:700;color:var(--danger)">@ViewBag.tinhTrang.SoLuongToiDa</span>
                     </div>
                     <div class="ce-cap-bar">
-                        <div class="ce-cap-bar__fill high" style="width:79%"></div>
+                        <div class="ce-cap-bar__fill high" style="width:@(ViewBag.phanTram)%"></div>
                     </div>
-                    <p style="font-size:.73rem;color:var(--text-muted);margin-top:.35rem">@conLai</p>
+                    <p style="font-size:.73rem;color:var(--text-muted);margin-top:.35rem">Số chỗ còn lại: @ViewBag.tinhTrang.SoChoConLai</p>
                 </div>
 
                 @* Deadline *@
@@ -140,8 +146,16 @@
                     <div style="display:flex;align-items:center;gap:.5rem;font-size:.83rem">
                         <span class="material-symbols-outlined" style="font-size:17px;color:var(--accent)">timer</span>
                         <div>
-                            <div style="font-weight:600;color:var(--text)">Hạn đăng ký: 19/03/2025</div>
-                            <div style="font-size:.73rem;color:var(--text-muted)">Còn 2 ngày</div>
+                            <div style="font-weight:600;color:var(--text)">Hạn đăng ký: @Model.NgayHetHanDangKy.Value.ToString("dd/MM/yyyy")</div>
+                            <div style="font-size:.73rem;color:var(--text-muted)">
+                                @if (ViewBag.SoNgayConLai > 0){
+                                    <span>Còn @ViewBag.SoNgayConLai ngày</span>
+                                }else if (ViewBag.SoNgayConLai == 0){
+                                    <span style="color:orange">Hết hạn trong hôm nay</span>
+                                }else{
+                                    <span style="color:red; font-weight:bold;">Đã hết hạn đăng ký</span>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>

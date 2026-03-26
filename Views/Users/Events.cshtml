@@ -148,31 +148,52 @@
 @section scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Counter animation
+            setTimeout(function () {
+                if (typeof ceCountUp === 'function') {
+                    ceCountUp(document.getElementById('cnt-sv'), 8420);
+                    ceCountUp(document.getElementById('cnt-clb'), 47);
+                }
+            }, 300);
 
-            document.querySelectorAll('.ce-filter-group').forEach(function (group) {
-                var allCb = group.querySelector('.check-all');
-                var items = group.querySelectorAll('.check-item');
-
-                if (!allCb) return;
-
-                allCb.addEventListener('change', function () {
-                    if (this.checked) {
-                        items.forEach(i => i.checked = false);
-                    }
-                });
-
-                items.forEach(function (item) {
-                    item.addEventListener('change', function () {
-                        if (this.checked) {
-                            allCb.checked = false;
-                        } else {
-                            var anyChecked = Array.from(items).some(i => i.checked);
-                            if (!anyChecked) allCb.checked = true;
-                        }
+            // Chip filter (client-side theo MaDanhMuc)
+            document.querySelectorAll('.ce-chip').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    document.querySelectorAll('.ce-chip').forEach(function (c) { c.classList.remove('active'); });
+                    chip.classList.add('active');
+                    var val = chip.dataset.value;
+                    document.querySelectorAll('#events-grid > [data-category]').forEach(function (card) {
+                        card.style.display = (val === 'all' || card.dataset.category === val) ? '' : 'none';
                     });
                 });
             });
 
+            // Sidebar checkbox: check-all toggle
+            document.querySelectorAll('.ce-filter-group').forEach(function (group) {
+                var allCb = group.querySelector('.check-all');
+                var items = group.querySelectorAll('.check-item');
+                if (!allCb) return;
+                allCb.addEventListener('change', function () {
+                    if (this.checked) items.forEach(function (i) { i.checked = false; });
+                });
+                items.forEach(function (item) {
+                    item.addEventListener('change', function () {
+                        if (this.checked) allCb.checked = false;
+                        if (group.querySelectorAll('.check-item:checked').length === 0) allCb.checked = true;
+                    });
+                });
+            });
+
+            // Clear filter
+            var clearBtn = document.getElementById('btn-clear-filter');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function () {
+                    document.querySelectorAll('.check-item').forEach(function (i) { i.checked = false; });
+                    document.querySelectorAll('.check-all').forEach(function (i) { i.checked = true; });
+                    var first = document.querySelector('input[name="time-filter"]');
+                    if (first) first.checked = true;
+                });
+            }
         });
     </script>
 }
