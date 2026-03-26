@@ -610,9 +610,14 @@
     <Content Include="Views\Users\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Users\EventDetail.cshtml" />
-    <Content Include="Views\Users\Registrations.cshtml" />
+    <Content Include="Views\Users\Registrations\Registrations.cshtml" />
     <Content Include="Views\Users\Filter.cshtml" />
     <Content Include="Views\Users\Events.cshtml" />
+    <Content Include="Views\Users\Registrations\_Sidebar.cshtml" />
+    <Content Include="Views\Users\Registrations\_Upcoming.cshtml" />
+    <Content Include="Views\Users\Registrations\_Attended.cshtml" />
+    <Content Include="Views\Users\Registrations\_Cancelled.cshtml" />
+    <Content Include="Views\Users\Registrations\_Modals.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

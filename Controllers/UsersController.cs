@@ -20,6 +20,12 @@ namespace school_event_management.Controllers
 
         SchoolEventManagementEntities db = new SchoolEventManagementEntities();
 
+        // ── Helper: lấy MSSV từ Session ──────────────────────────────
+        private string GetCurrentStudentId()
+        {
+            return Session["StudentId"] as string ?? "SV001"; // TODO: đổi khi có login thật
+        }
+
         //Users/Index 
         public ActionResult Index()
         {
@@ -135,30 +141,103 @@ namespace school_event_management.Controllers
             int soNgayConLai = difference.Days;
             ViewBag.SoNgayConLai = soNgayConLai;
 
-            if (daDangKy)
+            if (!string.IsNullOrEmpty(ev.LinkZalo))
             {
-                //Sử dụng QRCodeHelper mới của bạn
-                ViewBag.QRCodeBase64 = QRCodeHelper.GenerateQRCode(ev.MaEvent, currentStudentId);
+                ViewBag.QRCodeBase64 = QRCodeHelper.GenerateQRCodeFromLink(ev.LinkZalo);
             }
-
             return View(ev);
         }
 
-        //Registrations
+        // ── GET: /Users/Registrations ─────────────────────────────────
         public ActionResult Registrations()
         {
             ViewBag.Title = "Đăng ký của tôi";
             ViewBag.ActivePage = "registrations";
-            ViewBag.UserName = "Sinh Viên";
-            return View();
+
+            string studentId = GetCurrentStudentId();
+            ViewBag.UserName = Session["UserName"] as string ?? "Sinh Viên";
+
+            // Thông tin sinh viên
+            var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            ViewBag.SinhVien = sv;
+
+            var today = DateTime.Today;
+
+            // Toàn bộ đăng ký của sinh viên
+            var allDangKy = db.DangKySuKiens
+                              .Include(d => d.EVENT)
+                              .Include(d => d.EVENT.DanhMuc)
+                              .Include(d => d.EVENT.DiaDiem)
+                              .Include(d => d.EVENT.Vien)
+                              .Where(d => d.IDSinhVien == studentId)
+                              .OrderByDescending(d => d.NgayDangKy)
+                              .ToList();
+
+            // Tab: Sắp diễn ra
+            var sapDienRa = allDangKy
+                .Where(d => d.EVENT != null
+                         && d.EVENT.NgayBatDau >= today
+                         && !d.TrangThai.Contains("hủy")
+                         && !d.TrangThai.Contains("cancel"))
+                .OrderBy(d => d.EVENT.NgayBatDau)
+                .ToList();
+
+            // Tab: Đã tham dự
+            var daThamDu = allDangKy
+                .Where(d => d.EVENT != null
+                         && d.EVENT.NgayBatDau < today
+                         && !d.TrangThai.Contains("hủy")
+                         && !d.TrangThai.Contains("cancel"))
+                .OrderByDescending(d => d.EVENT.NgayBatDau)
+                .ToList();
+
+            // Tab: Đã hủy
+            var daHuy = allDangKy
+                .Where(d => d.TrangThai.Contains("hủy") || d.TrangThai.Contains("cancel"))
+                .OrderByDescending(d => d.NgayDangKy)
+                .ToList();
+
+            ViewBag.SapDienRa = sapDienRa;
+            ViewBag.DaThamDu = daThamDu;
+            ViewBag.DaHuy = daHuy;
+
+            // Thống kê
+            ViewBag.TongDangKy = allDangKy.Count;
+            ViewBag.TongThamDu = daThamDu.Count;
+            ViewBag.TongSapToi = sapDienRa.Count;
+
+            // Sinh QR cho từng sự kiện sắp tới
+            var qrDict = new Dictionary<int, string>();
+            foreach (var dk in sapDienRa)
+                if (!string.IsNullOrEmpty(dk.EVENT.LinkZalo))
+                {
+                    qrDict[dk.MaEvent] = QRCodeHelper.GenerateQRCodeFromLink(dk.EVENT.LinkZalo);
+                }
+            ViewBag.QRDict = qrDict;
+
+            return View("~/Views/Users/Registrations/Registrations.cshtml");
         }
 
-        //Users/Register
+        // ── POST: /Users/HuyDangKy ────────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(int eventId)
+        public ActionResult HuyDangKy(int maEvent)
         {
-            TempData["Success"] = "Đăng ký thành công!";
+            string studentId = GetCurrentStudentId();
+            var dangKy = db.DangKySuKiens
+                           .FirstOrDefault(d => d.MaEvent == maEvent && d.IDSinhVien == studentId);
+
+            if (dangKy == null)
+            {
+                TempData["Error"] = "Không tìm thấy đăng ký.";
+                return RedirectToAction("Registrations");
+            }
+
+            // Trigger SQL sẽ tự giảm SoLuongDaDangKy khi TrangThai đổi thành "hủy"
+            dangKy.TrangThai = "hủy";
+            db.SaveChanges();
+
+            TempData["Success"] = "Đã hủy đăng ký thành công.";
             return RedirectToAction("Registrations");
         }
 

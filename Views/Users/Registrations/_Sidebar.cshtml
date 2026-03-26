@@ -1,0 +1,48 @@
+﻿@* Views/Users/Registrations/_Sidebar.cshtml *@
+<div class="col-lg-3">
+    @* Profile banner *@
+    <div class="ce-profile-banner ce-reveal mb-3">
+        <div class="ce-profile-avatar">@ViewData["Avatar"]</div>
+        <div class="ce-profile-name">@ViewData["TenHienThi"]</div>
+        <div class="ce-profile-id">
+            MSSV: @ViewData["MaSV"]
+            @if (!string.IsNullOrEmpty(ViewData["Lop"]?.ToString()))
+            {<text> · @ViewData["Lop"]</text>}
+        </div>
+    </div>
+
+    @* Thống kê *@
+    <div class="row g-2 mb-3">
+        <div class="col-4">
+            <div class="ce-card p-2 text-center ce-reveal">
+                <div style="font-size:1.3rem;font-weight:800;color:var(--primary)">@ViewData["TongDangKy"]</div>
+                <div style="font-size:.62rem;color:var(--text-muted);text-transform:uppercase;font-weight:600">Tổng ĐK</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="ce-card p-2 text-center ce-reveal">
+                <div style="font-size:1.3rem;font-weight:800;color:var(--success)">@ViewData["TongThamDu"]</div>
+                <div style="font-size:.62rem;color:var(--text-muted);text-transform:uppercase;font-weight:600">Tham dự</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="ce-card p-2 text-center ce-reveal">
+                <div style="font-size:1.3rem;font-weight:800;color:var(--accent)">@ViewData["TongSapToi"]</div>
+                <div style="font-size:.62rem;color:var(--text-muted);text-transform:uppercase;font-weight:600">Sắp tới</div>
+            </div>
+        </div>
+    </div>
+
+    @* Quick actions *@
+    <div class="ce-card p-3 ce-reveal">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:.7rem">Nhanh chóng</div>
+        <div class="d-flex flex-column gap-2">
+            <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-ghost" style="justify-content:flex-start">
+                <span class="material-symbols-outlined" style="font-size:17px">event</span> Tìm sự kiện
+            </a>
+            <button class="ce-btn ce-btn-ghost" style="justify-content:flex-start" type="button" onclick="ceOpenModal('modal-qr-scan')">
+                <span class="material-symbols-outlined" style="font-size:17px">qr_code_scanner</span> Quét QR
+            </button>
+        </div>
+    </div>
+</div>

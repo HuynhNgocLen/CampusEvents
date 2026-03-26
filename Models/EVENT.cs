@@ -41,6 +41,7 @@ namespace shcool_event_management.Models
         public Nullable<System.TimeSpan> GioBatDau { get; set; }
         public Nullable<System.TimeSpan> GioKetThuc { get; set; }
         public string Email { get; set; }
+        public string LinkZalo { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }

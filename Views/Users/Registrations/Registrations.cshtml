@@ -1,0 +1,81 @@
+﻿@* Views/Users/Registrations/Registrations.cshtml *@
+@using shcool_event_management.Models
+@{
+    ViewBag.Title      = "Đăng ký của tôi";
+    ViewBag.ActivePage = "registrations";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+
+    var sv         = ViewBag.SinhVien as SinhVien;
+    var sapDienRa  = ViewBag.SapDienRa  as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var daThamDu   = ViewBag.DaThamDu   as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var daHuy      = ViewBag.DaHuy      as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var qrDict     = ViewBag.QRDict     as Dictionary<int, string> ?? new Dictionary<int, string>();
+
+    int tongDangKy = ViewBag.TongDangKy ?? 0;
+    int tongThamDu = ViewBag.TongThamDu ?? 0;
+    int tongSapToi = ViewBag.TongSapToi ?? 0;
+
+    // Tên hiển thị & avatar
+    string tenHienThi = sv != null ? sv.Ten : (ViewBag.UserName as string ?? "Sinh Viên");
+    string maSV       = sv?.ID ?? "---";
+    string lop        = sv?.MaNghanh ?? "";
+    string avatar     = tenHienThi.Length >= 2
+                        ? tenHienThi.Substring(tenHienThi.LastIndexOf(' ') > 0 ? tenHienThi.LastIndexOf(' ') + 1 : 0).Substring(0, 1).ToUpper()
+                          + tenHienThi.Substring(0, 1).ToUpper()
+                        : tenHienThi.Substring(0, 1).ToUpper();
+}
+
+@* TempData alerts *@
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mx-3 mt-3" role="alert">
+        <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px">check_circle</span>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
+        <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px">error</span>
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+
+        <!-- Sidebar -->
+        @Html.Partial("~/Views/Users/Registrations/_Sidebar.cshtml", new {
+            SinhVien = sv,
+            TongDangKy = tongDangKy,
+            TongThamDu = tongThamDu,
+            TongSapToi = tongSapToi,
+            TenHienThi = tenHienThi,
+            MaSV = maSV,
+            Lop = lop,
+            Avatar = avatar
+        })
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <h1 class="ce-section-title mb-4 ce-reveal">Đăng ký của tôi</h1>
+
+            <div class="ce-tabs-wrapper ce-reveal">
+                <div class="ce-tabs mb-4">
+                    <button class="ce-tab-btn active" data-tab="tab-upcoming">Sắp diễn ra @(sapDienRa.Count > 0 ? $"<span style='background:var(--primary);color:#fff;border-radius:99px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px'>{sapDienRa.Count}</span>" : "")</button>
+                    <button class="ce-tab-btn" data-tab="tab-attended">Đã tham dự @(daThamDu.Count > 0 ? $"<span style='background:var(--success);color:#fff;border-radius:99px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px'>{daThamDu.Count}</span>" : "")</button>
+                    <button class="ce-tab-btn" data-tab="tab-cancelled">Đã huỷ @(daHuy.Count > 0 ? $"<span style='background:var(--danger);color:#fff;border-radius:99px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px'>{daHuy.Count}</span>" : "")</button>
+                </div>
+
+                @Html.Partial("~/Views/Users/Registrations/_Upcoming.cshtml", sapDienRa)
+                @Html.Partial("~/Views/Users/Registrations/_Attended.cshtml", daThamDu)
+                @Html.Partial("~/Views/Users/Registrations/_Cancelled.cshtml", daHuy)
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modals *@
+@Html.Partial("~/Views/Users/Registrations/_Modals.cshtml", new { QRDict = qrDict })

@@ -1,0 +1,125 @@
+﻿@* Views/Users/Registrations/_Modals.cshtml *@
+
+@* ══ MODAL QR CHECK-IN ══ *@
+<div class="ce-modal-overlay" id="modal-qr">
+    <div class="ce-modal-box" style="max-width:340px">
+        <div class="ce-modal-header">
+            <h5>QR Check-in</h5>
+            <button class="ce-modal-close" type="button" onclick="ceCloseModal('modal-qr')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body" style="text-align:center">
+            <p id="qr-event-name" style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:.875rem"></p>
+            <div style="background:var(--surface-2);border-radius:var(--radius-lg);padding:1.1rem">
+                <img id="qr-image" src="" alt="QR Code" style="width:160px;height:160px;border-radius:8px;display:block;margin:0 auto" />
+                <p style="font-size:.72rem;color:var(--text-muted);margin-top:.6rem">Xuất trình mã này tại cổng check-in</p>
+            </div>
+        </div>
+        <div class="ce-modal-footer">
+            <button class="ce-btn ce-btn-primary" type="button" onclick="ceCloseModal('modal-qr')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+@* ══ MODAL XÁC NHẬN HỦY ══ *@
+<div class="ce-modal-overlay" id="modal-confirm-huy">
+    <div class="ce-modal-box" style="max-width:400px">
+        <div class="ce-modal-header">
+            <h5>Xác nhận huỷ đăng ký</h5>
+            <button class="ce-modal-close" type="button" onclick="ceCloseModal('modal-confirm-huy')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body">
+            <p style="font-size:.9rem;color:var(--text-muted)">Bạn có chắc muốn huỷ đăng ký sự kiện <strong id="huy-event-name" style="color:var(--text)"></strong>?</p>
+            <p style="font-size:.8rem;color:var(--danger);margin-top:.5rem">⚠️ Hành động này không thể hoàn tác.</p>
+        </div>
+        <div class="ce-modal-footer">
+            <button class="ce-btn ce-btn-ghost" type="button" onclick="ceCloseModal('modal-confirm-huy')">Không</button>
+            @using (Html.BeginForm("HuyDangKy", "Users", FormMethod.Post, new { id = "form-huy" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="maEvent" id="huy-ma-event" value="0" />
+                <button type="submit" class="ce-btn ce-btn-danger">
+                    <span class="material-symbols-outlined" style="font-size:16px">cancel</span> Xác nhận huỷ
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@* ══ MODAL QR SCANNER ══ *@
+<div class="ce-modal-overlay" id="modal-qr-scan">
+    <div class="ce-modal-box" style="max-width:360px">
+        <div class="ce-modal-header">
+            <h5>Quét QR Check-in</h5>
+            <button class="ce-modal-close" type="button" onclick="ceCloseModal('modal-qr-scan')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body" style="text-align:center">
+            <div style="width:100%;aspect-ratio:1;background:#111;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:.875rem">
+                <span class="material-symbols-outlined" style="font-size:60px;color:rgba(255,255,255,.25)">qr_code_scanner</span>
+                <div style="position:absolute;inset:14px;border:2px solid var(--primary);border-radius:8px;opacity:.7"></div>
+                @* Các góc trang trí *@
+                <div style="position:absolute;top:14px;left:14px;width:22px;height:22px;border-top:3px solid var(--primary);border-left:3px solid var(--primary);border-radius:4px 0 0 0"></div>
+                <div style="position:absolute;top:14px;right:14px;width:22px;height:22px;border-top:3px solid var(--primary);border-right:3px solid var(--primary);border-radius:0 4px 0 0"></div>
+                <div style="position:absolute;bottom:14px;left:14px;width:22px;height:22px;border-bottom:3px solid var(--primary);border-left:3px solid var(--primary);border-radius:0 0 0 4px"></div>
+                <div style="position:absolute;bottom:14px;right:14px;width:22px;height:22px;border-bottom:3px solid var(--primary);border-right:3px solid var(--primary);border-radius:0 0 4px 0"></div>
+            </div>
+            <p style="font-size:.83rem;color:var(--text-muted)">Hướng camera vào mã QR để check-in</p>
+        </div>
+        <div class="ce-modal-footer">
+            <button class="ce-btn ce-btn-ghost" type="button" onclick="ceCloseModal('modal-qr-scan')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Hàm mở/đóng dựa trên class 'active' của CSS gốc
+    function ceOpenModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function ceCloseModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function showQR(tenSuKien, base64) {
+        document.getElementById('qr-event-name').textContent = tenSuKien;
+        document.getElementById('qr-image').src = 'data:image/png;base64,' + base64;
+        ceOpenModal('modal-qr');
+    }
+
+    function confirmHuy(maEvent, tenSuKien) {
+        document.getElementById('huy-ma-event').value = maEvent;
+        document.getElementById('huy-event-name').textContent = tenSuKien;
+        ceOpenModal('modal-confirm-huy');
+    }
+
+    // Script xử lý chuyển Tab
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.ce-tab-btn');
+        const panes = document.querySelectorAll('.ce-tab-pane');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                panes.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const pane = document.getElementById(target);
+                if (pane) pane.classList.add('active');
+            });
+        });
+    });
+</script>

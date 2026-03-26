@@ -37,12 +37,15 @@
             <PropertyRef Name="MaEvent" />
           </Key>
           <Property Name="MaEvent" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MaVien" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="MaVien" Type="varchar" MaxLength="12" Nullable="false" />
           <Property Name="TenEvent" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="MaDanhMuc" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="100" />
           <Property Name="MaDiaDiem" Type="int" />
           <Property Name="NgayBatDau" Type="datetime" Nullable="false" />
+          <Property Name="GioBatDau" Type="time" Precision="0" />
           <Property Name="NgayKetThuc" Type="datetime" />
+          <Property Name="GioKetThuc" Type="time" Precision="0" />
           <Property Name="NgayHetHanDangKy" Type="date" />
           <Property Name="SoLuongToiDa" Type="int" Nullable="false" />
           <Property Name="SoLuongDaDangKy" Type="int" Nullable="false" />
@@ -54,9 +57,7 @@
           <Property Name="TrangThai" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
           <Property Name="NgayCapNhat" Type="datetime" />
-          <Property Name="GioBatDau" Type="time" Precision="0" />
-          <Property Name="GioKetThuc" Type="time" Precision="0" />
-          <Property Name="Email" Type="nvarchar" MaxLength="100" />
+          <Property Name="LinkZalo" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -74,13 +75,13 @@
           <Property Name="NgayThangNamSinh" Type="date" />
           <Property Name="SDT" Type="varchar" MaxLength="10" />
           <Property Name="MaNghanh" Type="varchar" MaxLength="6" />
-          <Property Name="MaVien" Type="char" MaxLength="12" />
+          <Property Name="MaVien" Type="varchar" MaxLength="12" />
         </EntityType>
         <EntityType Name="Vien">
           <Key>
             <PropertyRef Name="MaVien" />
           </Key>
-          <Property Name="MaVien" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="MaVien" Type="varchar" MaxLength="12" Nullable="false" />
           <Property Name="TenVien" Type="nvarchar" MaxLength="150" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
@@ -271,7 +272,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             <PropertyRef Name="MaEvent" />
           </Key>
           <Property Name="MaEvent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenEvent" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MaDanhMuc" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="MaDiaDiem" Type="Int32" />
@@ -296,6 +297,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Property Name="GioBatDau" Type="Time" Precision="0" />
           <Property Name="GioKetThuc" Type="Time" Precision="0" />
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LinkZalo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -314,7 +316,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
           <Property Name="SDT" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
           <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="SinhVien" ToRole="EVENT" />
           <NavigationProperty Name="MaNghanh1" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
@@ -323,7 +325,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Key>
             <PropertyRef Name="MaVien" />
           </Key>
-          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenVien" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_VIEN" FromRole="Vien" ToRole="EVENT" />
         </EntityType>
@@ -502,6 +504,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <EntitySetMapping Name="EVENTs">
             <EntityTypeMapping TypeName="school_event_managementModel.EVENT">
               <MappingFragment StoreEntitySet="EVENT">
+                <ScalarProperty Name="LinkZalo" ColumnName="LinkZalo" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="GioKetThuc" ColumnName="GioKetThuc" />
                 <ScalarProperty Name="GioBatDau" ColumnName="GioBatDau" />

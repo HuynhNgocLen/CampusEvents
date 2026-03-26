@@ -1,0 +1,36 @@
+﻿@* Views/Users/Registrations/_Attended.cshtml *@
+@model List < shcool_event_management.Models.DangKySuKien >
+
+<div class="ce-tab-pane" id="tab-attended">
+    @if (Model == null || !Model.Any())
+    {
+        @* Hiển thị trạng thái trống *@
+        <div class="ce-empty" style="text-align:center; padding: 40px 20px; color: var(--text-muted);">
+            <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;">history_edu</span>
+            <div class="ce-empty__title" style="font-weight: 600; font-size: 1.1rem;">Bạn chưa tham gia sự kiện nào</div>
+            <p style="font-size: 0.9rem; margin-top: 5px;">Hãy tích cực tham gia các hoạt động để nhận được nhiều quyền lợi nhé!</p>
+            <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary mt-3">Xem danh sách sự kiện</a>
+        </div>
+    }
+    else
+    {
+        @* Hiển thị danh sách nếu có dữ liệu *@
+        <div class="d-flex flex-column gap-3">
+            @foreach (var dk in Model)
+            {
+                <div class="ce-card p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="ce-icon-box-small" style="background: var(--success-light); color: var(--success);">
+                            <span class="material-symbols-outlined">verified</span>
+                        </div>
+                        <div style="flex:1; min-width:0">
+                            <div style="font-weight:700; color: var(--text);">@dk.EVENT.TenEvent</div>
+                            <div style="font-size:.75rem; color: var(--text-muted)">📅 @dk.EVENT.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <span class="ce-badge ce-badge-success">Đã tham dự</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

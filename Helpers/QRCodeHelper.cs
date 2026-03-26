@@ -7,13 +7,13 @@ using System.IO;
 
 public static class QRCodeHelper
 {
-    public static string GenerateQRCode(int maEvent, string idSinhVien, int pixelsPerModule = 20)
+    public static string GenerateQRCodeFromLink(string link, int pixelsPerModule = 20)
     {
-        string qrContent = $"EVENT:{maEvent}|SV:{idSinhVien}";
+        if (string.IsNullOrEmpty(link)) return null;
 
         using (var qrGenerator = new QRCodeGenerator())
         {
-            var qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
+            var qrCodeData = qrGenerator.CreateQrCode(link, QRCodeGenerator.ECCLevel.Q);
             var qrCode = new QRCode(qrCodeData);
 
             using (var qrCodeImage = qrCode.GetGraphic(pixelsPerModule, Color.Black, Color.White, true))
