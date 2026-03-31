@@ -207,10 +207,17 @@ namespace school_event_management.Controllers
 
             //Da luu
             ViewBag.DaLuu = db.SuKienYeuThiches
-                .Where(f => f.IDSinhVien == studentId)
-                .OrderByDescending(f => f.NgayLuu)
-                .Select(f => f.EVENT)
-                .ToList();
+    .Where(f => f.IDSinhVien == studentId)
+    .OrderByDescending(f => f.NgayLuu)
+    .AsEnumerable() // Chuyển sang bộ nhớ để khởi tạo object mới dễ hơn
+    .Select(f => new DangKySuKien
+    {
+        MaEvent = f.MaEvent,
+        IDSinhVien = f.IDSinhVien,
+        EVENT = f.EVENT, // Quan trọng: Gán object EVENT để View gọi được dk.EVENT
+        TrangThai = "Đã lưu" // Gán nhãn giả để nhận biết
+    })
+    .ToList();
 
             return View("~/Views/Users/Registrations/Registrations.cshtml");
         }

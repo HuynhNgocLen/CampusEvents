@@ -10,7 +10,7 @@
     var DaDangKy = ViewBag.DaDangKy as List<DangKySuKien> ?? new List<DangKySuKien>();
     var daThamDu = ViewBag.DaThamDu as List<DangKySuKien> ?? new List<DangKySuKien>();
     var daHuy = ViewBag.DaHuy as List<DangKySuKien> ?? new List<DangKySuKien>();
-    var daLuu = ViewBag.DaLuu as List<EVENT> ?? new List<EVENT>();
+    var daLuu = ViewBag.DaLuu as List<DangKySuKien> ?? new List<DangKySuKien>();
     var qrDict = ViewBag.QRDict as Dictionary<int, string> ?? new Dictionary<int, string>();
 
     int tongDangKy = ViewBag.TongDangKy ?? 0;
@@ -106,13 +106,11 @@
             const card = document.getElementById('saved-item-' + eventId);
             if (!card) return;
 
-            // Hiệu ứng biến mất nhanh
             card.style.transition = 'all 0.4s ease';
             card.style.opacity = '0';
             card.style.transform = 'translateX(50px)';
             card.style.pointerEvents = 'none';
 
-            // Lấy Token chống giả mạo (CSRF)
             const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
             const formData = new FormData();
@@ -126,7 +124,6 @@
                 body: formData
             })
             .then(res => {
-                // Kiểm tra nếu res không phải JSON (ví dụ trả về trang login HTML)
                 if (!res.ok) throw new Error('Network response was not ok');
                 return res.json();
             })
@@ -134,7 +131,6 @@
                 if (data.success) {
                     setTimeout(() => {
                         card.remove();
-                        // Nếu xóa hết thì reload để hiện trạng thái "Trống"
                         if (document.querySelectorAll('.saved-card').length === 0) {
                             location.reload();
                         }
@@ -155,6 +151,22 @@
             card.style.opacity = '1';
             card.style.transform = 'none';
             card.style.pointerEvents = 'auto';
-        }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const tabs = document.querySelectorAll('.ce-tab-btn');
+                const panes = document.querySelectorAll('.ce-tab-pane');
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const target = tab.getAttribute('data-tab');
+                        tabs.forEach(t => t.classList.remove('active'));
+                        panes.forEach(p => p.classList.remove('active'));
+                        tab.classList.add('active');
+                        const pane = document.getElementById(target);
+                        if (pane) pane.classList.add('active');
+                    });
+                });
+            });
         </script>
     }
