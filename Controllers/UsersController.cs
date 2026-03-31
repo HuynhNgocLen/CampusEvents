@@ -159,65 +159,76 @@ namespace school_event_management.Controllers
             return View(ev);
         }
 
-        //Users/Registrations
+        // Users/Registrations
         public ActionResult Registrations()
         {
             ViewBag.Title = "Đăng ký của tôi";
             ViewBag.ActivePage = "registrations";
 
             string studentId = GetCurrentStudentId();
+            int currentYear = DateTime.Now.Year; // Lấy năm hiện tại (2026)
 
-            ViewBag.SinhVien = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            ViewBag.SinhVien = sv;
 
+            // --- LOGIC THỐNG KÊ THEO NĂM ---
+
+            // 1. Tổng Đăng Ký Trong Năm (Tất cả trừ trạng thái Hủy)
+            ViewData["TongDangKyNam"] = db.DangKySuKiens
+                .Count(d => d.IDSinhVien == studentId
+                       && d.NgayDangKy.Year == currentYear
+                       && d.TrangThai != "hủy");
+
+            // 2. Tổng Hoàn Thành Trong Năm
+            ViewData["TongHoanThanhNam"] = db.DangKySuKiens
+                .Count(d => d.IDSinhVien == studentId
+                       && d.NgayDangKy.Year == currentYear
+                       && d.TrangThai.Trim() == "Đã hoàn thành");
+
+            // 3. Tổng Hủy Trong Năm
+            ViewData["TongHuyNam"] = db.DangKySuKiens
+                .Count(d => d.IDSinhVien == studentId
+                       && d.NgayDangKy.Year == currentYear
+                       && d.TrangThai.ToLower() == "hủy");
+
+            // --- DỮ LIỆU CHO CÁC TAB ---
             var today = DateTime.Today;
 
-            // Sự kiện đã đăng ký nhưng chưa diễn ra
+            // Sự kiện sắp tới (Tab Đã đăng ký)
             ViewBag.DaDangKy = db.DangKySuKiens
-                .Include(d => d.EVENT)
-                .Include(d => d.EVENT.DanhMuc)
-                .Include(d => d.EVENT.DiaDiem)
-                .Include(d => d.EVENT.Vien)
-                .Where(d => d.IDSinhVien == studentId
-                    && d.TrangThai == "Đã đăng ký"
-                    && d.EVENT.NgayBatDau >= today)
-                .OrderBy(d => d.EVENT.NgayBatDau)
-                .ToList();
-            
-            //da hoan thanh
+                .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
+                .Where(d => d.IDSinhVien == studentId && d.TrangThai == "Đã đăng ký" && d.EVENT.NgayBatDau >= today)
+                .OrderBy(d => d.EVENT.NgayBatDau).ToList();
+
+            // Tab Đã tham dự
             ViewBag.DaThamDu = db.DangKySuKiens
-                .Include(d => d.EVENT)
-                .Include(d => d.EVENT.DanhMuc)
-                .Include(d => d.EVENT.DiaDiem)
-                .Include(d => d.EVENT.Vien)
-                .Where(d => d.IDSinhVien == studentId
-                    && d.TrangThai.Trim() == "Đã hoàn thành")
-                .OrderByDescending(d => d.EVENT.NgayBatDau)
-                .ToList();
+                .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
+                .Where(d => d.IDSinhVien == studentId && d.TrangThai.Trim() == "Đã hoàn thành")
+                .OrderByDescending(d => d.EVENT.NgayBatDau).ToList();
 
-            // Đã hủy hoặc quá hạn
+            // Tab Đã hủy
             ViewBag.DaHuy = db.DangKySuKiens
-                .Include(d => d.EVENT)
-                .Include(d => d.EVENT.DanhMuc)
-                .Include(d => d.EVENT.DiaDiem)
-                .Include(d => d.EVENT.Vien)
-                .Where(d => d.IDSinhVien == studentId
-                         && (d.TrangThai == "Hủy" || d.TrangThai == "Quá hạn"))
-                .OrderByDescending(d => d.NgayDangKy)
-                .ToList();
+                .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
+                .Where(d => d.IDSinhVien == studentId && (d.TrangThai == "hủy" || d.TrangThai == "Quá hạn"))
+                .OrderByDescending(d => d.NgayDangKy).ToList();
 
-            //Da luu
+            // Tab Đã lưu
             ViewBag.DaLuu = db.SuKienYeuThiches
-    .Where(f => f.IDSinhVien == studentId)
-    .OrderByDescending(f => f.NgayLuu)
-    .AsEnumerable() // Chuyển sang bộ nhớ để khởi tạo object mới dễ hơn
-    .Select(f => new DangKySuKien
-    {
-        MaEvent = f.MaEvent,
-        IDSinhVien = f.IDSinhVien,
-        EVENT = f.EVENT, // Quan trọng: Gán object EVENT để View gọi được dk.EVENT
-        TrangThai = "Đã lưu" // Gán nhãn giả để nhận biết
-    })
-    .ToList();
+                .Where(f => f.IDSinhVien == studentId)
+                .OrderByDescending(f => f.NgayLuu).AsEnumerable()
+                .Select(f => new DangKySuKien
+                {
+                    MaEvent = f.MaEvent,
+                    IDSinhVien = f.IDSinhVien,
+                    EVENT = f.EVENT,
+                    TrangThai = "Đã lưu"
+                }).ToList();
+
+            // Truyền thêm dữ liệu cho Sidebar (nếu cần xử lý avatar ở Controller)
+            ViewData["TenHienThi"] = sv?.Ten ?? "Sinh Viên";
+            ViewData["MaSV"] = sv?.ID ?? "---";
+            ViewData["Lop"] = sv?.Lop ?? "";
+            ViewData["Avatar"] = !string.IsNullOrEmpty(sv?.Ten) ? sv.Ten.Substring(0, 1).ToUpper() : "SV";
 
             return View("~/Views/Users/Registrations/Registrations.cshtml");
         }
