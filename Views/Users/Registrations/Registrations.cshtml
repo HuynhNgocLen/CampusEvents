@@ -94,8 +94,67 @@
                 @Html.Partial("~/Views/Users/Registrations/_Cancelled.cshtml", daHuy)
                 @Html.Partial("~/Views/Users/Registrations/_Saved.cshtml", daLuu)
             </div>
+        </div>
     </div>
-</div>
 
-@* Modals *@
-@Html.Partial("~/Views/Users/Registrations/_Modals.cshtml", new { QRDict = qrDict })
+    @* Modals *@
+    @Html.Partial("~/Views/Users/Registrations/_Modals.cshtml", new { QRDict = qrDict })
+
+    @section scripts {
+        <script>
+        function fastRemoveFavorite(btn, eventId) {
+            const card = document.getElementById('saved-item-' + eventId);
+            if (!card) return;
+
+            // Hiệu ứng biến mất nhanh
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(50px)';
+            card.style.pointerEvents = 'none';
+
+            // Lấy Token chống giả mạo (CSRF)
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            const formData = new FormData();
+            formData.append('maEvent', eventId);
+            if (token) {
+                formData.append('__RequestVerificationToken', token);
+            }
+
+            fetch('@Url.Action("RemoveFavorite", "Users")', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                // Kiểm tra nếu res không phải JSON (ví dụ trả về trang login HTML)
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        card.remove();
+                        // Nếu xóa hết thì reload để hiện trạng thái "Trống"
+                        if (document.querySelectorAll('.saved-card').length === 0) {
+                            location.reload();
+                        }
+                    }, 400);
+                } else {
+                    alert(data.message || 'Không thể bỏ lưu!');
+                    resetCard(card);
+                }
+            })
+            .catch(err => {
+                console.error('Lỗi:', err);
+                alert('Có lỗi xảy ra, vui lòng thử lại.');
+                resetCard(card);
+            });
+        }
+
+        function resetCard(card) {
+            card.style.opacity = '1';
+            card.style.transform = 'none';
+            card.style.pointerEvents = 'auto';
+        }
+        </script>
+    }
