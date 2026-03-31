@@ -1,81 +1,89 @@
-﻿@model List<shcool_event_management.Models.EVENT>
+﻿@model List<shcool_event_management.Models.DangKySuKien>
 
-@if (Model == null || !Model.Any())
-{
-    <div class="ce-empty text-center py-5">
-        <span class="material-symbols-outlined" style="font-size:48px; opacity:.5; color:var(--text-muted)">bookmark_border</span>
-        <div class="fw-bold mt-2" style="color:var(--text-muted)">Chưa có sự kiện nào được lưu</div>
-        <p class="small text-muted">Hãy lưu lại những sự kiện bạn quan tâm để xem sau.</p>
-    </div>
-}
-else
-{
-    <div class="d-flex flex-column gap-3">
-        @foreach (var ev in Model)
-        {
-            var ngayHienTai = DateTime.Now;
-            bool daHetHan = ev.NgayHetHanDangKy.HasValue && ev.NgayHetHanDangKy.Value.Date < ngayHienTai.Date;
-            var conLai = (ev.SoLuongToiDa) - (ev.SoLuongDaDangKy);
-            bool hetCho = conLai <= 0;
+<div id="tab-saved" class="ce-tab-pane">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="ce-empty text-center py-5">
+            <span class="material-symbols-outlined" style="font-size:52px; opacity:.6; color:var(--text-muted)">bookmark_border</span>
+            <div class="ce-empty__title mt-3">Chưa có sự kiện nào được lưu</div>
+            <p class="small text-muted">Lưu lại những sự kiện bạn quan tâm để xem sau.</p>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            @foreach (var dk in Model)
+            {
+                var ev = dk.EVENT;
+                var ngayHienTai = DateTime.Now;
+                bool daHetHan = ev.NgayHetHanDangKy.HasValue && ev.NgayHetHanDangKy.Value.Date < ngayHienTai.Date;
+                var conLai = (ev.SoLuongToiDa) - (ev.SoLuongDaDangKy);
+                bool hetCho = conLai <= 0;
 
-            <div class="ce-card p-3 ce-hover-card saved-card" id="saved-item-@ev.MaEvent">
-                <div class="d-flex gap-3 align-items-start flex-wrap">
-                    <div class="ce-icon-box-small"
-                         style="background: @(ev.DanhMuc?.MauSac ?? "#3b82f6")15; color: @(ev.DanhMuc?.MauSac ?? "#3b82f6")">
-                        <span class="material-symbols-outlined">@(ev.DanhMuc?.Icon ?? "bookmark")</span>
-                    </div>
+                <div class="ce-card p-4 ce-hover-card saved-card" id="saved-item-@ev.MaEvent">
 
-                    <div class="flex-grow-1" style="min-width:0">
-                        <div class="fw-bold text-truncate" style="font-size: 1.05rem;">@ev.TenEvent</div>
-                        <div class="d-flex flex-column gap-1 mt-2">
-                            <div class="text-muted small d-flex align-items-center gap-1">
-                                <span class="material-symbols-outlined" style="font-size:16px">calendar_month</span>
-                                Ngày: @ev.NgayBatDau.ToString("dd/MM/yyyy")
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="ce-icon-box">
+                            <span class="material-symbols-outlined">@(ev.DanhMuc?.Icon ?? "bookmark")</span>
+                        </div>
+
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                                <div class="fw-bold text-truncate">@ev.TenEvent</div>
+                                <span class="ce-badge"
+                                      style="background: @(ev.DanhMuc?.MauSac ?? "#3b82f6")15; color: @(ev.DanhMuc?.MauSac ?? "#3b82f6")">
+                                    @(ev.DanhMuc?.TenDanhMuc ?? "Sự kiện")
+                                </span>
                             </div>
-                            <div class="text-muted small d-flex align-items-center gap-1">
-                                <span class="material-symbols-outlined" style="font-size:16px">location_on</span>
-                                @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                            <div class="mt-3 text-muted small">
+                                <div class="text-muted small mt-1">
+                                    <span class="material-symbols-outlined">calendar_month</span>
+                                    @ev.NgayBatDau.ToString("dd/MM/yyyy")
+                                </div>
+                                <div class="text-muted small mt-1">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                                </div>
                             </div>
                         </div>
+
+
                     </div>
 
-                    <span class="ce-badge" style="background: @(ev.DanhMuc?.MauSac ?? "#3b82f6")20; color: @(ev.DanhMuc?.MauSac ?? "#3b82f6")">
-                        @(ev.DanhMuc?.TenDanhMuc ?? "Sự kiện")
-                    </span>
-                </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })"
+                               class="ce-btn ce-btn-sm ce-btn-ghost">
+                                <span class="material-symbols-outlined">info</span> Chi tiết
+                            </a>
+                            <button type="button" class="ce-btn ce-btn-sm ce-btn-ghost text-danger"
+                                    onclick="fastRemoveFavorite(this, @ev.MaEvent)">
+                                <span class="material-symbols-outlined">bookmark_remove</span> Bỏ lưu
+                            </button>
+                        </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                    <div class="d-flex gap-2">
-                        <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-sm ce-btn-ghost">
-                            <span class="material-symbols-outlined" style="font-size:16px">info</span> Chi tiết
-                        </a>
-
-                        @* Nút bỏ lưu gọi hàm fastRemoveFavorite *@
-                        <button type="button" class="ce-btn ce-btn-sm ce-btn-ghost text-danger" onclick="fastRemoveFavorite(this, @ev.MaEvent)">
-                            <span class="material-symbols-outlined" style="font-size:16px">bookmark_remove</span> Bỏ lưu
-                        </button>
+                        @if (daHetHan)
+                        {
+                            <button class="ce-btn ce-btn-sm" disabled style="background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;">
+                                <span class="material-symbols-outlined">event_busy</span> Hết hạn
+                            </button>
+                        }
+                        else if (hetCho)
+                        {
+                            <button class="ce-btn ce-btn-sm" disabled style="background:#fff1f2;color:#ef4444;border:1px solid #fecaca;">
+                                <span class="material-symbols-outlined">block</span> Hết chỗ
+                            </button>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })"
+                               class="ce-btn ce-btn-sm ce-btn-primary">
+                                <span class="material-symbols-outlined">how_to_reg</span> Đăng ký ngay
+                            </a>
+                        }
                     </div>
-
-                    @if (daHetHan)
-                    {
-                        <button class="ce-btn ce-btn-sm" disabled style="background: #f1f5f9; color: #94a3b8; cursor: not-allowed; border: 1px solid #e2e8f0;">
-                            <span class="material-symbols-outlined" style="font-size:16px">event_busy</span> Hết hạn
-                        </button>
-                    }
-                    else if (hetCho)
-                    {
-                        <button class="ce-btn ce-btn-sm" disabled style="background: #fff1f2; color: #ef4444; cursor: not-allowed; border: 1px solid #fecaca;">
-                            <span class="material-symbols-outlined" style="font-size:16px">block</span> Hết chỗ
-                        </button>
-                    }
-                    else
-                    {
-                        <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-sm ce-btn-primary">
-                            <span class="material-symbols-outlined" style="font-size:16px">how_to_reg</span> Đăng ký ngay
-                        </a>
-                    }
                 </div>
-            </div>
-        }
-    </div>
-}
+            }
+        </div>
+    }
+</div>
