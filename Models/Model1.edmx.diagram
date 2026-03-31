@@ -10,17 +10,21 @@
         <EntityTypeShape EntityType="school_event_managementModel.DiaDiem" Width="1.5" PointX="6" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.EVENT" Width="1.5" PointX="8.25" PointY="2.75" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.MaNghanh" Width="1.5" PointX="0.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.SinhVien" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.Vien" Width="1.5" PointX="6" PointY="10.25" IsExpanded="true" />
         <AssociationConnector Association="school_event_managementModel.FK_DangKy_Event" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_DangKy_SinhVien" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_EVENT_DANHMUC" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_EVENT_DIADIEM" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_EVENT_NGUOIDANG" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_EVENT_VIEN" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_NGHANH" ManuallyRouted="false" />
         <EntityTypeShape EntityType="school_event_managementModel.vw_SoChoConLai" Width="1.5" PointX="0.75" PointY="0.75" />
-      </Diagram>
+        <EntityTypeShape EntityType="school_event_managementModel.SinhVien" Width="1.5" PointX="3" PointY="5" />
+        <AssociationConnector Association="school_event_managementModel.FK_DangKy_SinhVien" />
+        <AssociationConnector Association="school_event_managementModel.FK_EVENT_NGUOIDANG" />
+        <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_NGHANH" />
+        <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_VIEN" />
+        <EntityTypeShape EntityType="school_event_managementModel.SuKienYeuThich" Width="1.5" PointX="10.5" PointY="5" />
+        <AssociationConnector Association="school_event_managementModel.FK_Favorites_Event" />
+        <AssociationConnector Association="school_event_managementModel.FK_Favorites_SinhVien" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

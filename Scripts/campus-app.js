@@ -59,7 +59,7 @@ function ceCloseModal(id) {
 
 /* ── Navbar mobile toggle ─────────────────────────────────────── */
 function ceInitNavbar() {
-    var btn  = document.getElementById('ce-nav-toggler');
+    var btn = document.getElementById('ce-nav-toggler');
     var menu = document.getElementById('ce-mobile-menu');
     if (!btn || !menu) return;
 
@@ -88,7 +88,7 @@ function ceInitTabs() {
     document.querySelectorAll('.ce-tab-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var paneId = btn.dataset.tab;
-            var scope  = btn.closest('.ce-tabs-wrapper') || document;
+            var scope = btn.closest('.ce-tabs-wrapper') || document;
             scope.querySelectorAll('.ce-tab-btn').forEach(function (b) { b.classList.remove('active'); });
             scope.querySelectorAll('.ce-tab-pane').forEach(function (p) { p.classList.remove('active'); });
             btn.classList.add('active');
@@ -107,20 +107,6 @@ function ceInitChips() {
                 group.querySelectorAll('.ce-chip').forEach(function (c) { c.classList.remove('active'); });
             }
             chip.classList.add('active');
-        });
-    });
-}
-
-/* ── Save / bookmark ─────────────────────────────────────────── */
-function ceInitSave() {
-    document.querySelectorAll('.ce-event-card__save').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault(); e.stopPropagation();
-            btn.classList.toggle('saved');
-            var saved = btn.classList.contains('saved');
-            btn.querySelector('.material-symbols-outlined').textContent =
-                saved ? 'favorite' : 'favorite_border';
-            CeToast.show(saved ? 'Đã lưu sự kiện' : 'Đã bỏ lưu sự kiện', saved ? 'success' : 'info');
         });
     });
 }
@@ -167,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function () {
     ceInitNavbar();
     ceInitTabs();
     ceInitChips();
-    ceInitSave();
     ceInitReveal();
 
     // Theme toggle buttons

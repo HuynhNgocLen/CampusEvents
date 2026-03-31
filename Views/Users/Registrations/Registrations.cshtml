@@ -1,28 +1,38 @@
 ﻿@* Views/Users/Registrations/Registrations.cshtml *@
-@using shcool_event_management.Models
+@using shcool_event_management.Models   @* ← Sửa namespace *@
 @{
-    ViewBag.Title      = "Đăng ký của tôi";
+    ViewBag.Title = "Đăng ký của tôi";
     ViewBag.ActivePage = "registrations";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
 
-    var sv         = ViewBag.SinhVien as SinhVien;
-    var sapDienRa  = ViewBag.SapDienRa  as List<DangKySuKien> ?? new List<DangKySuKien>();
-    var daThamDu   = ViewBag.DaThamDu   as List<DangKySuKien> ?? new List<DangKySuKien>();
-    var daHuy      = ViewBag.DaHuy      as List<DangKySuKien> ?? new List<DangKySuKien>();
-    var qrDict     = ViewBag.QRDict     as Dictionary<int, string> ?? new Dictionary<int, string>();
+    // Lấy dữ liệu từ ViewBag
+    var sv = ViewBag.SinhVien as SinhVien;
+    var DaDangKy = ViewBag.DaDangKy as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var daThamDu = ViewBag.DaThamDu as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var daHuy = ViewBag.DaHuy as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var daLuu = ViewBag.DaLuu as List<EVENT> ?? new List<EVENT>();
+    var qrDict = ViewBag.QRDict as Dictionary<int, string> ?? new Dictionary<int, string>();
 
     int tongDangKy = ViewBag.TongDangKy ?? 0;
     int tongThamDu = ViewBag.TongThamDu ?? 0;
     int tongSapToi = ViewBag.TongSapToi ?? 0;
 
-    // Tên hiển thị & avatar
-    string tenHienThi = sv != null ? sv.Ten : (ViewBag.UserName as string ?? "Sinh Viên");
-    string maSV       = sv?.ID ?? "---";
-    string lop        = sv?.MaNghanh ?? "";
-    string avatar     = tenHienThi.Length >= 2
-                        ? tenHienThi.Substring(tenHienThi.LastIndexOf(' ') > 0 ? tenHienThi.LastIndexOf(' ') + 1 : 0).Substring(0, 1).ToUpper()
-                          + tenHienThi.Substring(0, 1).ToUpper()
-                        : tenHienThi.Substring(0, 1).ToUpper();
+    // Thông tin sinh viên
+    string tenHienThi = sv != null ? (sv.Ten ?? sv.Ten ?? "Sinh Viên")
+                                   : (ViewBag.UserName as string ?? "Sinh Viên");
+
+    string maSV = sv?.ID ?? "---";
+    string lop = sv?.MaNghanh ?? sv?.MaNghanh ?? "";
+
+    // Tạo avatar (2 chữ cái đầu)
+    string avatar = "SV";
+    if (!string.IsNullOrWhiteSpace(tenHienThi))
+    {
+        var words = tenHienThi.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        avatar = words.Length >= 2
+         ? (words[0][0].ToString() + words[1][0].ToString()).ToUpper()
+         : words[0].Substring(0, Math.Min(2, words[0].Length)).ToUpper();
+    }
 }
 
 @* TempData alerts *@
@@ -47,7 +57,8 @@
     <div class="row g-4">
 
         <!-- Sidebar -->
-        @Html.Partial("~/Views/Users/Registrations/_Sidebar.cshtml", new {
+        @Html.Partial("~/Views/Users/Registrations/_Sidebar.cshtml", new
+        {
             SinhVien = sv,
             TongDangKy = tongDangKy,
             TongThamDu = tongThamDu,
@@ -64,16 +75,25 @@
 
             <div class="ce-tabs-wrapper ce-reveal">
                 <div class="ce-tabs mb-4">
-                    <button class="ce-tab-btn active" data-tab="tab-upcoming">Sắp diễn ra @(sapDienRa.Count > 0 ? $"<span style='background:var(--primary);color:#fff;border-radius:99px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px'>{sapDienRa.Count}</span>" : "")</button>
-                    <button class="ce-tab-btn" data-tab="tab-attended">Đã tham dự @(daThamDu.Count > 0 ? $"<span style='background:var(--success);color:#fff;border-radius:99px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px'>{daThamDu.Count}</span>" : "")</button>
-                    <button class="ce-tab-btn" data-tab="tab-cancelled">Đã huỷ @(daHuy.Count > 0 ? $"<span style='background:var(--danger);color:#fff;border-radius:99px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px'>{daHuy.Count}</span>" : "")</button>
+                    <button class="ce-tab-btn active" data-tab="tab-upcoming">
+                        Đã đăng ký
+                    </button>
+                    <button class="ce-tab-btn" data-tab="tab-attended">
+                        Đã tham dự
+                    </button>
+                    <button class="ce-tab-btn" data-tab="tab-cancelled">
+                        Đã huỷ
+                    </button>
+                    <button class="ce-tab-btn" data-tab="tab-saved">
+                        Đã lưu
+                    </button>
                 </div>
 
-                @Html.Partial("~/Views/Users/Registrations/_Upcoming.cshtml", sapDienRa)
+                @Html.Partial("~/Views/Users/Registrations/_Upcoming.cshtml", DaDangKy)
                 @Html.Partial("~/Views/Users/Registrations/_Attended.cshtml", daThamDu)
                 @Html.Partial("~/Views/Users/Registrations/_Cancelled.cshtml", daHuy)
+                @Html.Partial("~/Views/Users/Registrations/_Saved.cshtml", daLuu)
             </div>
-        </div>
     </div>
 </div>
 

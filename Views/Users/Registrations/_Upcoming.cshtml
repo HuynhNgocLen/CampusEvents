@@ -1,10 +1,13 @@
-﻿@* Views/Users/Registrations/_Upcoming.cshtml *@
-@model List<shcool_event_management.Models.DangKySuKien>
+﻿@model List<shcool_event_management.Models.DangKySuKien>
+
+@{
+    var list = ViewBag.DaDangKy as List<shcool_event_management.Models.DangKySuKien>;
+}
 
 <div class="ce-tab-pane active" id="tab-upcoming">
-    @if (!Model.Any())
+    @if (list == null || !list.Any())
     {
-        <div class="ce-empty">
+        <div class="ce-empty text-center">
             <span class="material-symbols-outlined">event_upcoming</span>
             <div class="ce-empty__title">Chưa có sự kiện sắp tới</div>
             <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary mt-2">Khám phá ngay</a>
@@ -13,42 +16,61 @@
     else
     {
         <div class="d-flex flex-column gap-3">
-            @foreach (var dk in Model)
+            @foreach (var dk in list)
             {
                 var ev = dk.EVENT;
                 var soNgay = (ev.NgayBatDau.Date - DateTime.Today).Days;
-            var qrDict = ViewBag.QRDict as Dictionary<int, string>;
-                var qrBase64 = qrDict != null && qrDict.ContainsKey(dk.MaEvent) ? qrDict[dk.MaEvent] : null;
 
-<div class="ce-card p-3">
-    <div class="d-flex gap-3 align-items-start">
-        <div class="ce-icon-box">
-            <span class="material-symbols-outlined">@(ev.DanhMuc?.Icon ?? "event")</span>
-        </div>
-        <div style="flex:1;min-width:0">
-            <div class="d-flex justify-content-between">
-                <h5 style="font-size:.9rem;font-weight:700">@ev.TenEvent</h5>
-                @if (soNgay == 0)
-                {<span class="badge-today">🔥 Hôm nay!</span> }
-                else if (soNgay > 0)
-                { <span class="badge-upcoming">Còn @soNgay ngày</span>} [cite: 50, 52]
-            </div>
-            <div class="ce-meta-info">
-                <span>📅 @ev.NgayBatDau.ToString("dd/MM/yyyy")</span>
-                <span>📍 @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")</span>
-            </div>
-        </div>
-    </div>
-    <div class="d-flex gap-2 mt-3 pt-3 border-top">
-        @if (qrBase64 != null)
-        {
-            <button class="ce-btn ce-btn-primary ce-btn-sm" onclick="showQR('@ev.TenEvent', '@qrBase64')">QR Check-in</button>
-        } [cite: 68]
-        <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-ghost ce-btn-sm">Chi tiết</a>
-        <button class="ce-btn ce-btn-ghost ce-btn-sm ms-auto text-danger" onclick="confirmHuy(@dk.MaEvent, '@ev.TenEvent')">Hủy</button>
-    </div>
-</div>
-}
+                <div class="ce-card p-3 ce-hover-card">
+
+                    <div class="d-flex gap-3 flex-wrap">
+                        <div class="ce-icon-box">
+                            <span class="material-symbols-outlined">
+                                @(ev.DanhMuc?.Icon ?? "event")
+                            </span>
+                        </div>
+
+                        <div class="flex-grow-1">
+
+                            <div class="d-flex justify-content-between flex-wrap gap-2">
+
+                                <div style="min-width:0">
+                                    <div class="fw-bold text-truncate">@ev.TenEvent</div>
+                                    <hr>
+                                    <div class="text-muted small mt-1"> <span class="material-symbols-outlined" style="font-size:16px">calendar_month</span> Ngày Bắt Đầu: @ev.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                                    <div class="text-muted small mt-1"> <span class="material-symbols-outlined" style="font-size:16px">location_on</span> Địa điểm: @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")</div>
+                                </div>
+                                <div>
+                                    @if (soNgay == 0)
+                                    {
+                                        <span class="ce-badge ce-badge-danger">🔥 Hôm nay</span>
+                                    }
+                                    else if (soNgay > 0)
+                                    {
+                                        <span class="ce-badge ce-badge-primary">Còn @soNgay ngày</span>
+                                    }
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mt-3 pt-2 border-top">
+
+                                <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })"
+                                   class="ce-btn ce-btn-ghost ce-btn-sm">
+                                    Chi tiết
+                                </a>
+
+                                <button class="ce-btn ce-btn-ghost ce-btn-sm ms-auto text-danger"
+                                        onclick="confirmHuy(@dk.MaEvent, '@ev.TenEvent')">
+                                    Hủy
+                                </button>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>

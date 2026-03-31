@@ -176,6 +176,9 @@
     <Compile Include="Models\SinhVien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SuKienYeuThich.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Vien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -585,6 +588,7 @@
     <Content Include="packages\QRCoder.1.7.0\README.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\campus-app.js" />
+    <Content Include="Scripts\A-user-events.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -618,6 +622,7 @@
     <Content Include="Views\Users\Registrations\_Attended.cshtml" />
     <Content Include="Views\Users\Registrations\_Cancelled.cshtml" />
     <Content Include="Views\Users\Registrations\_Modals.cshtml" />
+    <Content Include="Views\Users\Registrations\_Saved.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

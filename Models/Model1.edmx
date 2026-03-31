@@ -57,7 +57,7 @@
           <Property Name="TrangThai" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
           <Property Name="NgayCapNhat" Type="datetime" />
-          <Property Name="LinkZalo" Type="varchar" MaxLength="50" />
+          <Property Name="LinkZalo" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -73,9 +73,21 @@
           <Property Name="ID" Type="varchar" MaxLength="13" Nullable="false" />
           <Property Name="Ten" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="NgayThangNamSinh" Type="date" />
-          <Property Name="SDT" Type="varchar" MaxLength="10" />
+          <Property Name="SoDienThoai" Type="varchar" MaxLength="11" />
+          <Property Name="Email" Type="nvarchar" MaxLength="100" />
+          <Property Name="Lop" Type="nvarchar" MaxLength="50" />
           <Property Name="MaNghanh" Type="varchar" MaxLength="6" />
           <Property Name="MaVien" Type="varchar" MaxLength="12" />
+        </EntityType>
+        <EntityType Name="SuKienYeuThich">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+            <PropertyRef Name="MaEvent" />
+          </Key>
+          <Property Name="IDSinhVien" Type="varchar" MaxLength="13" Nullable="false" />
+          <Property Name="MaEvent" Type="int" Nullable="false" />
+          <Property Name="NgayLuu" Type="datetime" />
+          <Property Name="TrangThai" Type="varchar" MaxLength="5" />
         </EntityType>
         <EntityType Name="Vien">
           <Key>
@@ -173,6 +185,30 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Favorites_Event">
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
+          <End Role="SuKienYeuThich" Type="Self.SuKienYeuThich" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EVENT">
+              <PropertyRef Name="MaEvent" />
+            </Principal>
+            <Dependent Role="SuKienYeuThich">
+              <PropertyRef Name="MaEvent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Favorites_SinhVien">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="1" />
+          <End Role="SuKienYeuThich" Type="Self.SuKienYeuThich" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SuKienYeuThich">
+              <PropertyRef Name="IDSinhVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SINHVIEN_NGHANH">
           <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="0..1" />
           <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
@@ -185,6 +221,18 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SINHVIEN_VIEN">
+          <End Role="Vien" Type="Self.Vien" Multiplicity="0..1" />
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="school_event_managementModelStoreContainer">
           <EntitySet Name="DangKySuKien" EntityType="Self.DangKySuKien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
@@ -192,6 +240,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <EntitySet Name="EVENT" EntityType="Self.EVENT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaNghanh" EntityType="Self.MaNghanh" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SinhVien" EntityType="Self.SinhVien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SuKienYeuThich" EntityType="Self.SuKienYeuThich" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vien" EntityType="Self.Vien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="vw_SoChoConLai" EntityType="Self.vw_SoChoConLai" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -227,8 +276,20 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             <End Role="Vien" EntitySet="Vien" />
             <End Role="EVENT" EntitySet="EVENT" />
           </AssociationSet>
+          <AssociationSet Name="FK_Favorites_Event" Association="Self.FK_Favorites_Event">
+            <End Role="EVENT" EntitySet="EVENT" />
+            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThich" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Favorites_SinhVien" Association="Self.FK_Favorites_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhVien" />
+            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThich" />
+          </AssociationSet>
           <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
             <End Role="MaNghanh" EntitySet="MaNghanh" />
+            <End Role="SinhVien" EntitySet="SinhVien" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SINHVIEN_VIEN" Association="Self.FK_SINHVIEN_VIEN">
+            <End Role="Vien" EntitySet="Vien" />
             <End Role="SinhVien" EntitySet="SinhVien" />
           </AssociationSet>
         </EntityContainer>
@@ -246,7 +307,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Property Name="NgayDangKy" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENT" Relationship="Self.FK_DangKy_Event" FromRole="DangKySuKien" ToRole="EVENT" />
-          <NavigationProperty Name="SinhVien" Relationship="Self.FK_DangKy_SinhVien" FromRole="DangKySuKien" ToRole="SinhVien" />
+          <NavigationProperty Name="SinhVien" Relationship="school_event_managementModel.FK_DangKy_SinhVien" FromRole="DangKySuKien" ToRole="SinhVien" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
@@ -292,12 +353,13 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_Event" FromRole="EVENT" ToRole="DangKySuKien" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_EVENT_DANHMUC" FromRole="EVENT" ToRole="DanhMuc" />
           <NavigationProperty Name="DiaDiem" Relationship="Self.FK_EVENT_DIADIEM" FromRole="EVENT" ToRole="DiaDiem" />
-          <NavigationProperty Name="SinhVien" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="EVENT" ToRole="SinhVien" />
           <NavigationProperty Name="Vien" Relationship="Self.FK_EVENT_VIEN" FromRole="EVENT" ToRole="Vien" />
           <Property Name="GioBatDau" Type="Time" Precision="0" />
           <Property Name="GioKetThuc" Type="Time" Precision="0" />
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="LinkZalo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LinkZalo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="SinhVien" Relationship="school_event_managementModel.FK_EVENT_NGUOIDANG" FromRole="EVENT" ToRole="SinhVien" />
+          <NavigationProperty Name="SuKienYeuThiches" Relationship="school_event_managementModel.FK_Favorites_Event" FromRole="EVENT" ToRole="SuKienYeuThich" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -305,21 +367,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           </Key>
           <Property Name="MaNghanh1" Type="String" MaxLength="6" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenNghanh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="SinhViens" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="MaNghanh" ToRole="SinhVien" />
-        </EntityType>
-        <EntityType Name="SinhVien">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Ten" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
-          <Property Name="SDT" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
-          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="SinhVien" ToRole="EVENT" />
-          <NavigationProperty Name="MaNghanh1" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
+          <NavigationProperty Name="SinhViens" Relationship="school_event_managementModel.FK_SINHVIEN_NGHANH" FromRole="MaNghanh" ToRole="SinhVien" />
         </EntityType>
         <EntityType Name="Vien">
           <Key>
@@ -328,6 +376,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenVien" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_VIEN" FromRole="Vien" ToRole="EVENT" />
+          <NavigationProperty Name="SinhViens" Relationship="school_event_managementModel.FK_SINHVIEN_VIEN" FromRole="Vien" ToRole="SinhVien" />
         </EntityType>
         <Association Name="FK_DangKy_Event">
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
@@ -338,18 +387,6 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             </Principal>
             <Dependent Role="DangKySuKien">
               <PropertyRef Name="MaEvent" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DangKy_SinhVien">
-          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="1" />
-          <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SinhVien">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="DangKySuKien">
-              <PropertyRef Name="IDSinhVien" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -377,18 +414,6 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_EVENT_NGUOIDANG">
-          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
-          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SinhVien">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="EVENT">
-              <PropertyRef Name="NguoiDang" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_EVENT_VIEN">
           <End Role="Vien" Type="Self.Vien" Multiplicity="1" />
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
@@ -401,32 +426,15 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_SINHVIEN_NGHANH">
-          <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="0..1" />
-          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MaNghanh">
-              <PropertyRef Name="MaNghanh1" />
-            </Principal>
-            <Dependent Role="SinhVien">
-              <PropertyRef Name="MaNghanh" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="SchoolEventManagementEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="DangKySuKiens" EntityType="Self.DangKySuKien" />
           <EntitySet Name="DanhMucs" EntityType="Self.DanhMuc" />
           <EntitySet Name="DiaDiems" EntityType="Self.DiaDiem" />
           <EntitySet Name="EVENTs" EntityType="Self.EVENT" />
           <EntitySet Name="MaNghanhs" EntityType="Self.MaNghanh" />
-          <EntitySet Name="SinhViens" EntityType="Self.SinhVien" />
           <EntitySet Name="Viens" EntityType="Self.Vien" />
           <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
             <End Role="EVENT" EntitySet="EVENTs" />
-            <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DangKy_SinhVien" Association="Self.FK_DangKy_SinhVien">
-            <End Role="SinhVien" EntitySet="SinhViens" />
             <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
           </AssociationSet>
           <AssociationSet Name="FK_EVENT_DANHMUC" Association="Self.FK_EVENT_DANHMUC">
@@ -437,20 +445,38 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             <End Role="DiaDiem" EntitySet="DiaDiems" />
             <End Role="EVENT" EntitySet="EVENTs" />
           </AssociationSet>
-          <AssociationSet Name="FK_EVENT_NGUOIDANG" Association="Self.FK_EVENT_NGUOIDANG">
-            <End Role="SinhVien" EntitySet="SinhViens" />
-            <End Role="EVENT" EntitySet="EVENTs" />
-          </AssociationSet>
           <AssociationSet Name="FK_EVENT_VIEN" Association="Self.FK_EVENT_VIEN">
             <End Role="Vien" EntitySet="Viens" />
             <End Role="EVENT" EntitySet="EVENTs" />
           </AssociationSet>
-          <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
+          <EntitySet Name="vw_SoChoConLai" EntityType="school_event_managementModel.vw_SoChoConLai" />
+          <EntitySet Name="SinhViens" EntityType="school_event_managementModel.SinhVien" />
+          <AssociationSet Name="FK_DangKy_SinhVien" Association="school_event_managementModel.FK_DangKy_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EVENT_NGUOIDANG" Association="school_event_managementModel.FK_EVENT_NGUOIDANG">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="EVENT" EntitySet="EVENTs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="school_event_managementModel.FK_SINHVIEN_NGHANH">
             <End Role="MaNghanh" EntitySet="MaNghanhs" />
             <End Role="SinhVien" EntitySet="SinhViens" />
           </AssociationSet>
-          <EntitySet Name="vw_SoChoConLai" EntityType="school_event_managementModel.vw_SoChoConLai" />
-        </EntityContainer>
+          <AssociationSet Name="FK_SINHVIEN_VIEN" Association="school_event_managementModel.FK_SINHVIEN_VIEN">
+            <End Role="Vien" EntitySet="Viens" />
+            <End Role="SinhVien" EntitySet="SinhViens" />
+          </AssociationSet>
+          <EntitySet Name="SuKienYeuThiches" EntityType="school_event_managementModel.SuKienYeuThich" />
+          <AssociationSet Name="FK_Favorites_Event" Association="school_event_managementModel.FK_Favorites_Event">
+            <End Role="EVENT" EntitySet="EVENTs" />
+            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Favorites_SinhVien" Association="school_event_managementModel.FK_Favorites_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="vw_SoChoConLai">
           <Key>
             <PropertyRef Name="MaEvent" />
@@ -466,7 +492,109 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Property Name="SoChoConLai" Type="Int32" />
           <Property Name="TrangThaiCho" Type="String" Nullable="false" MaxLength="7" FixedLength="false" Unicode="true" />
         </EntityType>
-      </Schema>
+        <EntityType Name="SinhVien">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="Ten" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
+          <Property Name="SoDienThoai" Type="String" MaxLength="11" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Lop" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="DangKySuKiens" Relationship="school_event_managementModel.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
+          <NavigationProperty Name="EVENTs" Relationship="school_event_managementModel.FK_EVENT_NGUOIDANG" FromRole="SinhVien" ToRole="EVENT" />
+          <NavigationProperty Name="MaNghanh1" Relationship="school_event_managementModel.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
+          <NavigationProperty Name="Vien" Relationship="school_event_managementModel.FK_SINHVIEN_VIEN" FromRole="SinhVien" ToRole="Vien" />
+          <NavigationProperty Name="SuKienYeuThiches" Relationship="school_event_managementModel.FK_Favorites_SinhVien" FromRole="SinhVien" ToRole="SuKienYeuThich" />
+        </EntityType>
+        <Association Name="FK_DangKy_SinhVien">
+          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="1" />
+          <End Type="school_event_managementModel.DangKySuKien" Role="DangKySuKien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DangKySuKien">
+              <PropertyRef Name="IDSinhVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EVENT_NGUOIDANG">
+          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="0..1" />
+          <End Type="school_event_managementModel.EVENT" Role="EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="NguoiDang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SINHVIEN_NGHANH">
+          <End Type="school_event_managementModel.MaNghanh" Role="MaNghanh" Multiplicity="0..1" />
+          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaNghanh">
+              <PropertyRef Name="MaNghanh1" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaNghanh" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SINHVIEN_VIEN">
+          <End Type="school_event_managementModel.Vien" Role="Vien" Multiplicity="0..1" />
+          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SuKienYeuThich">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+            <PropertyRef Name="MaEvent" />
+          </Key>
+          <Property Name="IDSinhVien" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="MaEvent" Type="Int32" Nullable="false" />
+          <Property Name="NgayLuu" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="EVENT" Relationship="school_event_managementModel.FK_Favorites_Event" FromRole="SuKienYeuThich" ToRole="EVENT" />
+          <NavigationProperty Name="SinhVien" Relationship="school_event_managementModel.FK_Favorites_SinhVien" FromRole="SuKienYeuThich" ToRole="SinhVien" />
+          <Property Name="TrangThai" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK_Favorites_Event">
+          <End Type="school_event_managementModel.EVENT" Role="EVENT" Multiplicity="1" />
+          <End Type="school_event_managementModel.SuKienYeuThich" Role="SuKienYeuThich" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EVENT">
+              <PropertyRef Name="MaEvent" />
+            </Principal>
+            <Dependent Role="SuKienYeuThich">
+              <PropertyRef Name="MaEvent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Favorites_SinhVien">
+          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="1" />
+          <End Type="school_event_managementModel.SuKienYeuThich" Role="SuKienYeuThich" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SuKienYeuThich">
+              <PropertyRef Name="IDSinhVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -537,18 +665,6 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SinhViens">
-            <EntityTypeMapping TypeName="school_event_managementModel.SinhVien">
-              <MappingFragment StoreEntitySet="SinhVien">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Ten" ColumnName="Ten" />
-                <ScalarProperty Name="NgayThangNamSinh" ColumnName="NgayThangNamSinh" />
-                <ScalarProperty Name="SDT" ColumnName="SDT" />
-                <ScalarProperty Name="MaNghanh" ColumnName="MaNghanh" />
-                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Viens">
             <EntityTypeMapping TypeName="school_event_managementModel.Vien">
               <MappingFragment StoreEntitySet="Vien">
@@ -566,6 +682,30 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
                 <ScalarProperty Name="SoLuongToiDa" ColumnName="SoLuongToiDa" />
                 <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
                 <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SinhViens">
+            <EntityTypeMapping TypeName="school_event_managementModel.SinhVien">
+              <MappingFragment StoreEntitySet="SinhVien">
+                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
+                <ScalarProperty Name="MaNghanh" ColumnName="MaNghanh" />
+                <ScalarProperty Name="Lop" ColumnName="Lop" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="SoDienThoai" ColumnName="SoDienThoai" />
+                <ScalarProperty Name="NgayThangNamSinh" ColumnName="NgayThangNamSinh" />
+                <ScalarProperty Name="Ten" ColumnName="Ten" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SuKienYeuThiches">
+            <EntityTypeMapping TypeName="school_event_managementModel.SuKienYeuThich">
+              <MappingFragment StoreEntitySet="SuKienYeuThich">
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="NgayLuu" ColumnName="NgayLuu" />
+                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
+                <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

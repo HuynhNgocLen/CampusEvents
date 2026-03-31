@@ -1,0 +1,129 @@
+﻿@model List<shcool_event_management.Models.EVENT>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="ce-empty text-center py-5">
+        <span class="material-symbols-outlined" style="font-size:48px; opacity:.5; color:var(--text-muted)">bookmark_border</span>
+        <div class="fw-bold mt-2" style="color:var(--text-muted)">Chưa có sự kiện nào được lưu</div>
+        <p class="small text-muted">Hãy lưu lại những sự kiện bạn quan tâm để xem sau.</p>
+    </div>
+}
+else
+{
+    <div class="d-flex flex-column gap-3">
+        @foreach (var ev in Model)
+        {
+            var ngayHienTai = DateTime.Now;
+            bool daHetHan = ev.NgayHetHanDangKy.HasValue && ev.NgayHetHanDangKy.Value.Date < ngayHienTai.Date;
+            var conLai = (ev.SoLuongToiDa) - (ev.SoLuongDaDangKy);
+            bool hetCho = conLai <= 0;
+
+            <div class="ce-card p-3 ce-hover-card saved-card" id="saved-item-@ev.MaEvent">
+                <div class="d-flex gap-3 align-items-start flex-wrap">
+                    <div class="ce-icon-box-small"
+                         style="background: @(ev.DanhMuc?.MauSac ?? "#3b82f6")15; color: @(ev.DanhMuc?.MauSac ?? "#3b82f6")">
+                        <span class="material-symbols-outlined">@(ev.DanhMuc?.Icon ?? "bookmark")</span>
+                    </div>
+
+                    <div class="flex-grow-1" style="min-width:0">
+                        <div class="fw-bold text-truncate" style="font-size: 1.05rem;">@ev.TenEvent</div>
+                        <div class="d-flex flex-column gap-1 mt-2">
+                            <div class="text-muted small d-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size:16px">calendar_month</span>
+                                Ngày: @ev.NgayBatDau.ToString("dd/MM/yyyy")
+                            </div>
+                            <div class="text-muted small d-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size:16px">location_on</span>
+                                @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="ce-badge" style="background: @(ev.DanhMuc?.MauSac ?? "#3b82f6")20; color: @(ev.DanhMuc?.MauSac ?? "#3b82f6")">
+                        @(ev.DanhMuc?.TenDanhMuc ?? "Sự kiện")
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-sm ce-btn-ghost">
+                            <span class="material-symbols-outlined" style="font-size:16px">info</span> Chi tiết
+                        </a>
+
+                        @* Nút bỏ lưu gọi hàm fastRemoveFavorite *@
+                        <button type="button" class="ce-btn ce-btn-sm ce-btn-ghost text-danger" onclick="fastRemoveFavorite(this, @ev.MaEvent)">
+                            <span class="material-symbols-outlined" style="font-size:16px">bookmark_remove</span> Bỏ lưu
+                        </button>
+                    </div>
+
+                    @if (daHetHan)
+                    {
+                        <button class="ce-btn ce-btn-sm" disabled style="background: #f1f5f9; color: #94a3b8; cursor: not-allowed; border: 1px solid #e2e8f0;">
+                            <span class="material-symbols-outlined" style="font-size:16px">event_busy</span> Hết hạn
+                        </button>
+                    }
+                    else if (hetCho)
+                    {
+                        <button class="ce-btn ce-btn-sm" disabled style="background: #fff1f2; color: #ef4444; cursor: not-allowed; border: 1px solid #fecaca;">
+                            <span class="material-symbols-outlined" style="font-size:16px">block</span> Hết chỗ
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-sm ce-btn-primary">
+                            <span class="material-symbols-outlined" style="font-size:16px">how_to_reg</span> Đăng ký ngay
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function fastRemoveFavorite(btn, eventId) {
+        const card = document.getElementById('saved-item-' + eventId);
+        if (card) {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(50px)';
+            card.style.pointerEvents = 'none';
+        }
+
+        @Html.AntiForgeryToken()
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        const formData = new FormData();
+        formData.append('maEvent', eventId);
+        if (token) {
+            formData.append('__RequestVerificationToken', token);
+        }
+
+        fetch('@Url.Action("RemoveFavorite", "Users")', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                setTimeout(() => {
+                    card.remove();
+                    if (document.querySelectorAll('.saved-card').length === 0) {
+                        location.reload();
+                    }
+                }, 400);
+            } else {
+                alert('Không thể bỏ lưu!');
+                card.style.opacity = '1';
+                card.style.transform = 'none';
+                card.style.pointerEvents = 'auto';
+            }
+        })
+        .catch(err => {
+            console.error('Lỗi:', err);
+            card.style.opacity = '1';
+            card.style.transform = 'none';
+            card.style.pointerEvents = 'auto';
+        });
+    }
+</script>

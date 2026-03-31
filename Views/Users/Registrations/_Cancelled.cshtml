@@ -1,13 +1,12 @@
-﻿@* Views/Users/Registrations/_Cancelled.cshtml *@
-@model List<shcool_event_management.Models.DangKySuKien>
+﻿@model List<shcool_event_management.Models.DangKySuKien>
 
 <div class="ce-tab-pane" id="tab-cancelled">
     @if (Model == null || !Model.Any())
     {
-        <div class="ce-empty" style="text-align:center; padding: 40px 20px; color: var(--text-muted);">
-            <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;">layers_clear</span>
-            <div class="ce-empty__title" style="font-weight: 600; font-size: 1.1rem;">Danh sách trống</div>
-            <p style="font-size: 0.9rem; margin-top: 5px;">Bạn chưa hủy đăng ký bất kỳ sự kiện nào.</p>
+        <div class="ce-empty text-center py-5">
+            <span class="material-symbols-outlined" style="font-size:48px; opacity:.5;">layers_clear</span>
+            <div class="ce-empty__title mt-2">Danh sách trống</div>
+            <p class="text-muted small">Bạn chưa hủy đăng ký sự kiện nào.</p>
         </div>
     }
     else
@@ -15,17 +14,47 @@
         <div class="d-flex flex-column gap-3">
             @foreach (var dk in Model)
             {
-                <div class="ce-card p-3" style="opacity:.7">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="ce-icon-box-small" style="background:#fff1f2; color:#e11d48">
+                var ev = dk.EVENT;
+
+                <div class="ce-card p-3 ce-hover-card cancelled-card">
+
+                    <div class="d-flex gap-3 align-items-start flex-wrap">
+
+                        <!-- Icon -->
+                        <div class="ce-icon-box-small cancelled-icon">
                             <span class="material-symbols-outlined">event_busy</span>
                         </div>
-                        <div style="flex:1; min-width:0">
-                            <div style="text-decoration:line-through; font-weight:700; color:var(--text)">@dk.EVENT.TenEvent</div>
-                            <div style="font-size:.72rem; color:var(--text-muted)">Hủy lúc: @dk.NgayDangKy.ToString("dd/MM/yyyy HH:mm")</div>
+
+                        <!-- Nội dung -->
+                        <div class="flex-grow-1" style="min-width:0">
+                            <div class="fw-bold text-truncate">
+                                @ev.TenEvent
+                            </div>
+                            <hr>
+                            <div class="text-muted small mt-1">
+                                Ngày bắt đầu: @ev.NgayBatDau.ToString("dd/MM/yyyy")
+                            </div>
+
+                            <div class="text-muted small">
+                                Hủy lúc: @dk.NgayDangKy.ToString("dd/MM/yyyy HH:mm")
+                            </div>
                         </div>
+
+                        <!-- Badge -->
                         <span class="ce-badge ce-badge-danger">Đã hủy</span>
+
                     </div>
+
+                    <!-- Action -->
+                    <div class="d-flex gap-2 mt-3 pt-3 flex-wrap cancelled-actions">
+
+                        <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })"
+                           class="ce-btn ce-btn-sm ce-btn-ghost">
+                            <span class="material-symbols-outlined" style="font-size:14px">visibility</span>
+                            Xem lại
+                        </a>
+                    </div>
+
                 </div>
             }
         </div>
