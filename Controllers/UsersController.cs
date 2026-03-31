@@ -16,7 +16,7 @@ namespace school_event_management.Controllers
         //Lấy MSSV hiện tại 
         private string GetCurrentStudentId()
         {
-            return Session["StudentId"] as string ?? "SV001";
+            return Session["StudentId"] as string;
         }
 
         //Đã lưu

@@ -27,7 +27,6 @@
 
     @* ── NAVBAR ── *@
     <nav class="ce-navbar">
-        <!-- ... phần navbar giữ nguyên như cũ ... -->
         <a href="@Url.Action("Index", "Users")" class="ce-navbar__brand">
             <div class="ce-navbar__logo">
                 <span class="material-symbols-outlined">school</span>
@@ -64,13 +63,34 @@
                 <span class="material-symbols-outlined">notifications</span>
                 <span class="ce-notif-dot"></span>
             </button>
-            <a href="@Url.Action("Registrations", "Users")" class="ce-navbar__avatar" title="Tài khoản">
-                @{
-                    var name = ViewBag.UserName as string ?? "SV";
-                    var initials = name.Length >= 2 ? name.Substring(0, 2).ToUpper() : name.ToUpper();
-                }
-                @initials
-            </a>
+            @if (Session["StudentId"] != null)
+            {
+                @* TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP *@
+                <div class="dropdown">
+                    <a href="#" class="ce-navbar__avatar" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
+                        @{
+                            var name = ViewBag.UserName as string ?? "SV";
+                            var initials = name.Length >= 2 ? name.Substring(0, 2).ToUpper() : name.ToUpper();
+                        }
+                        @initials
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px;">
+                        <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Users")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px">person</span> Hồ sơ cá nhân</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px">logout</span> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                @* TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP *@
+                <a href="@Url.Action("Login", "Account")" class="ce-navbar__login-btn d-flex align-items-center gap-2" title="Đăng nhập hệ thống">
+                    <div class="ce-navbar__avatar-guest">
+                        <span class="material-symbols-outlined" style="font-size: 20px; color: var(--text-muted);">person</span>
+                    </div>
+                    <span class="d-none d-sm-inline" style="font-size: 0.85rem; font-weight: 600; color: var(--text);">Đăng nhập</span>
+                </a>
+            }
             <button class="ce-navbar__toggler" id="ce-nav-toggler" aria-label="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>

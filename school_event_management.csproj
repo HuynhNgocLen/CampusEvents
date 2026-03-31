@@ -626,6 +626,8 @@
     <Content Include="Views\Users\Registrations\_Cancelled.cshtml" />
     <Content Include="Views\Users\Registrations\_Modals.cshtml" />
     <Content Include="Views\Users\Registrations\_Saved.cshtml" />
+    <Content Include="Views\Account\_LoginForm.cshtml" />
+    <Content Include="Views\Account\_RegisterForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
