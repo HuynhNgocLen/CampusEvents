@@ -4,9 +4,9 @@
     @if (Model == null || !Model.Any())
     {
         <div class="ce-empty text-center py-5">
-            <span class="material-symbols-outlined" style="font-size:48px; opacity:.5;">history_edu</span>
-            <div class="ce-empty__title mt-2">Chưa tham gia sự kiện nào</div>
-            <p class="text-muted small">Hãy tham gia sự kiện để tích lũy trải nghiệm nhé 🚀</p>
+            <span class="material-symbols-outlined" style="font-size:52px; opacity:.6;">history_edu</span>
+            <div class="ce-empty__title mt-3">Chưa tham gia sự kiện nào</div>
+            <p class="text-muted small">Hãy tham gia sự kiện để tích lũy kinh nghiệm nhé 🚀</p>
             <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary mt-3">
                 Khám phá sự kiện
             </a>
@@ -20,56 +20,37 @@
                 var ev = dk.EVENT;
                 var soNgay = (DateTime.Today - ev.NgayBatDau.Date).Days;
 
-                <div class="ce-card p-3 ce-hover-card attended-card">
+                <div class="ce-card p-4 ce-hover-card attended-card">
 
-                    <div class="d-flex gap-3 align-items-start flex-wrap">
-
-                        <!-- Icon -->
-                        <div class="ce-icon-box-small attended-icon">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="ce-icon-box attended-icon">
                             <span class="material-symbols-outlined">verified</span>
                         </div>
 
-                        <!-- Nội dung -->
-                        <div class="flex-grow-1" style="min-width:0">
-
-                            <div class="fw-bold text-truncate">
-                                @ev.TenEvent
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                                <div class="fw-bold text-truncate">@ev.TenEvent</div>
+                                <span class="ce-badge ce-badge-success">Hoàn thành</span>
                             </div>
                             <hr />
-                            <div class="text-muted small mt-1">
-                                Ngày Bắt Đầu: @ev.NgayBatDau.ToString("dd/MM/yyyy")
-                            </div>
-
-                            <div class="text-muted small">
-                               Đã diễn ra @soNgay ngày trước
+                                <div class="mt-3 text-muted small">
+                                    <div class="text-muted small mt-1"><span class="material-symbols-outlined" style="font-size:16px">calendar_month</span> Ngày bắt đầu: <strong>@ev.NgayBatDau.ToString("dd/MM/yyyy")</strong></div>
+                                    <div class="text-muted small mt-1"><span class="material-symbols-outlined" style="font-size:16px">calendar_month</span> Đã diễn ra <strong>@soNgay ngày trước</strong></div>
+                                </div>
                             </div>
 
                         </div>
 
-                        <!-- Badge -->
-                        <span class="ce-badge ce-badge-success">
-                            Hoàn thành
-                        </span>
-
-                    </div>
-
-                    <!-- Action -->
-                    <div class="d-flex gap-2 mt-3 pt-3 flex-wrap attended-actions">
-
+                    <div class="d-flex gap-2 mt-4 pt-3 border-top">
                         <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })"
-                           class="ce-btn ce-btn-sm ce-btn-ghost">
-                            <span class="material-symbols-outlined" style="font-size:14px">visibility</span>
-                            Xem lại
+                           class="ce-btn ce-btn-sm ce-btn-ghost flex-grow-1">
+                            <span class="material-symbols-outlined">visibility</span> Xem lại
                         </a>
-
                         <a href="@Url.Action("Events","Users")"
-                           class="ce-btn ce-btn-sm ce-btn-primary">
-                            <span class="material-symbols-outlined" style="font-size:14px">explore</span>
-                            Tìm sự kiện mới
+                           class="ce-btn ce-btn-sm ce-btn-primary flex-grow-1">
+                            <span class="material-symbols-outlined">explore</span> Tìm sự kiện mới
                         </a>
-
                     </div>
-
                 </div>
             }
         </div>
