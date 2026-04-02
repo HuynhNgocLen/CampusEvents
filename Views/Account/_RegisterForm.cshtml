@@ -1,64 +1,92 @@
-﻿
-    <div class="ce-auth-title">Tạo tài khoản</div>
-    <div class="ce-auth-sub">Đăng ký với thông tin sinh viên của bạn</div>
+﻿<div class="ce-auth-title">Tạo tài khoản</div>
+<div class="ce-auth-sub">Đăng ký với thông tin sinh viên của bạn</div>
 
-    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        <div class="row g-3 mb-3">
-            <div class="col-6">
-                <label class="ce-form-label">Họ</label>
-                <input class="ce-form-control" name="lastName" type="text" placeholder="Nguyễn" />
-            </div>
-            <div class="col-6">
-                <label class="ce-form-label">Tên</label>
-                <input class="ce-form-control" name="firstName" type="text" placeholder="Bình" />
-            </div>
+@using (Html.BeginForm("Register", "Account", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row g-3 mb-3">
+        <div class="col-6">
+            <label class="ce-form-label">Họ</label>
+            <input class="ce-form-control" name="lastName" type="text" placeholder="Nguyễn" />
         </div>
-        <div class="mb-3">
-            <label class="ce-form-label">Mã sinh viên</label>
+        <div class="col-6">
+            <label class="ce-form-label">Tên</label>
+            <input class="ce-form-control" name="firstName" type="text" placeholder="Bình" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="ce-form-label">Mã sinh viên</label>
+        <div class="ce-input-icon">
+            <span class="material-symbols-outlined icon">badge</span>
+            <input class="ce-form-control" name="studentId" type="text" placeholder="SV2021001234" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="ce-form-label">Email trường</label>
+        <div class="ce-input-icon">
+            <span class="material-symbols-outlined icon">mail</span>
+            <input class="ce-form-control" name="email" type="email" placeholder="tensv@student.abc.edu.vn" />
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-6">
+            <label class="ce-form-label">Số điện thoại</label>
             <div class="ce-input-icon">
-                <span class="material-symbols-outlined icon">badge</span>
-                <input class="ce-form-control" name="studentId" type="text" placeholder="SV2021001234" />
+                <span class="material-symbols-outlined icon">call</span>
+                <input class="ce-form-control" name="phoneNumber" type="tel" placeholder="09___" />
             </div>
         </div>
-        <div class="mb-3">
-            <label class="ce-form-label">Email trường</label>
+        <div class="col-6">
+            <label class="ce-form-label">Lớp</label>
             <div class="ce-input-icon">
-                <span class="material-symbols-outlined icon">mail</span>
-                <input class="ce-form-control" name="email" type="email" placeholder="tensv@student.abc.edu.vn" />
+                <span class="material-symbols-outlined icon">school</span>
+                <input class="ce-form-control" name="className" type="text" placeholder="CNTT22" />
             </div>
         </div>
-        <div class="mb-3">
-            <label class="ce-form-label">Khoa / Ngành</label>
-            <select class="ce-form-select" name="faculty">
-                <option value="">Chọn khoa</option>
-                <option>Công nghệ Thông tin</option>
-                <option>Kinh tế</option>
-                <option>Kỹ thuật Điện</option>
-                <option>Ngoại ngữ</option>
-                <option>Quản trị Kinh doanh</option>
-            </select>
+    </div>
+    <div class="mb-3">
+        <label class="ce-form-label">Ngành học</label>
+        <select class="ce-form-select" name="faculty">
+            <option value="">Chọn Ngành</option>
+            <option value="CNTT">Công nghệ thông tin</option>
+            <option value="KTPM">Kỹ Thuật Phần Mềm</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="ce-form-label">Khoa / Viện</label>
+        <select class="ce-form-select" name="institute">
+            <option value="">Chọn Khoa / Viện</option>
+            <option value="CNS">Viện Công Nghệ Số</option>
+            <option value="KTCN">Viện Kỹ Thuật Công Nghệ</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="ce-form-label">Mật khẩu</label>
+        <div class="ce-input-icon">
+            <span class="material-symbols-outlined icon">lock</span>
+            <input class="ce-form-control" name="password" type="password"
+                   id="pw-reg" placeholder="Tối thiểu 8 ký tự" style="padding-right:2.8rem" />
+            <button type="button" onclick="cePwToggle('pw-reg',this)"
+                    style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted)">
+                <span class="material-symbols-outlined" style="font-size:17px">visibility</span>
+            </button>
         </div>
-        <div class="mb-3">
-            <label class="ce-form-label">Mật khẩu</label>
-            <div class="ce-input-icon">
-                <span class="material-symbols-outlined icon">lock</span>
-                <input class="ce-form-control" name="password" type="password"
-                       id="pw-reg" placeholder="Tối thiểu 8 ký tự" style="padding-right:2.8rem" />
-                <button type="button" onclick="cePwToggle('pw-reg',this)"
-                        style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted)">
-                    <span class="material-symbols-outlined" style="font-size:17px">visibility</span>
-                </button>
-            </div>
-        </div>
-        <div class="mb-4">
-            <label style="display:flex;align-items:flex-start;gap:.45rem;cursor:pointer;font-size:.83rem;color:var(--text-muted)">
-                <input type="checkbox" style="margin-top:3px;accent-color:var(--primary);flex-shrink:0" />
-                Tôi đồng ý với <a href="#" style="color:var(--primary)">Điều khoản sử dụng</a> và <a href="#" style="color:var(--primary)">Chính sách bảo mật</a>
-            </label>
-        </div>
-        <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg" type="submit">
-            <span class="material-symbols-outlined">person_add</span> Tạo tài khoản
-        </button>
-    }
+    </div>
+
+    <div class="mb-4">
+        <label style="display:flex;align-items:flex-start;gap:.45rem;cursor:pointer;font-size:.83rem;color:var(--text-muted)">
+            <input type="checkbox" style="margin-top:3px;accent-color:var(--primary);flex-shrink:0" />
+            Tôi đồng ý với <a href="#" style="color:var(--primary)">Điều khoản sử dụng</a> và <a href="#" style="color:var(--primary)">Chính sách bảo mật</a>
+        </label>
+    </div>
+
+    <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg" type="submit">
+        <span class="material-symbols-outlined">person_add</span> Tạo tài khoản
+    </button>
+}

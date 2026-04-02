@@ -11,7 +11,7 @@ namespace school_event_management.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly SchoolEventManagementEntities db = new SchoolEventManagementEntities();
+        private readonly school_event_managementEntities db = new school_event_managementEntities();
 
         //Lấy MSSV hiện tại 
         private string GetCurrentStudentId()
@@ -36,12 +36,20 @@ namespace school_event_management.Controllers
             }
         }
 
+        private ActionResult CheckLogin()
+        {
+            if (Session["StudentId"] == null)
+                return RedirectToAction("Login", "Account");
+            return null;
+        }
+
         //Users/Index
         public ActionResult Index()
         {
+            var redirect = CheckLogin();
+            if (redirect != null) return redirect;
             ViewBag.Title = "Khám phá Sự kiện";
             ViewBag.ActivePage = "home";
-            ViewBag.UserName = "Sinh Viên";
 
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
             ViewBag.DanhMucs = db.DanhMucs.ToList();
@@ -56,12 +64,57 @@ namespace school_event_management.Controllers
             return View(events);
         }
 
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+
+            string studentId = Session["StudentId"] as string;
+
+            if (!string.IsNullOrEmpty(studentId))
+            {
+                // Tìm sinh viên trong Database
+                var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+                if (sv != null)
+                {
+                    // 1. Dữ liệu cho Navbar (ở _LayoutUsers.cshtml)
+                    ViewBag.UserName = sv.Ten;
+
+                    // 2. Dữ liệu cho Sidebar (ở _Sidebar.cshtml)
+                    ViewData["TenHienThi"] = sv.Ten;
+                    ViewData["MaSV"] = sv.ID;
+                    ViewData["Lop"] = sv.Lop;
+
+                    // Lấy 2 chữ cái đầu của TÊN làm Avatar (Có xử lý khoảng trắng thừa)
+                    var words = sv.Ten.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    string initials = "SV"; // Mặc định
+
+                    if (words.Length > 0)
+                    {
+                        // Lấy chữ cái đầu của từ cuối cùng
+                        initials = words[words.Length - 1].Substring(0, 1).ToUpper();
+
+                        // Nếu tên có 2 từ trở lên, lấy thêm chữ cái của từ áp chót
+                        if (words.Length >= 2)
+                        {
+                            var apChot = words[words.Length - 2].Substring(0, 1).ToUpper();
+                            initials = apChot + initials;
+                        }
+                    }
+                    ViewData["Avatar"] = initials;
+                }
+            }
+            else
+            {
+                // Đề phòng trường hợp chưa đăng nhập
+                ViewBag.UserName = "Khách";
+            }
+        }
+
         //Users/Events
         public ActionResult Events(string[] vien, string[] danhmuc, string time, string[] status)
         {
             ViewBag.Title = "Sự kiện";
             ViewBag.ActivePage = "events";
-            ViewBag.UserName = "Sinh Viên";
 
             // Dữ liệu cho Filter Sidebar
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
@@ -128,7 +181,10 @@ namespace school_event_management.Controllers
             ViewBag.tinhTrang = tinhTrang;
 
             //Phan Tram
-            ViewBag.phanTram = tinhTrang.SoLuongDaDangKy * 100 / tinhTrang.SoLuongToiDa;
+            if (tinhTrang != null && tinhTrang.SoLuongToiDa > 0)
+                ViewBag.phanTram = tinhTrang.SoLuongDaDangKy * 100 / tinhTrang.SoLuongToiDa;
+            else
+                ViewBag.phanTram = 0;
 
             db.Configuration.ProxyCreationEnabled = false;
 
@@ -140,7 +196,7 @@ namespace school_event_management.Controllers
 
             if (ev == null) return HttpNotFound();
 
-            bool daDangKy = db.DangKySuKiens.Any(d => d.MaEvent == id&& d.IDSinhVien == currentStudentId && !d.TrangThai.Contains("Hủy"));
+            bool daDangKy = db.DangKySuKiens.Any(d => d.MaEvent == id&& d.IDSinhVien == currentStudentId && !d.TrangThai.Contains("hủy"));
             ViewBag.DaDangKy = daDangKy;
 
             //Time 
@@ -224,11 +280,6 @@ namespace school_event_management.Controllers
                     TrangThai = "Đã lưu"
                 }).ToList();
 
-            // Truyền thêm dữ liệu cho Sidebar (nếu cần xử lý avatar ở Controller)
-            ViewData["TenHienThi"] = sv?.Ten ?? "Sinh Viên";
-            ViewData["MaSV"] = sv?.ID ?? "---";
-            ViewData["Lop"] = sv?.Lop ?? "";
-            ViewData["Avatar"] = !string.IsNullOrEmpty(sv?.Ten) ? sv.Ten.Substring(0, 1).ToUpper() : "SV";
 
             return View("~/Views/Users/Registrations/Registrations.cshtml");
         }
@@ -286,7 +337,7 @@ namespace school_event_management.Controllers
         {
             string studentId = GetCurrentStudentId();
 
-            var daDangKy = db.DangKySuKiens.Any(d =>d.MaEvent == eventId&& d.IDSinhVien == studentId&& !d.TrangThai.ToLower().Contains("Hủy"));
+            var daDangKy = db.DangKySuKiens.Any(d =>d.MaEvent == eventId&& d.IDSinhVien == studentId&& !d.TrangThai.ToLower().Contains("hủy"));
 
             if (daDangKy)
             {
@@ -363,7 +414,6 @@ namespace school_event_management.Controllers
         {
             ViewBag.Title = "Lịch của tôi";
             ViewBag.ActivePage = "schedule";
-            ViewBag.UserName = "Sinh Viên";
             return View();
         }
 
