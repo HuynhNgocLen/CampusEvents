@@ -33,7 +33,7 @@ namespace school_event_management.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string username, string password)
         {
-            var sv = db.SinhViens.FirstOrDefault(s => s.Email == username && s.MatKhau == password);
+            var sv = db.SinhViens.FirstOrDefault(s => s.Email == username || s.ID == username   && s.MatKhau == password);
             if (sv != null)
             {
                 Session["StudentId"] = sv.ID;
@@ -41,7 +41,6 @@ namespace school_event_management.Controllers
                 return RedirectToAction("Index", "Users");
             }
 
-            // Đổi ViewBag thành TempData
             TempData["Error"] = "Sai tên đăng nhập hoặc mật khẩu.";
             return View();
         }

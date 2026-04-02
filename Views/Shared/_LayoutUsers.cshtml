@@ -54,76 +54,70 @@
             </a>
         </div>
 
-        <div class="ce-navbar__actions" style="display: flex; align-items: center; gap: 0.6rem;">
-
-            <button class="ce-navbar__icon-btn" data-action="toggle-theme" title="Đổi giao diện"
-                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); cursor: pointer;">
-                <span class="material-symbols-outlined ce-theme-icon" style="color: var(--text-muted); font-size: 22px;">light_mode</span>
+        <div class="ce-navbar__actions">
+            <button class="ce-navbar__icon-btn" data-action="toggle-theme" title="Đổi giao diện">
+                <span class="material-symbols-outlined ce-theme-icon">light_mode</span>
             </button>
-
+            <button class="ce-navbar__icon-btn d-none d-sm-flex" title="Thông báo"
+                    onclick="ceOpenModal('modal-notif')">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="ce-notif-dot"></span>
+            </button>
             @if (Session["StudentId"] != null)
             {
-                @* --- TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP --- *@
-
-                <button class="ce-navbar__icon-btn d-none d-sm-flex" title="Thông báo" onclick="ceOpenModal('modal-notif')"
-                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); cursor: pointer; position: relative;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted); font-size: 22px;">notifications</span>
-                    <span class="ce-notif-dot" style="position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; border: 2px solid var(--surface);"></span>
-                </button>
-
-                <a href="@Url.Action("Registrations", "Users")" title="Hồ sơ cá nhân"
-                   style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f0f7ff; border: 2px solid #3b82f6; text-decoration: none; color: #3b82f6; font-weight: 700; font-size: 0.9rem;">
-                    @{
-                        // 1. Lấy tên từ Session (nếu null thì dùng "SV")
-                        var name = Session["UserName"] as string;
-                        if (string.IsNullOrWhiteSpace(name))
-                        {
-                            name = "SV";
+                @* TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP *@
+                <div class="dropdown">
+                    <a href="#" class="ce-navbar__avatar" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
+                        @{
+                            var name = ViewBag.UserName as string ?? "SV";
+                            var initials = name.Length >= 2 ? name.Substring(0, 2).ToUpper() : name.ToUpper();
                         }
-
-                        // 2. Tách từ và TỰ ĐỘNG XÓA các khoảng trắng thừa
-                        var words = name.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                        var initials = "SV"; // Đặt mặc định là SV để phòng hờ
-
-                        if (words.Length > 0)
-                        {
-                            // 3. Lấy chữ cái đầu của từ cuối cùng (Dùng Index thay cho Last() để khỏi lỗi LINQ)
-                            initials = words[words.Length - 1].Substring(0, 1).ToUpper();
-
-                            if (words.Length >= 2)
-                            {
-                                // 4. Lấy chữ cái của từ áp chót ghép vào
-                                var apChot = words[words.Length - 2].Substring(0, 1).ToUpper();
-                                initials = apChot + initials;
-                            }
-                        }
-                    }
-                    @initials
-                </a>
-
-                <a href="@Url.Action("Logout", "Account")" title="Đăng xuất"
-                   style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); text-decoration: none;">
-                    <span class="material-symbols-outlined" style="color: #ef4444; font-size: 22px;">logout</span>
-                </a>
+                        @initials
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px;">
+                        <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Users")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px">person</span> Hồ sơ cá nhân</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px">logout</span> Đăng xuất</a></li>
+                    </ul>
+                </div>
             }
             else
             {
-                @* --- TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP --- *@
-
-                <a href="@Url.Action("Login", "Account")" title="Đăng nhập hệ thống"
-                   style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 1.2rem; border-radius: 12px; background: var(--primary); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: opacity 0.2s;">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
-                    <span class="d-none d-sm-inline">Đăng nhập</span>
+                @* TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP *@
+                <a href="@Url.Action("Login", "Account")" class="ce-navbar__login-btn d-flex align-items-center gap-2" title="Đăng nhập hệ thống">
+                    <div class="ce-navbar__avatar-guest">
+                        <span class="material-symbols-outlined" style="font-size: 20px; color: var(--text-muted);">person</span>
+                    </div>
+                    <span class="d-none d-sm-inline" style="font-size: 0.85rem; font-weight: 600; color: var(--text);">Đăng nhập</span>
                 </a>
             }
-
-            <button class="ce-navbar__toggler d-md-none" id="ce-nav-toggler" aria-label="Menu"
-                    style="background: none; border: none; padding: 0; color: var(--text); display: flex; align-items: center;">
-                <span class="material-symbols-outlined" style="font-size: 28px;">menu</span>
+            <button class="ce-navbar__toggler" id="ce-nav-toggler" aria-label="Menu">
+                <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
     </nav>
+
+    <div class="ce-mobile-menu" id="ce-mobile-menu">
+        <div class="ce-mobile-menu__content">
+            <div class="ce-mobile-menu__header">
+                <span class="ce-navbar__name">Menu</span>
+            </div>
+            <div class="ce-mobile-menu__nav">
+                <a href="@Url.Action("Index", "Users")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
+                    <span class="material-symbols-outlined">home</span> Trang chủ
+                </a>
+                <a href="@Url.Action("Events", "Users")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
+                    <span class="material-symbols-outlined">event</span> Sự kiện
+                </a>
+                <a href="@Url.Action("Registrations", "Users")" class="@(ViewBag.ActivePage == "registrations" ? "active" : "")">
+                    <span class="material-symbols-outlined">assignment_turned_in</span> Đăng ký của tôi
+                </a>
+                <a href="@Url.Action("Schedule", "Users")" class="@(ViewBag.ActivePage == "schedule" ? "active" : "")">
+                    <span class="material-symbols-outlined">calendar_month</span> Lịch của tôi
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Mobile Menu và Notification Modal giữ nguyên như cũ của bạn -->
     @* ── PAGE WRAPPER ── *@
