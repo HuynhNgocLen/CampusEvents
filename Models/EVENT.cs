@@ -25,9 +25,12 @@ namespace shcool_event_management.Models
         public string MaVien { get; set; }
         public string TenEvent { get; set; }
         public string MaDanhMuc { get; set; }
+        public string Email { get; set; }
         public Nullable<int> MaDiaDiem { get; set; }
         public System.DateTime NgayBatDau { get; set; }
+        public Nullable<System.TimeSpan> GioBatDau { get; set; }
         public Nullable<System.DateTime> NgayKetThuc { get; set; }
+        public Nullable<System.TimeSpan> GioKetThuc { get; set; }
         public Nullable<System.DateTime> NgayHetHanDangKy { get; set; }
         public int SoLuongToiDa { get; set; }
         public int SoLuongDaDangKy { get; set; }
@@ -39,17 +42,14 @@ namespace shcool_event_management.Models
         public string TrangThai { get; set; }
         public System.DateTime NgayTao { get; set; }
         public Nullable<System.DateTime> NgayCapNhat { get; set; }
-        public Nullable<System.TimeSpan> GioBatDau { get; set; }
-        public Nullable<System.TimeSpan> GioKetThuc { get; set; }
-        public string Email { get; set; }
         public string LinkZalo { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
         public virtual DiaDiem DiaDiem { get; set; }
-        public virtual Vien Vien { get; set; }
         public virtual SinhVien SinhVien { get; set; }
+        public virtual Vien Vien { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SuKienYeuThich> SuKienYeuThiches { get; set; }
     }

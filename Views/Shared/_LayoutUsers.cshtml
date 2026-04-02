@@ -97,6 +97,28 @@
         </div>
     </nav>
 
+    <div class="ce-mobile-menu" id="ce-mobile-menu">
+        <div class="ce-mobile-menu__content">
+            <div class="ce-mobile-menu__header">
+                <span class="ce-navbar__name">Menu</span>
+            </div>
+            <div class="ce-mobile-menu__nav">
+                <a href="@Url.Action("Index", "Users")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
+                    <span class="material-symbols-outlined">home</span> Trang chủ
+                </a>
+                <a href="@Url.Action("Events", "Users")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
+                    <span class="material-symbols-outlined">event</span> Sự kiện
+                </a>
+                <a href="@Url.Action("Registrations", "Users")" class="@(ViewBag.ActivePage == "registrations" ? "active" : "")">
+                    <span class="material-symbols-outlined">assignment_turned_in</span> Đăng ký của tôi
+                </a>
+                <a href="@Url.Action("Schedule", "Users")" class="@(ViewBag.ActivePage == "schedule" ? "active" : "")">
+                    <span class="material-symbols-outlined">calendar_month</span> Lịch của tôi
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Menu và Notification Modal giữ nguyên như cũ của bạn -->
     @* ── PAGE WRAPPER ── *@
     <div class="ce-page-wrapper">

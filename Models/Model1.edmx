@@ -78,6 +78,7 @@
           <Property Name="Lop" Type="nvarchar" MaxLength="50" />
           <Property Name="MaNghanh" Type="varchar" MaxLength="6" />
           <Property Name="MaVien" Type="varchar" MaxLength="12" />
+          <Property Name="MatKhau" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="SuKienYeuThich">
           <Key>
@@ -328,7 +329,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="NgayDangKy" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENT" Relationship="Self.FK_DangKy_Event" FromRole="DangKySuKien" ToRole="EVENT" />
-          <NavigationProperty Name="SinhVien" Relationship="school_event_managementModel.FK_DangKy_SinhVien" FromRole="DangKySuKien" ToRole="SinhVien" />
+          <NavigationProperty Name="SinhVien" Relationship="Self.FK_DangKy_SinhVien" FromRole="DangKySuKien" ToRole="SinhVien" />
         </EntityType>
         <EntityType Name="DanhMuc">
           <Key>
@@ -357,9 +358,12 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenEvent" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MaDanhMuc" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="MaDiaDiem" Type="Int32" />
           <Property Name="NgayBatDau" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="GioBatDau" Type="Time" Precision="0" />
           <Property Name="NgayKetThuc" Type="DateTime" Precision="3" />
+          <Property Name="GioKetThuc" Type="Time" Precision="0" />
           <Property Name="NgayHetHanDangKy" Type="DateTime" Precision="0" />
           <Property Name="SoLuongToiDa" Type="Int32" Nullable="false" />
           <Property Name="SoLuongDaDangKy" Type="Int32" Nullable="false" />
@@ -371,16 +375,13 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="NgayTao" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="LinkZalo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_Event" FromRole="EVENT" ToRole="DangKySuKien" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_EVENT_DANHMUC" FromRole="EVENT" ToRole="DanhMuc" />
           <NavigationProperty Name="DiaDiem" Relationship="Self.FK_EVENT_DIADIEM" FromRole="EVENT" ToRole="DiaDiem" />
+          <NavigationProperty Name="SinhVien" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="EVENT" ToRole="SinhVien" />
           <NavigationProperty Name="Vien" Relationship="Self.FK_EVENT_VIEN" FromRole="EVENT" ToRole="Vien" />
-          <Property Name="GioBatDau" Type="Time" Precision="0" />
-          <Property Name="GioKetThuc" Type="Time" Precision="0" />
-          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="LinkZalo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="SinhVien" Relationship="school_event_managementModel.FK_EVENT_NGUOIDANG" FromRole="EVENT" ToRole="SinhVien" />
-          <NavigationProperty Name="SuKienYeuThiches" Relationship="school_event_managementModel.FK_Favorites_Event" FromRole="EVENT" ToRole="SuKienYeuThich" />
+          <NavigationProperty Name="SuKienYeuThiches" Relationship="Self.FK_Favorites_Event" FromRole="EVENT" ToRole="SuKienYeuThich" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -388,7 +389,38 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           </Key>
           <Property Name="MaNghanh1" Type="String" MaxLength="6" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenNghanh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="SinhViens" Relationship="school_event_managementModel.FK_SINHVIEN_NGHANH" FromRole="MaNghanh" ToRole="SinhVien" />
+          <NavigationProperty Name="SinhViens" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="MaNghanh" ToRole="SinhVien" />
+        </EntityType>
+        <EntityType Name="SinhVien">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Ten" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
+          <Property Name="SoDienThoai" Type="String" MaxLength="11" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Lop" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
+          <Property Name="MatKhau" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
+          <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="SinhVien" ToRole="EVENT" />
+          <NavigationProperty Name="MaNghanh1" Relationship="Self.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
+          <NavigationProperty Name="SuKienYeuThiches" Relationship="Self.FK_Favorites_SinhVien" FromRole="SinhVien" ToRole="SuKienYeuThich" />
+          <NavigationProperty Name="Vien" Relationship="Self.FK_SINHVIEN_VIEN" FromRole="SinhVien" ToRole="Vien" />
+        </EntityType>
+        <EntityType Name="SuKienYeuThich">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+            <PropertyRef Name="MaEvent" />
+          </Key>
+          <Property Name="IDSinhVien" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MaEvent" Type="Int32" Nullable="false" />
+          <Property Name="NgayLuu" Type="DateTime" Precision="3" />
+          <Property Name="TrangThai" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EVENT" Relationship="Self.FK_Favorites_Event" FromRole="SuKienYeuThich" ToRole="EVENT" />
+          <NavigationProperty Name="SinhVien" Relationship="Self.FK_Favorites_SinhVien" FromRole="SuKienYeuThich" ToRole="SinhVien" />
         </EntityType>
         <EntityType Name="Vien">
           <Key>
@@ -397,7 +429,32 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenVien" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENTs" Relationship="Self.FK_EVENT_VIEN" FromRole="Vien" ToRole="EVENT" />
-          <NavigationProperty Name="SinhViens" Relationship="school_event_managementModel.FK_SINHVIEN_VIEN" FromRole="Vien" ToRole="SinhVien" />
+          <NavigationProperty Name="SinhViens" Relationship="Self.FK_SINHVIEN_VIEN" FromRole="Vien" ToRole="SinhVien" />
+        </EntityType>
+        <EntityType Name="vw_SoChoConLai">
+          <Key>
+            <PropertyRef Name="MaEvent" />
+            <PropertyRef Name="TenEvent" />
+            <PropertyRef Name="SoLuongToiDa" />
+            <PropertyRef Name="SoLuongDaDangKy" />
+            <PropertyRef Name="TrangThaiCho" />
+          </Key>
+          <Property Name="MaEvent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenEvent" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SoLuongToiDa" Type="Int32" Nullable="false" />
+          <Property Name="SoLuongDaDangKy" Type="Int32" Nullable="false" />
+          <Property Name="SoChoConLai" Type="Int32" />
+          <Property Name="TrangThaiCho" Type="String" MaxLength="7" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="vw_UserStatsByYear">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+          </Key>
+          <Property Name="IDSinhVien" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Nam" Type="Int32" />
+          <Property Name="TongDangKyNam" Type="Int32" />
+          <Property Name="TongHoanThanhNam" Type="Int32" />
+          <Property Name="TongHuyNam" Type="Int32" />
         </EntityType>
         <Association Name="FK_DangKy_Event">
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
@@ -408,6 +465,18 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             </Principal>
             <Dependent Role="DangKySuKien">
               <PropertyRef Name="MaEvent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DangKy_SinhVien">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="1" />
+          <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="DangKySuKien">
+              <PropertyRef Name="IDSinhVien" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -435,6 +504,18 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_EVENT_NGUOIDANG">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EVENT">
+              <PropertyRef Name="NguoiDang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_EVENT_VIEN">
           <End Role="Vien" Type="Self.Vien" Multiplicity="1" />
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
@@ -447,15 +528,71 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="SchoolEventManagementEntities" annotation:LazyLoadingEnabled="true">
+        <Association Name="FK_Favorites_Event">
+          <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
+          <End Role="SuKienYeuThich" Type="Self.SuKienYeuThich" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EVENT">
+              <PropertyRef Name="MaEvent" />
+            </Principal>
+            <Dependent Role="SuKienYeuThich">
+              <PropertyRef Name="MaEvent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SINHVIEN_NGHANH">
+          <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="0..1" />
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaNghanh">
+              <PropertyRef Name="MaNghanh1" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaNghanh" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Favorites_SinhVien">
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="1" />
+          <End Role="SuKienYeuThich" Type="Self.SuKienYeuThich" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SinhVien">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SuKienYeuThich">
+              <PropertyRef Name="IDSinhVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SINHVIEN_VIEN">
+          <End Role="Vien" Type="Self.Vien" Multiplicity="0..1" />
+          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="SinhVien">
+              <PropertyRef Name="MaVien" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="school_event_managementEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="DangKySuKiens" EntityType="Self.DangKySuKien" />
           <EntitySet Name="DanhMucs" EntityType="Self.DanhMuc" />
           <EntitySet Name="DiaDiems" EntityType="Self.DiaDiem" />
           <EntitySet Name="EVENTs" EntityType="Self.EVENT" />
           <EntitySet Name="MaNghanhs" EntityType="Self.MaNghanh" />
+          <EntitySet Name="SinhViens" EntityType="Self.SinhVien" />
+          <EntitySet Name="SuKienYeuThiches" EntityType="Self.SuKienYeuThich" />
           <EntitySet Name="Viens" EntityType="Self.Vien" />
+          <EntitySet Name="vw_SoChoConLai" EntityType="Self.vw_SoChoConLai" />
+          <EntitySet Name="vw_UserStatsByYear" EntityType="Self.vw_UserStatsByYear" />
           <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
             <End Role="EVENT" EntitySet="EVENTs" />
+            <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DangKy_SinhVien" Association="Self.FK_DangKy_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhViens" />
             <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
           </AssociationSet>
           <AssociationSet Name="FK_EVENT_DANHMUC" Association="Self.FK_EVENT_DANHMUC">
@@ -466,172 +603,37 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             <End Role="DiaDiem" EntitySet="DiaDiems" />
             <End Role="EVENT" EntitySet="EVENTs" />
           </AssociationSet>
+          <AssociationSet Name="FK_EVENT_NGUOIDANG" Association="Self.FK_EVENT_NGUOIDANG">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="EVENT" EntitySet="EVENTs" />
+          </AssociationSet>
           <AssociationSet Name="FK_EVENT_VIEN" Association="Self.FK_EVENT_VIEN">
             <End Role="Vien" EntitySet="Viens" />
             <End Role="EVENT" EntitySet="EVENTs" />
           </AssociationSet>
-          <EntitySet Name="vw_SoChoConLai" EntityType="school_event_managementModel.vw_SoChoConLai" />
-          <EntitySet Name="SinhViens" EntityType="school_event_managementModel.SinhVien" />
-          <AssociationSet Name="FK_DangKy_SinhVien" Association="school_event_managementModel.FK_DangKy_SinhVien">
-            <End Role="SinhVien" EntitySet="SinhViens" />
-            <End Role="DangKySuKien" EntitySet="DangKySuKiens" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EVENT_NGUOIDANG" Association="school_event_managementModel.FK_EVENT_NGUOIDANG">
-            <End Role="SinhVien" EntitySet="SinhViens" />
+          <AssociationSet Name="FK_Favorites_Event" Association="Self.FK_Favorites_Event">
             <End Role="EVENT" EntitySet="EVENTs" />
+            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
           </AssociationSet>
-          <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="school_event_managementModel.FK_SINHVIEN_NGHANH">
+          <AssociationSet Name="FK_SINHVIEN_NGHANH" Association="Self.FK_SINHVIEN_NGHANH">
             <End Role="MaNghanh" EntitySet="MaNghanhs" />
             <End Role="SinhVien" EntitySet="SinhViens" />
           </AssociationSet>
-          <AssociationSet Name="FK_SINHVIEN_VIEN" Association="school_event_managementModel.FK_SINHVIEN_VIEN">
+          <AssociationSet Name="FK_Favorites_SinhVien" Association="Self.FK_Favorites_SinhVien">
+            <End Role="SinhVien" EntitySet="SinhViens" />
+            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SINHVIEN_VIEN" Association="Self.FK_SINHVIEN_VIEN">
             <End Role="Vien" EntitySet="Viens" />
             <End Role="SinhVien" EntitySet="SinhViens" />
           </AssociationSet>
-          <EntitySet Name="SuKienYeuThiches" EntityType="school_event_managementModel.SuKienYeuThich" />
-          <AssociationSet Name="FK_Favorites_Event" Association="school_event_managementModel.FK_Favorites_Event">
-            <End Role="EVENT" EntitySet="EVENTs" />
-            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Favorites_SinhVien" Association="school_event_managementModel.FK_Favorites_SinhVien">
-            <End Role="SinhVien" EntitySet="SinhViens" />
-            <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
-          </AssociationSet>
-          <EntitySet Name="vw_UserStatsByYear" EntityType="school_event_managementModel.vw_UserStatsByYear" />
-          </EntityContainer>
-        <EntityType Name="vw_SoChoConLai">
-          <Key>
-            <PropertyRef Name="MaEvent" />
-            <PropertyRef Name="TenEvent" />
-            <PropertyRef Name="SoLuongToiDa" />
-            <PropertyRef Name="SoLuongDaDangKy" />
-            <PropertyRef Name="TrangThaiCho" />
-          </Key>
-          <Property Name="MaEvent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TenEvent" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="SoLuongToiDa" Type="Int32" Nullable="false" />
-          <Property Name="SoLuongDaDangKy" Type="Int32" Nullable="false" />
-          <Property Name="SoChoConLai" Type="Int32" />
-          <Property Name="TrangThaiCho" Type="String" Nullable="false" MaxLength="7" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="SinhVien">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
-          <Property Name="Ten" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="NgayThangNamSinh" Type="DateTime" Precision="0" />
-          <Property Name="SoDienThoai" Type="String" MaxLength="11" FixedLength="false" Unicode="false" />
-          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Lop" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MaNghanh" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="DangKySuKiens" Relationship="school_event_managementModel.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
-          <NavigationProperty Name="EVENTs" Relationship="school_event_managementModel.FK_EVENT_NGUOIDANG" FromRole="SinhVien" ToRole="EVENT" />
-          <NavigationProperty Name="MaNghanh1" Relationship="school_event_managementModel.FK_SINHVIEN_NGHANH" FromRole="SinhVien" ToRole="MaNghanh" />
-          <NavigationProperty Name="Vien" Relationship="school_event_managementModel.FK_SINHVIEN_VIEN" FromRole="SinhVien" ToRole="Vien" />
-          <NavigationProperty Name="SuKienYeuThiches" Relationship="school_event_managementModel.FK_Favorites_SinhVien" FromRole="SinhVien" ToRole="SuKienYeuThich" />
-        </EntityType>
-        <Association Name="FK_DangKy_SinhVien">
-          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="1" />
-          <End Type="school_event_managementModel.DangKySuKien" Role="DangKySuKien" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SinhVien">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="DangKySuKien">
-              <PropertyRef Name="IDSinhVien" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_EVENT_NGUOIDANG">
-          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="0..1" />
-          <End Type="school_event_managementModel.EVENT" Role="EVENT" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SinhVien">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="EVENT">
-              <PropertyRef Name="NguoiDang" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SINHVIEN_NGHANH">
-          <End Type="school_event_managementModel.MaNghanh" Role="MaNghanh" Multiplicity="0..1" />
-          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MaNghanh">
-              <PropertyRef Name="MaNghanh1" />
-            </Principal>
-            <Dependent Role="SinhVien">
-              <PropertyRef Name="MaNghanh" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SINHVIEN_VIEN">
-          <End Type="school_event_managementModel.Vien" Role="Vien" Multiplicity="0..1" />
-          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Vien">
-              <PropertyRef Name="MaVien" />
-            </Principal>
-            <Dependent Role="SinhVien">
-              <PropertyRef Name="MaVien" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="SuKienYeuThich">
-          <Key>
-            <PropertyRef Name="IDSinhVien" />
-            <PropertyRef Name="MaEvent" />
-          </Key>
-          <Property Name="IDSinhVien" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
-          <Property Name="MaEvent" Type="Int32" Nullable="false" />
-          <Property Name="NgayLuu" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="EVENT" Relationship="school_event_managementModel.FK_Favorites_Event" FromRole="SuKienYeuThich" ToRole="EVENT" />
-          <NavigationProperty Name="SinhVien" Relationship="school_event_managementModel.FK_Favorites_SinhVien" FromRole="SuKienYeuThich" ToRole="SinhVien" />
-          <Property Name="TrangThai" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <Association Name="FK_Favorites_Event">
-          <End Type="school_event_managementModel.EVENT" Role="EVENT" Multiplicity="1" />
-          <End Type="school_event_managementModel.SuKienYeuThich" Role="SuKienYeuThich" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="EVENT">
-              <PropertyRef Name="MaEvent" />
-            </Principal>
-            <Dependent Role="SuKienYeuThich">
-              <PropertyRef Name="MaEvent" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Favorites_SinhVien">
-          <End Type="school_event_managementModel.SinhVien" Role="SinhVien" Multiplicity="1" />
-          <End Type="school_event_managementModel.SuKienYeuThich" Role="SuKienYeuThich" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SinhVien">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="SuKienYeuThich">
-              <PropertyRef Name="IDSinhVien" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="vw_UserStatsByYear">
-          <Key>
-            <PropertyRef Name="IDSinhVien" />
-          </Key>
-          <Property Name="IDSinhVien" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
-          <Property Name="Nam" Type="Int32" />
-          <Property Name="TongDangKyNam" Type="Int32" />
-          <Property Name="TongHoanThanhNam" Type="Int32" />
-          <Property Name="TongHuyNam" Type="Int32" />
-        </EntityType>
-        </Schema>
+        </EntityContainer>
+      </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="school_event_managementModelStoreContainer" CdmEntityContainer="SchoolEventManagementEntities">
+        <EntityContainerMapping StorageEntityContainer="school_event_managementModelStoreContainer" CdmEntityContainer="school_event_managementEntities">
           <EntitySetMapping Name="DangKySuKiens">
             <EntityTypeMapping TypeName="school_event_managementModel.DangKySuKien">
               <MappingFragment StoreEntitySet="DangKySuKien">
@@ -664,17 +666,16 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <EntitySetMapping Name="EVENTs">
             <EntityTypeMapping TypeName="school_event_managementModel.EVENT">
               <MappingFragment StoreEntitySet="EVENT">
-                <ScalarProperty Name="LinkZalo" ColumnName="LinkZalo" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="GioKetThuc" ColumnName="GioKetThuc" />
-                <ScalarProperty Name="GioBatDau" ColumnName="GioBatDau" />
                 <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
                 <ScalarProperty Name="MaVien" ColumnName="MaVien" />
                 <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
                 <ScalarProperty Name="MaDanhMuc" ColumnName="MaDanhMuc" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="MaDiaDiem" ColumnName="MaDiaDiem" />
                 <ScalarProperty Name="NgayBatDau" ColumnName="NgayBatDau" />
+                <ScalarProperty Name="GioBatDau" ColumnName="GioBatDau" />
                 <ScalarProperty Name="NgayKetThuc" ColumnName="NgayKetThuc" />
+                <ScalarProperty Name="GioKetThuc" ColumnName="GioKetThuc" />
                 <ScalarProperty Name="NgayHetHanDangKy" ColumnName="NgayHetHanDangKy" />
                 <ScalarProperty Name="SoLuongToiDa" ColumnName="SoLuongToiDa" />
                 <ScalarProperty Name="SoLuongDaDangKy" ColumnName="SoLuongDaDangKy" />
@@ -686,6 +687,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
                 <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
                 <ScalarProperty Name="NgayTao" ColumnName="NgayTao" />
                 <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="LinkZalo" ColumnName="LinkZalo" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -694,6 +696,31 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
               <MappingFragment StoreEntitySet="MaNghanh">
                 <ScalarProperty Name="MaNghanh1" ColumnName="MaNghanh" />
                 <ScalarProperty Name="TenNghanh" ColumnName="TenNghanh" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SinhViens">
+            <EntityTypeMapping TypeName="school_event_managementModel.SinhVien">
+              <MappingFragment StoreEntitySet="SinhVien">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Ten" ColumnName="Ten" />
+                <ScalarProperty Name="NgayThangNamSinh" ColumnName="NgayThangNamSinh" />
+                <ScalarProperty Name="SoDienThoai" ColumnName="SoDienThoai" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Lop" ColumnName="Lop" />
+                <ScalarProperty Name="MaNghanh" ColumnName="MaNghanh" />
+                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
+                <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SuKienYeuThiches">
+            <EntityTypeMapping TypeName="school_event_managementModel.SuKienYeuThich">
+              <MappingFragment StoreEntitySet="SuKienYeuThich">
+                <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
+                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
+                <ScalarProperty Name="NgayLuu" ColumnName="NgayLuu" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -708,47 +735,23 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <EntitySetMapping Name="vw_SoChoConLai">
             <EntityTypeMapping TypeName="school_event_managementModel.vw_SoChoConLai">
               <MappingFragment StoreEntitySet="vw_SoChoConLai">
-                <ScalarProperty Name="TrangThaiCho" ColumnName="TrangThaiCho" />
-                <ScalarProperty Name="SoChoConLai" ColumnName="SoChoConLai" />
-                <ScalarProperty Name="SoLuongDaDangKy" ColumnName="SoLuongDaDangKy" />
-                <ScalarProperty Name="SoLuongToiDa" ColumnName="SoLuongToiDa" />
+                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
                 <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
-                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SinhViens">
-            <EntityTypeMapping TypeName="school_event_managementModel.SinhVien">
-              <MappingFragment StoreEntitySet="SinhVien">
-                <ScalarProperty Name="MaVien" ColumnName="MaVien" />
-                <ScalarProperty Name="MaNghanh" ColumnName="MaNghanh" />
-                <ScalarProperty Name="Lop" ColumnName="Lop" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="SoDienThoai" ColumnName="SoDienThoai" />
-                <ScalarProperty Name="NgayThangNamSinh" ColumnName="NgayThangNamSinh" />
-                <ScalarProperty Name="Ten" ColumnName="Ten" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SuKienYeuThiches">
-            <EntityTypeMapping TypeName="school_event_managementModel.SuKienYeuThich">
-              <MappingFragment StoreEntitySet="SuKienYeuThich">
-                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
-                <ScalarProperty Name="NgayLuu" ColumnName="NgayLuu" />
-                <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
-                <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
+                <ScalarProperty Name="SoLuongToiDa" ColumnName="SoLuongToiDa" />
+                <ScalarProperty Name="SoLuongDaDangKy" ColumnName="SoLuongDaDangKy" />
+                <ScalarProperty Name="SoChoConLai" ColumnName="SoChoConLai" />
+                <ScalarProperty Name="TrangThaiCho" ColumnName="TrangThaiCho" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="vw_UserStatsByYear">
             <EntityTypeMapping TypeName="school_event_managementModel.vw_UserStatsByYear">
               <MappingFragment StoreEntitySet="vw_UserStatsByYear">
-                <ScalarProperty Name="TongHuyNam" ColumnName="TongHuyNam" />
-                <ScalarProperty Name="TongHoanThanhNam" ColumnName="TongHoanThanhNam" />
-                <ScalarProperty Name="TongDangKyNam" ColumnName="TongDangKyNam" />
-                <ScalarProperty Name="Nam" ColumnName="Nam" />
                 <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
+                <ScalarProperty Name="Nam" ColumnName="Nam" />
+                <ScalarProperty Name="TongDangKyNam" ColumnName="TongDangKyNam" />
+                <ScalarProperty Name="TongHoanThanhNam" ColumnName="TongHoanThanhNam" />
+                <ScalarProperty Name="TongHuyNam" ColumnName="TongHuyNam" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
