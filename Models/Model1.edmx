@@ -113,6 +113,18 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
           <Property Name="SoChoConLai" Type="int" />
           <Property Name="TrangThaiCho" Type="nvarchar" MaxLength="7" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_UserStatsByYear">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+          </Key>
+          <Property Name="IDSinhVien" Type="varchar" MaxLength="13" Nullable="false" />
+          <Property Name="Nam" Type="int" />
+          <Property Name="TongDangKyNam" Type="int" />
+          <Property Name="TongHoanThanhNam" Type="int" />
+          <Property Name="TongHuyNam" Type="int" />
+        </EntityType>
         <Association Name="FK_DangKy_Event">
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="1" />
           <End Role="DangKySuKien" Type="Self.DangKySuKien" Multiplicity="*" />
@@ -251,6 +263,15 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
     [vw_SoChoConLai].[SoChoConLai] AS [SoChoConLai], 
     [vw_SoChoConLai].[TrangThaiCho] AS [TrangThaiCho]
     FROM [dbo].[vw_SoChoConLai] AS [vw_SoChoConLai]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_UserStatsByYear" EntityType="Self.vw_UserStatsByYear" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_UserStatsByYear].[IDSinhVien] AS [IDSinhVien], 
+    [vw_UserStatsByYear].[Nam] AS [Nam], 
+    [vw_UserStatsByYear].[TongDangKyNam] AS [TongDangKyNam], 
+    [vw_UserStatsByYear].[TongHoanThanhNam] AS [TongHoanThanhNam], 
+    [vw_UserStatsByYear].[TongHuyNam] AS [TongHuyNam]
+    FROM [dbo].[vw_UserStatsByYear] AS [vw_UserStatsByYear]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_DangKy_Event" Association="Self.FK_DangKy_Event">
             <End Role="EVENT" EntitySet="EVENT" />
@@ -476,6 +497,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             <End Role="SinhVien" EntitySet="SinhViens" />
             <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
           </AssociationSet>
+          <EntitySet Name="vw_UserStatsByYear" EntityType="school_event_managementModel.vw_UserStatsByYear" />
           </EntityContainer>
         <EntityType Name="vw_SoChoConLai">
           <Key>
@@ -594,6 +616,16 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="vw_UserStatsByYear">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+          </Key>
+          <Property Name="IDSinhVien" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="Nam" Type="Int32" />
+          <Property Name="TongDangKyNam" Type="Int32" />
+          <Property Name="TongHoanThanhNam" Type="Int32" />
+          <Property Name="TongHuyNam" Type="Int32" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -705,6 +737,17 @@ warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does n
                 <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
                 <ScalarProperty Name="NgayLuu" ColumnName="NgayLuu" />
                 <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
+                <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_UserStatsByYear">
+            <EntityTypeMapping TypeName="school_event_managementModel.vw_UserStatsByYear">
+              <MappingFragment StoreEntitySet="vw_UserStatsByYear">
+                <ScalarProperty Name="TongHuyNam" ColumnName="TongHuyNam" />
+                <ScalarProperty Name="TongHoanThanhNam" ColumnName="TongHoanThanhNam" />
+                <ScalarProperty Name="TongDangKyNam" ColumnName="TongDangKyNam" />
+                <ScalarProperty Name="Nam" ColumnName="Nam" />
                 <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
               </MappingFragment>
             </EntityTypeMapping>

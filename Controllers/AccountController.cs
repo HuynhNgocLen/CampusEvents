@@ -11,15 +11,26 @@ namespace school_event_management.Controllers
             return View();
         }
 
+        [ChildActionOnly]
+        public ActionResult GetForm(string type)
+        {
+            return PartialView(type == "Register" ? "_RegisterForm" : "_LoginForm");
+        }
+        public ActionResult GetFormAjax(string type)
+        {
+            if (type == "Register") return PartialView("_RegisterForm");
+            return PartialView("_LoginForm");
+        }
+
         // POST: /Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string username, string password)
+        public ActionResult Login(string userId, string password) // Đổi tên tham số cho khớp với Form
         {
-            // TODO: xác thực với database
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(password))
             {
-                Session["UserName"] = username;
+                // Sau này mày viết code check DB ở đây
+                Session["StudentId"] = userId;
                 return RedirectToAction("Index", "Users");
             }
             ViewBag.Error = "Sai tên đăng nhập hoặc mật khẩu.";
@@ -29,9 +40,7 @@ namespace school_event_management.Controllers
         // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(string lastName, string firstName,
-                                     string studentId, string email,
-                                     string faculty, string password)
+        public ActionResult Register(string FullName, string StudentId, string Password)
         {
             // TODO: lưu vào database
             TempData["Success"] = "Tài khoản đã được tạo! Vui lòng đăng nhập.";
