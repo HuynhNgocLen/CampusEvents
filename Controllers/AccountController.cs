@@ -33,8 +33,7 @@ namespace school_event_management.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string username, string password)
         {
-            var sv = db.SinhViens.FirstOrDefault(s => s.Email == username || s.ID == username && s.MatKhau == password);
-            var sv = db.SinhViens.FirstOrDefault(s => s.Email == username || s.ID == username   && s.MatKhau == password);
+            var sv = db.SinhViens.FirstOrDefault(s => (s.Email == username || s.ID == username) && s.MatKhau == password);
 
             if (sv != null)
             {
@@ -87,6 +86,55 @@ namespace school_event_management.Controllers
             }
 
             return RedirectToAction("Login");
+        }
+
+        // GET: Account/ForgotPassword
+        public ActionResult ForgotPassword()
+        {
+            ViewBag.Title = "Khôi phục mật khẩu";
+            return View();
+        }
+
+        // POST: Account/ForgotPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForgotPassword(string identifier, string newPassword, string confirmPassword)
+        {
+            // 1. Kiểm tra mật khẩu nhập lại
+            if (newPassword != confirmPassword)
+            {
+                TempData["Error"] = "Mật khẩu xác nhận không khớp!";
+                return View();
+            }
+
+            using (var dbForgot = new school_event_managementEntities())
+            {
+                // 2. Tìm sinh viên theo ID (MSSV) hoặc Email
+                var sv = dbForgot.SinhViens.FirstOrDefault(s => s.Email == identifier || s.ID == identifier);
+
+                if (sv == null)
+                {
+                    // 3. Nếu không có tài khoản
+                    TempData["Error"] = "Tài khoản này chưa có trong dữ liệu. Vui lòng đăng ký mới!";
+                    return View();
+                }
+
+                try
+                {
+                    // 4. Nếu có, tiến hành đổi mật khẩu mới
+                    sv.MatKhau = newPassword;
+                    dbForgot.SaveChanges();
+
+                    // Chuyển hướng về trang đăng nhập với thông báo thành công
+                    TempData["Success"] = "Đổi mật khẩu thành công! Vui lòng đăng nhập lại.";
+                    return RedirectToAction("Login");
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Có lỗi xảy ra: " + ex.Message;
+                    return View();
+                }
+            }
         }
 
         public ActionResult Logout()
