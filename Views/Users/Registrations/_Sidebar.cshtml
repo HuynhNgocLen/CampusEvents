@@ -108,13 +108,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 2. Styling UI */
-    .ce-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #f1f5f9;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
     .stat-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
     .stat-number { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
@@ -136,7 +129,11 @@
     .quick-actions-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: .8rem; }
     .sidebar-link { justify-content: flex-start !important; padding: 0.6rem 0.8rem !important; border-radius: 8px !important; transition: all 0.2s ease !important; }
     .sidebar-link span { margin-right: 10px; font-size: 20px; }
-    .sidebar-link:hover { background: #f8fafc !important; transform: translateX(5px); color: var(--primary) !important; }
+        .sidebar-link:hover {
+            background: var(--surface-2) !important;
+            transform: translateX(5px);
+            color: var(--primary) !important;
+        }
 </style>
 
 <script>

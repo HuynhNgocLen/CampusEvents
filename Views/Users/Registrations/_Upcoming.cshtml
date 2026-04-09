@@ -7,10 +7,13 @@
 <div class="ce-tab-pane active" id="tab-upcoming">
     @if (list == null || !list.Any())
     {
-        <div class="ce-empty text-center">
-            <span class="material-symbols-outlined">event_upcoming</span>
-            <div class="ce-empty__title">Chưa có sự kiện sắp tới</div>
-            <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary mt-2">Khám phá ngay</a>
+        <div class="ce-empty text-center py-5">
+            <span class="material-symbols-outlined text-muted" style="font-size: 56px; opacity: 0.5;">event_upcoming</span>
+            <h5 class="ce-empty__title mt-3 fw-bold">Chưa có sự kiện sắp tới</h5>
+            <p class="--text small mb-4">Bạn chưa đăng ký tham gia sự kiện nào đang chờ diễn ra.</p>
+            <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary">
+                <span class="material-symbols-outlined">explore</span> Khám phá ngay
+            </a>
         </div>
     }
     else
@@ -21,55 +24,51 @@
                 var ev = dk.EVENT;
                 var soNgay = (ev.NgayBatDau.Date - DateTime.Today).Days;
 
-                <div class="ce-card p-3 ce-hover-card">
-
-                    <div class="d-flex gap-3 flex-wrap">
-                        <div class="ce-icon-box">
+                <div class="ce-card p-3 p-md-4 ce-hover-card filter-card-item" data-date="@ev.NgayBatDau.ToString("yyyy-MM-dd")">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="ce-icon-box rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background: var(--surface-2); color: var(--primary);">
                             <span class="material-symbols-outlined">
                                 @(ev.DanhMuc?.Icon ?? "event")
                             </span>
                         </div>
 
-                        <div class="flex-grow-1">
-
-                            <div class="d-flex justify-content-between flex-wrap gap-2">
-
-                                <div style="min-width:0">
-                                    <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                        <div class="fw-bold text-truncate">@ev.TenEvent</div>
-                                        <span class="ce-badge ce-badge-success">Đã đăng ký</span>
-                                    </div>
-                                        <hr>
-                                        <div class="text-muted small mt-1"> <span class="material-symbols-outlined" style="font-size:16px">calendar_month</span> Ngày Bắt Đầu: @ev.NgayBatDau.ToString("dd/MM/yyyy")</div>
-                                        <div class="text-muted small mt-1"> <span class="material-symbols-outlined" style="font-size:16px">location_on</span> Địa điểm: @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")</div>
-                                    </div>
-                                    <div>
-                                        @if (soNgay == 0)
-                                        {
-                                            <span class="ce-badge ce-badge-danger">🔥 Hôm nay</span>
-                                        }
-                                        else if (soNgay > 0)
-                                        {
-                                            <span class="ce-badge ce-badge-primary">Còn @soNgay ngày</span>
-                                        }
-                                    </div>
-
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                                <h6 class="fw-bold mb-0 text-truncate flex-grow-1" style="font-size: 1.1rem; color: var(--text); min-width: 150px;">@ev.TenEvent</h6>
+                                <div class="flex-shrink-0">
+                                    @if (soNgay == 0)
+                                    {
+                                        <span class="ce-badge ce-badge-danger shadow-sm">🔥 Hôm nay</span>
+                                    }
+                                    else if (soNgay > 0)
+                                    {
+                                        <span class="ce-badge ce-badge-primary shadow-sm">Còn @soNgay ngày</span>
+                                    }
                                 </div>
-
-                            <div class="d-flex flex-wrap gap-2 mt-3 pt-2 border-top">
-
-                                <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })"
-                                   class="ce-btn ce-btn-ghost ce-btn-sm">
-                                    <span class="material-symbols-outlined">info</span>Chi tiết
-                                </a>
-
-                                <button class="ce-btn ce-btn-ghost ce-btn-sm ms-auto text-danger"
-                                        onclick="confirmHuy(@dk.MaEvent, '@ev.TenEvent')">
-                                    Hủy
-                                </button>
-
                             </div>
 
+                            <div class="d-flex flex-wrap gap-3 small mb-3" style="color: var(--text-muted);">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">calendar_month</span>
+                                    <span>@ev.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 16px; color: var(--danger);">location_on</span>
+                                    <span class="text-truncate" style="max-width: 250px;" title="@(ev.DiaDiem?.TenDiaDiem)">
+                                        @(ev.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-end gap-2 mt-3 pt-3" style="border-top: 1px solid var(--border);">
+                                <button class="ce-btn ce-btn-ghost ce-btn-sm text-danger flex-grow-1 flex-sm-grow-0 justify-content-center" onclick="confirmHuy(@dk.MaEvent, '@ev.TenEvent')">
+                                    <span class="material-symbols-outlined">cancel</span> Hủy đăng ký
+                                </button>
+                                <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-primary ce-btn-sm flex-grow-1 flex-sm-grow-0 justify-content-center">
+                                    <span class="material-symbols-outlined">visibility</span> Chi tiết
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

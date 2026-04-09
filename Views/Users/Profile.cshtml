@@ -1,0 +1,193 @@
+﻿@model shcool_event_management.Models.SinhVien
+
+@{
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+    var drl = ViewBag.DRL ?? 0;
+    var thanhTichList = ViewBag.ThanhTich as List<string>;
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+
+        <div class="col-lg-4">
+
+            <div class="ce-card p-4 text-center mb-4">
+                <div class="mb-3 d-inline-flex align-items-center justify-content-center"
+                     style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-size: 32px; font-weight: bold;">
+                    @Model.Ten.Substring(0, 1).ToUpper()
+                </div>
+                <h5 class="fw-bold mb-1">@Model.Ten</h5>
+                <p class="text-muted small mb-3">MSSV: @Model.ID | Lớp: @(Model.Lop ?? "Chưa cập nhật")</p>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <span class="ce-badge ce-badge-primary">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">military_tech</span>
+                        ĐRL HK@(ViewBag.HocKy) năm học @(ViewBag.Nam) - @(ViewBag.Nam + 1): @drl
+                    </span>
+
+                    <span class="ce-badge ce-badge-success">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">verified</span> Sinh viên
+                    </span>
+                </div>
+            </div>
+
+            <div class="ce-card p-4 mb-4">
+                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-warning">emoji_events</span> Thành tích nổi bật
+                </h6>
+                @if (thanhTichList != null && thanhTichList.Any())
+                {
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                        @foreach (var item in thanhTichList)
+                        {
+                            <li class="d-flex align-items-start gap-2 small">
+                                <span class="material-symbols-outlined text-success" style="font-size: 18px;">check_circle</span>
+                                <span>@item</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted small mb-0">Chưa có thành tích nào.</p>
+                }
+            </div>
+
+            <div class="ce-card p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-bold mb-0">Sự kiện đã đăng năm @ViewBag.CurrentYear</h6>
+                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2" style="font-size: 0.7rem;">
+                        @((ViewBag.SuKienTrongNam as List<shcool_event_management.Models.EVENT>)?.Count ?? 0) sự kiện
+                    </span>
+                </div>
+
+                <div class="event-mini-list" style="max-height: 300px; overflow-y: auto;">
+                    @{
+                        var listSuKien = ViewBag.SuKienTrongNam as List<shcool_event_management.Models.EVENT>;
+                    }
+
+                    @if (listSuKien != null && listSuKien.Any())
+                    {
+                        foreach (var ev in listSuKien)
+                        {
+                            <div class="d-flex align-items-start gap-2 mb-3 pb-2 border-bottom border-light-subtle">
+                                <div class="flex-shrink-0 mt-1">
+                                    <span class="material-symbols-outlined text-primary" style="font-size: 18px;">
+                                        event_note
+                                    </span>
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-medium text-truncate mb-0" style="font-size: 0.85rem; color: var(--text);">
+                                        <a href="@Url.Action("EventDetail", "Users", new { id = ev.MaEvent })" style="color: inherit; text-decoration: none;">
+                                            @ev.TenEvent
+                                        </a>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            @ev.NgayBatDau.ToString("dd/MM/yyyy")
+                                        </small>
+                                        <span class="badge" style="font-size: 0.65rem; background: #22c55e">
+                                            Đã đăng
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <span class="material-symbols-outlined text-muted" style="font-size: 32px; opacity: 0.5;">history</span>
+                            <p class="text-muted small mt-2">Chưa đăng sự kiện nào trong năm nay</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="ce-card p-4">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">
+                        @(ViewBag.IsCurrentUser ? "manage_accounts" : "person")
+                    </span>
+                    @(ViewBag.IsCurrentUser ? "Cập nhật thông tin" : "Thông tin liên hệ")
+                </h5>
+
+                @if (ViewBag.IsCurrentUser)
+                {
+                    // NẾU LÀ HỒ SƠ CỦA MÌNH -> HIỆN FORM CÓ NÚT LƯU
+                    using (Html.BeginForm("UpdateProfile", "Users", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-semibold">Mã số</label>
+                                <input type="text" class="form-control bg-light" value="@Model.ID" disabled />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-semibold">Họ và Tên / Tên CLB</label>
+                                <input type="text" class="form-control bg-light" value="@Model.Ten" disabled />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-semibold">Lớp</label>
+                                <input type="text" class="form-control bg-light" value="@Model.Lop" disabled />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-semibold">Ngành</label>
+                                <input type="text" class="form-control bg-light" value="@Model.MaNghanh" disabled />
+                            </div>
+
+                            <div class="col-12"><hr class="my-2 border-light" /></div>
+
+                            <div class="col-md-12">
+                                <label class="form-label small fw-semibold">Ngày sinh / Ngày thành lập</label>
+                                <input type="date" name="NgayThangNamSinh" class="form-control"
+                                       value="@(Model.NgayThangNamSinh.HasValue ? Model.NgayThangNamSinh.Value.ToString("yyyy-MM-dd") : "")" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Số điện thoại</label>
+                                <input type="tel" name="SoDienThoai" class="form-control" value="@Model.SoDienThoai" placeholder="Nhập SĐT..." />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Email</label>
+                                <input type="email" name="Email" class="form-control" value="@Model.Email" placeholder="Nhập Email..." />
+                            </div>
+
+                            <div class="col-12 mt-4 text-end">
+                                <button type="submit" class="ce-btn ce-btn-primary px-4">
+                                    <span class="material-symbols-outlined">save</span> Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Mã số</label>
+                            <input type="text" class="form-control bg-light" value="@Model.ID" disabled />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Họ và Tên / Tên CLB</label>
+                            <input type="text" class="form-control bg-light" value="@Model.Ten" disabled />
+                        </div>
+
+                        <div class="col-12"><hr class="my-2 border-light" /></div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Số điện thoại liên hệ</label>
+                            <input type="text" class="form-control bg-light" value="@(string.IsNullOrEmpty(Model.SoDienThoai) ? "Chưa cập nhật" : Model.SoDienThoai)" disabled />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Email liên hệ</label>
+                            <input type="text" class="form-control bg-light" value="@(string.IsNullOrEmpty(Model.Email) ? "Chưa cập nhật" : Model.Email)" disabled />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

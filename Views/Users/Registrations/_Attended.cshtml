@@ -4,10 +4,10 @@
     @if (Model == null || !Model.Any())
     {
         <div class="ce-empty text-center py-5">
-            <span class="material-symbols-outlined" style="font-size:52px; opacity:.6;">history_edu</span>
-            <div class="ce-empty__title mt-3">Chưa tham gia sự kiện nào</div>
-            <p class="text-muted small">Hãy tham gia sự kiện để tích lũy kinh nghiệm nhé 🚀</p>
-            <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary mt-3">
+            <span class="material-symbols-outlined text-muted" style="font-size: 56px; opacity: 0.5;">history_edu</span>
+            <h5 class="ce-empty__title mt-3 fw-bold">Chưa tham gia sự kiện nào</h5>
+            <p class="--text small mb-4">Hãy tham gia sự kiện để tích lũy kinh nghiệm và kiến thức nhé 🚀</p>
+            <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-primary">
                 Khám phá sự kiện
             </a>
         </div>
@@ -20,36 +20,39 @@
                 var ev = dk.EVENT;
                 var soNgay = (DateTime.Today - ev.NgayBatDau.Date).Days;
 
-                <div class="ce-card p-4 ce-hover-card attended-card">
-
+                <div class="ce-card p-3 p-md-4 ce-hover-card attended-card filter-card-item" data-date="@ev.NgayBatDau.ToString("yyyy-MM-dd")">
                     <div class="d-flex gap-3 align-items-start">
-                        <div class="ce-icon-box attended-icon">
+                        <div class="ce-icon-box rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.15); color: var(--success);">
                             <span class="material-symbols-outlined">verified</span>
                         </div>
 
                         <div class="flex-grow-1 min-w-0">
-                            <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                <div class="fw-bold text-truncate">@ev.TenEvent</div>
-                                <span class="ce-badge ce-badge-success">Hoàn thành</span>
+                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                                <h6 class="fw-bold mb-0 text-truncate flex-grow-1" style="font-size: 1.1rem; color: var(--text); min-width: 150px;">@ev.TenEvent</h6>
+                                <span class="ce-badge ce-badge-success flex-shrink-0">Hoàn thành</span>
                             </div>
-                            <hr />
-                                <div class="mt-3 text-muted small">
-                                    <div class="text-muted small mt-1"><span class="material-symbols-outlined" style="font-size:16px">calendar_month</span> Ngày bắt đầu: <strong>@ev.NgayBatDau.ToString("dd/MM/yyyy")</strong></div>
-                                    <div class="text-muted small mt-1"><span class="material-symbols-outlined" style="font-size:16px">calendar_month</span> Đã diễn ra <strong>@soNgay ngày trước</strong></div>
+
+                            <div class="d-flex flex-wrap gap-3 small mb-3" style="color: var(--text-muted);">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">calendar_month</span>
+                                    <span>Ngày tổ chức: @ev.NgayBatDau.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 16px; color: var(--success);">history</span>
+                                    <span>Đã diễn ra @soNgay ngày trước</span>
                                 </div>
                             </div>
 
+                            <div class="d-flex flex-wrap justify-content-end gap-2 mt-3 pt-3" style="border-top: 1px solid var(--border);">
+                                <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })" class="ce-btn ce-btn-sm ce-btn-ghost flex-grow-1 flex-sm-grow-0 justify-content-center">
+                                    <span class="material-symbols-outlined">visibility</span> Xem lại
+                                </a>
+                                <a href="@Url.Action("Events","Users")" class="ce-btn ce-btn-sm ce-btn-primary flex-grow-1 flex-sm-grow-0 justify-content-center">
+                                    <span class="material-symbols-outlined">explore</span> Tìm sự kiện mới
+                                </a>
+                            </div>
                         </div>
-
-                    <div class="d-flex gap-2 mt-4 pt-3 border-top">
-                        <a href="@Url.Action("EventDetail","Users", new { id = ev.MaEvent })"
-                           class="ce-btn ce-btn-sm ce-btn-ghost flex-grow-1">
-                            <span class="material-symbols-outlined">visibility</span> Xem lại
-                        </a>
-                        <a href="@Url.Action("Events","Users")"
-                           class="ce-btn ce-btn-sm ce-btn-primary flex-grow-1">
-                            <span class="material-symbols-outlined">explore</span> Tìm sự kiện mới
-                        </a>
                     </div>
                 </div>
             }

@@ -572,3 +572,105 @@ textarea.ce-form-control {
     background: var(--border);
     margin: .75rem 0;
 }
+
+
+/* ── Mobile Filter Logic (Bổ sung vào cuối file) ── */
+
+/* Header của filter (Chỉ hiện trên mobile để có nút đóng) */
+.ce-filter-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.ce-filter-close {
+    background: var(--surface-2);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+@media (max-width: 991.98px) {
+    .ce-filter-header {
+        display: flex;
+    }
+
+    .ce-filter-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2000;
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        padding: 1.5rem;
+        height: 100dvh;
+        width: 100vw;
+        overflow-y: auto;
+        visibility: hidden;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), visibility 0.4s;
+    }
+
+        .ce-filter-sidebar.open {
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .ce-filter-sidebar.open::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: -1;
+         }
+
+}
+
+/*Page List*/
+.ce-pagination {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    padding: 0;
+}
+
+    .ce-pagination li a {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        border: 1px solid var(--cef-border);
+        color: var(--cef-text);
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .ce-pagination li.active a {
+        background: var(--cef-primary);
+        color: white;
+        border-color: var(--cef-primary);
+    }
+
+    .ce-pagination li.disabled {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .ce-pagination li:not(.active):hover a {
+        background: var(--cef-primary-lt);
+        color: var(--cef-primary);
+    }

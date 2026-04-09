@@ -31,36 +31,48 @@
 
             <!-- Chips Filter -->
             <div class="ce-chips mb-4">
-                <span class="ce-chip active" data-value="all">
+                <a href="@Url.Action("Events", new { sort = ViewBag.CurrentSort, q = ViewBag.SearchQuery })"
+                   class="ce-chip @(Request.QueryString["danhmuc"] == null ? "active" : "")" style="text-decoration:none">
                     <span class="material-symbols-outlined">apps</span> Tất cả
-                </span>
+                </a>
 
                 @if (ViewBag.DanhMucs != null)
                 {
                     foreach (var dm in ViewBag.DanhMucs)
                     {
-                        <span class="ce-chip" data-value="@dm.MaDanhMuc">
-                            @if (!string.IsNullOrEmpty(dm.Icon))
-                            {
-                                <span class="material-symbols-outlined">@dm.Icon</span>
-                            }
-                            @dm.TenDanhMuc
-                        </span>
+                        <a href="@Url.Action("Events", new { danhmuc = dm.MaDanhMuc, sort = ViewBag.CurrentSort, q = ViewBag.SearchQuery })"
+                           class="ce-chip @(Request.QueryString["danhmuc"] == dm.MaDanhMuc ? "active" : "")" style="text-decoration:none">
+                            <span class="material-symbols-outlined">@dm.Icon</span> @dm.TenDanhMuc
+                        </a>
                     }
                 }
             </div>
 
-            <!-- Header + Sort -->
-            <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
-                <h2 class="ce-section-title mb-0">Danh sách sự kiện</h2>
+            <!-- Sort -->
+            <div class="ce-page-header mb-4">
+                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                    <h2 class="ce-section-title mb-0">Danh sách sự kiện</h2>
 
-                <div class="d-flex align-items-center gap-2">
-                    <span style="font-size:.78rem; color:var(--text-muted); font-weight:600;">Sắp xếp theo:</span>
-                    <select id="sort-select" class="ce-form-select" style="width:auto; height:38px; font-size:.82rem;">
-                        <option value="newest">Mới nhất</option>
-                        <option value="upcoming">Sắp diễn ra</option>
-                        <option value="popular">Phổ biến nhất</option>
-                    </select>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" onclick="toggleFilterSidebar()"
+                                class="ce-btn ce-btn-ghost d-lg-none ce-filter-trigger">
+                            <span class="material-symbols-outlined">filter_list</span>
+                            Lọc
+                        </button>
+
+                        <div class="vr d-none d-sm-block d-lg-none mx-1"></div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="d-none d-md-inline" style="font-size:.78rem; color:var(--text-muted); font-weight:600;">Sắp xếp:</span>
+                            <select id="sort-select" class="ce-form-select" style="width:auto; height:38px; font-size:.82rem;"
+                                    onchange="location.href='@Url.Action("Events")?sort=' + this.value + '&q=@ViewBag.SearchQuery' + '@(Request.QueryString["danhmuc"] != null ? "&danhmuc=" + Request.QueryString["danhmuc"] : "")';">
+                                <option value="" @(string.IsNullOrEmpty(ViewBag.CurrentSort) ? "selected" : "")>Mặc định</option>
+                                <option value="newest" @(ViewBag.CurrentSort == "newest" ? "selected" : "")>Mới nhất</option>
+                                <option value="upcoming" @(ViewBag.CurrentSort == "upcoming" ? "selected" : "")>Sắp diễn ra</option>
+                                <option value="popular" @(ViewBag.CurrentSort == "popular" ? "selected" : "")>Phổ biến nhất</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -73,79 +85,48 @@
                         var conLai = item.SoLuongToiDa - item.SoLuongDaDangKy;
                         bool isSaved = ViewBag.SavedEventIds != null && ((List<int>)ViewBag.SavedEventIds).Contains(item.MaEvent);
 
-                        <div class="col-12 col-sm-6 col-xl-4 ce-reveal" data-category="@item.MaDanhMuc">
+                        <div class="col-12 col-sm-6 col-xl-4 ce-reveal">
                             <div class="ce-event-card">
-
-                                <!-- Image + Badges -->
                                 <div class="ce-event-card__img">
                                     <a href="@Url.Action("EventDetail","Users", new { id = item.MaEvent })">
                                         <div class="ce-event-card__img-placeholder">
                                             <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "event")</span>
                                         </div>
                                     </a>
-
                                     <div class="ce-event-card__badges">
                                         <span class="ce-badge" style="background-color: @(item.DanhMuc?.MauSac ?? "#3b82f6");">
                                             @item.DanhMuc.TenDanhMuc
                                         </span>
-                                        @if (conLai == 0)
-                                        {
-                                        <span class="ce-badge ce-badge-danger">Hết chỗ</span>
-                                        }
+                                        @if (conLai <= 0)
+                                        {<span class="ce-badge ce-badge-danger">Hết chỗ</span> }
                                         else if (conLai <= 10)
-                                        {
-                                        <span class="ce-badge ce-badge-warning">Sắp đầy (Còn conLai chỗ)</span>
-                                        }
+                                        { <span class="ce-badge ce-badge-warning">Sắp đầy</span> }
                                         else
-                                        {
-                                        <span class="ce-badge ce-badge-success">Còn chỗ</span>
-                                        }
+                                        { <span class="ce-badge ce-badge-success">Còn chỗ</span>}
                                     </div>
-
-                                    <!-- Nút Lưu -->
                                     <button class="ce-event-card__save @(isSaved ? "saved" : "")"
-                                            type="button"
-                                            id="btn-favorite-@item.MaEvent"
-                                            onclick="toggleFavorite(this, @item.MaEvent); event.preventDefault(); event.stopPropagation();">
-                                        <span class="material-symbols-outlined">
-                                            @(isSaved ? "favorite" : "favorite_border")
-                                        </span>
+                                            onclick="toggleFavorite(this, @item.MaEvent); event.preventDefault();">
+                                        <span class="material-symbols-outlined">@(isSaved ? "favorite" : "favorite_border")</span>
                                     </button>
                                 </div>
-
-                                <!-- Body -->
                                 <div class="ce-event-card__body">
                                     <h5 class="ce-event-card__title">
-                                        <a href="@Url.Action("EventDetail","Users", new { id = item.MaEvent })" class="text-decoration-none">
-                                            @item.TenEvent
-                                        </a>
+                                        <a href="@Url.Action("EventDetail","Users", new { id = item.MaEvent })">@item.TenEvent</a>
                                     </h5>
-
                                     <div class="ce-event-card__meta">
                                         <div class="ce-event-card__meta-row">
                                             <span class="material-symbols-outlined">calendar_today</span>
-                                            @item.NgayBatDau.ToString("dddd, dd/MM/yyyy", new CultureInfo("vi-VN"))
+                                            @item.NgayBatDau.ToString("dd/MM/yyyy")
                                         </div>
-                                        @if (item.NgayKetThuc.HasValue)
-                                        {
-                                            <div class="ce-event-card__meta-row">
-                                                <span class="material-symbols-outlined">event_busy</span>
-                                                Đến @item.NgayKetThuc.Value.ToString("dd/MM/yyyy")
-                                            </div>
-                                        }
                                         <div class="ce-event-card__meta-row">
                                             <span class="material-symbols-outlined">location_on</span>
-                                            @(item.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                                            @(item.DiaDiem?.TenDiaDiem ?? "Trực tuyến")
                                         </div>
                                     </div>
-
                                     <div class="ce-event-card__footer">
-                                        <div class="ce-event-card__slots">
-                                            <span class="material-symbols-outlined">group</span>
-                                            @conLai / @item.SoLuongToiDa chỗ còn lại
-                                        </div>
+                                        <div class="ce-event-card__slots">@conLai / @item.SoLuongToiDa chỗ</div>
                                         <span class="ce-badge @(item.GiaVe == 0 ? "ce-badge-primary" : "ce-badge-info")">
-                                            @(item.GiaVe == 0 || item.GiaVe == null ? "Miễn phí" : String.Format("{0:N0}đ", item.GiaVe))
+                                            @(item.GiaVe == 0 ? "Miễn phí" : String.Format("{0:N0}đ", item.GiaVe))
                                         </span>
                                     </div>
                                 </div>
@@ -153,13 +134,38 @@
                         </div>
                     }
                 </div>
+
+                if (ViewBag.TotalPages > 1)
+                {
+                    <div class="d-flex justify-content-center mt-5">
+                        <ul class="ce-pagination">
+                            <li class="@(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <a href="@Url.Action("Events", new { page = ViewBag.CurrentPage - 1, sort = ViewBag.CurrentSort, vien = ViewBag.SelectedVien, danhmuc = ViewBag.SelectedDanhMuc, time = ViewBag.SelectedTime, status = ViewBag.SelectedStatus, q = ViewBag.SearchQuery })">
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </a>
+                            </li>
+
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="@(ViewBag.CurrentPage == i ? "active" : "")">
+                                    <a href="@Url.Action("Events", new { page = i,keyword = ViewBag.Keyword, sort = ViewBag.CurrentSort, vien = ViewBag.SelectedVien, danhmuc = ViewBag.SelectedDanhMuc, time = ViewBag.SelectedTime, status = ViewBag.SelectedStatus, q = ViewBag.SearchQuery })">@i</a>
+                                </li>
+                            }
+
+                            <li class="@(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                <a href="@Url.Action("Events", new { page = ViewBag.CurrentPage + 1, sort = ViewBag.CurrentSort, vien = ViewBag.SelectedVien, danhmuc = ViewBag.SelectedDanhMuc, time = ViewBag.SelectedTime, status = ViewBag.SelectedStatus, q = ViewBag.SearchQuery })">
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
             }
             else
             {
                 <div class="ce-empty text-center py-5">
                     <span class="material-symbols-outlined display-1 text-muted">search_off</span>
                     <h4 class="mt-3">Không tìm thấy sự kiện nào</h4>
-                    <p class="text-muted">Vui lòng thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
                 </div>
             }
 

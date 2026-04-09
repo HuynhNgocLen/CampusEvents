@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="DangKySuKien">
           <Key>
             <PropertyRef Name="MaEvent" />
@@ -57,7 +57,10 @@
           <Property Name="TrangThai" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
           <Property Name="NgayCapNhat" Type="datetime" />
-          <Property Name="LinkZalo" Type="varchar" MaxLength="100" />
+          <Property Name="LinkZalo" Type="nvarchar" MaxLength="100" />
+          <Property Name="DRL" Type="int" />
+          <Property Name="NgayBatDauDangKy" Type="datetime" />
+          <Property Name="IsHidden" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -96,6 +99,18 @@
           </Key>
           <Property Name="MaVien" Type="varchar" MaxLength="12" Nullable="false" />
           <Property Name="TenVien" Type="nvarchar" MaxLength="150" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'school_event_management.dbo.vw_DiemRenLuyenTheoKy' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_DiemRenLuyenTheoKy">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+            <PropertyRef Name="HocKy" />
+          </Key>
+          <Property Name="IDSinhVien" Type="varchar" MaxLength="13" Nullable="false" />
+          <Property Name="Nam" Type="int" />
+          <Property Name="HocKy" Type="int" Nullable="false" />
+          <Property Name="TongDiemRenLuyen" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'school_event_management.dbo.vw_SoChoConLai' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -255,6 +270,14 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <EntitySet Name="SinhVien" EntityType="Self.SinhVien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SuKienYeuThich" EntityType="Self.SuKienYeuThich" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vien" EntityType="Self.Vien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vw_DiemRenLuyenTheoKy" EntityType="Self.vw_DiemRenLuyenTheoKy" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_DiemRenLuyenTheoKy].[IDSinhVien] AS [IDSinhVien], 
+    [vw_DiemRenLuyenTheoKy].[Nam] AS [Nam], 
+    [vw_DiemRenLuyenTheoKy].[HocKy] AS [HocKy], 
+    [vw_DiemRenLuyenTheoKy].[TongDiemRenLuyen] AS [TongDiemRenLuyen]
+    FROM [dbo].[vw_DiemRenLuyenTheoKy] AS [vw_DiemRenLuyenTheoKy]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="vw_SoChoConLai" EntityType="Self.vw_SoChoConLai" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [vw_SoChoConLai].[MaEvent] AS [MaEvent], 
@@ -315,8 +338,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             <End Role="SinhVien" EntitySet="SinhVien" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="school_event_managementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -376,13 +398,16 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="NgayTao" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
-          <Property Name="LinkZalo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LinkZalo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_Event" FromRole="EVENT" ToRole="DangKySuKien" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_EVENT_DANHMUC" FromRole="EVENT" ToRole="DanhMuc" />
           <NavigationProperty Name="DiaDiem" Relationship="Self.FK_EVENT_DIADIEM" FromRole="EVENT" ToRole="DiaDiem" />
           <NavigationProperty Name="SinhVien" Relationship="Self.FK_EVENT_NGUOIDANG" FromRole="EVENT" ToRole="SinhVien" />
           <NavigationProperty Name="Vien" Relationship="Self.FK_EVENT_VIEN" FromRole="EVENT" ToRole="Vien" />
           <NavigationProperty Name="SuKienYeuThiches" Relationship="Self.FK_Favorites_Event" FromRole="EVENT" ToRole="SuKienYeuThich" />
+          <Property Name="DRL" Type="Int32" />
+          <Property Name="NgayBatDauDangKy" Type="DateTime" Precision="3" />
+          <Property Name="IsHidden" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -628,7 +653,18 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             <End Role="Vien" EntitySet="Viens" />
             <End Role="SinhVien" EntitySet="SinhViens" />
           </AssociationSet>
+          <EntitySet Name="vw_DiemRenLuyenTheoKy" EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" />
         </EntityContainer>
+        <EntityType Name="vw_DiemRenLuyenTheoKy">
+          <Key>
+            <PropertyRef Name="IDSinhVien" />
+            <PropertyRef Name="HocKy" />
+          </Key>
+          <Property Name="IDSinhVien" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="Nam" Type="Int32" />
+          <Property Name="HocKy" Type="Int32" Nullable="false" />
+          <Property Name="TongDiemRenLuyen" Type="Int32" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -667,6 +703,9 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <EntitySetMapping Name="EVENTs">
             <EntityTypeMapping TypeName="school_event_managementModel.EVENT">
               <MappingFragment StoreEntitySet="EVENT">
+                <ScalarProperty Name="IsHidden" ColumnName="IsHidden" />
+                <ScalarProperty Name="NgayBatDauDangKy" ColumnName="NgayBatDauDangKy" />
+                <ScalarProperty Name="DRL" ColumnName="DRL" />
                 <ScalarProperty Name="MaEvent" ColumnName="MaEvent" />
                 <ScalarProperty Name="MaVien" ColumnName="MaVien" />
                 <ScalarProperty Name="TenEvent" ColumnName="TenEvent" />
@@ -753,6 +792,16 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
                 <ScalarProperty Name="TongDangKyNam" ColumnName="TongDangKyNam" />
                 <ScalarProperty Name="TongHoanThanhNam" ColumnName="TongHoanThanhNam" />
                 <ScalarProperty Name="TongHuyNam" ColumnName="TongHuyNam" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_DiemRenLuyenTheoKy">
+            <EntityTypeMapping TypeName="school_event_managementModel.vw_DiemRenLuyenTheoKy">
+              <MappingFragment StoreEntitySet="vw_DiemRenLuyenTheoKy">
+                <ScalarProperty Name="TongDiemRenLuyen" ColumnName="TongDiemRenLuyen" />
+                <ScalarProperty Name="HocKy" ColumnName="HocKy" />
+                <ScalarProperty Name="Nam" ColumnName="Nam" />
+                <ScalarProperty Name="IDSinhVien" ColumnName="IDSinhVien" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
