@@ -3,23 +3,20 @@ using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 
 namespace school_event_management.Controllers
 {
+    [JwtAuthorize]
     public class UsersController : Controller
     {
         private readonly school_event_managementEntities db = new school_event_managementEntities();
-
-        //Lấy MSSV hiện tại 
         private string GetCurrentStudentId()
         {
-            return Session["StudentId"] as string;
+            return JwtService.GetStudentId(Request);
         }
 
-        //Đã lưu
         private void LoadFavoriteData()
         {
             string studentId = GetCurrentStudentId();
@@ -36,21 +33,37 @@ namespace school_event_management.Controllers
             }
         }
 
-        private ActionResult CheckLogin()
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (Session["StudentId"] == null)
-                return RedirectToAction("Login", "Account");
-            return null;
+            base.OnActionExecuting(filterContext);
+
+            string studentId = GetCurrentStudentId();
+            if (string.IsNullOrEmpty(studentId)) return;
+
+            var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            if (sv == null) return;
+
+            ViewBag.UserName = sv.Ten;
+            ViewData["TenHienThi"] = sv.Ten;
+            ViewData["MaSV"] = sv.ID;
+            ViewData["Lop"] = sv.Lop;
+
+            var words = sv.Ten.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string initials = "SV";
+            if (words.Length > 0)
+            {
+                initials = words[words.Length - 1].Substring(0, 1).ToUpper();
+                if (words.Length >= 2)
+                    initials = words[words.Length - 2].Substring(0, 1).ToUpper() + initials;
+            }
+            ViewData["Avatar"] = initials;
         }
 
-        //Users/Index
+        // Users/Index
         public ActionResult Index()
         {
-            var redirect = CheckLogin();
-            if (redirect != null) return redirect;
             ViewBag.Title = "Khám phá Sự kiện";
             ViewBag.ActivePage = "home";
-
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
             ViewBag.DanhMucs = db.DanhMucs.ToList();
 
@@ -64,95 +77,59 @@ namespace school_event_management.Controllers
             return View(events);
         }
 
-        protected override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            base.OnActionExecuting(filterContext);
-
-            string studentId = Session["StudentId"] as string;
-
-            if (!string.IsNullOrEmpty(studentId))
-            {
-                // Tìm sinh viên trong Database
-                var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
-                if (sv != null)
-                {
-                    // 1. Dữ liệu cho Navbar (ở _LayoutUsers.cshtml)
-                    ViewBag.UserName = sv.Ten;
-
-                    // 2. Dữ liệu cho Sidebar (ở _Sidebar.cshtml)
-                    ViewData["TenHienThi"] = sv.Ten;
-                    ViewData["MaSV"] = sv.ID;
-                    ViewData["Lop"] = sv.Lop;
-
-                    // Lấy 2 chữ cái đầu của TÊN làm Avatar (Có xử lý khoảng trắng thừa)
-                    var words = sv.Ten.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    string initials = "SV"; // Mặc định
-
-                    if (words.Length > 0)
-                    {
-                        // Lấy chữ cái đầu của từ cuối cùng
-                        initials = words[words.Length - 1].Substring(0, 1).ToUpper();
-
-                        // Nếu tên có 2 từ trở lên, lấy thêm chữ cái của từ áp chót
-                        if (words.Length >= 2)
-                        {
-                            var apChot = words[words.Length - 2].Substring(0, 1).ToUpper();
-                            initials = apChot + initials;
-                        }
-                    }
-                    ViewData["Avatar"] = initials;
-                }
-            }
-            else
-            {
-                // Đề phòng trường hợp chưa đăng nhập
-                ViewBag.UserName = "Khách";
-            }
-        }
-
-        //Users/Events
-        public ActionResult Events(string[] vien, string[] danhmuc, string time, string[] status)
+        // Users/Events
+        public ActionResult Events(string[] vien, string[] danhmuc, string time, string[] status, string sort, string keyword = "", int page = 1)
         {
             ViewBag.Title = "Sự kiện";
             ViewBag.ActivePage = "events";
-
-            // Dữ liệu cho Filter Sidebar
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
             ViewBag.DanhMucs = db.DanhMucs.ToList();
 
+            int pageSize = 6;
+            var today = DateTime.Today;
+
+            // 1. CHỈ LẤY SỰ KIỆN KHÔNG BỊ ẨN
             var query = db.EVENTs
                 .Include(e => e.DanhMuc)
                 .Include(e => e.DiaDiem)
                 .Include(e => e.Vien)
+                .Where(e => e.IsHidden == false)
                 .AsQueryable();
 
-            // Lọc theo Viện
+            // ---------------------------------------------------------
+            // [MỚI] BỘ LỌC TÌM KIẾM TỪ KHÓA TỪ NAVBAR
+            // ---------------------------------------------------------
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                string search = keyword.Trim().ToLower();
+                query = query.Where(e => e.TenEvent.ToLower().Contains(search)
+                                      || (e.MoTa != null && e.MoTa.ToLower().Contains(search)));
+
+                // Lưu lại để hiển thị ngoài View
+                ViewBag.Keyword = keyword;
+            }
+
+            // 2. Lọc theo Viện, Danh mục
             var selectedVien = vien?.ToList() ?? new List<string>();
             if (selectedVien.Count > 0 && !selectedVien.Contains("all"))
-            {
                 query = query.Where(e => selectedVien.Contains(e.MaVien));
-            }
 
-            // Lọc theo Danh mục
             var selectedDM = danhmuc?.ToList() ?? new List<string>();
             if (selectedDM.Count > 0 && !selectedDM.Contains("all"))
-            {
                 query = query.Where(e => selectedDM.Contains(e.MaDanhMuc));
-            }
 
-            // Lọc theo Thời gian
-            var today = DateTime.Today;
+            // 3. Lọc theo Thời gian
             if (!string.IsNullOrEmpty(time) && time != "all")
             {
                 if (time == "today")
-                    query = query.Where(e => DbFunctions.TruncateTime(e.NgayBatDau) == today);
+                    query = query.Where(e => System.Data.Entity.DbFunctions.TruncateTime(e.NgayBatDau) == today);
                 else if (time == "week")
                     query = query.Where(e => e.NgayBatDau >= today && e.NgayBatDau <= today.AddDays(7));
                 else if (time == "month")
                     query = query.Where(e => e.NgayBatDau.Month == today.Month && e.NgayBatDau.Year == today.Year);
             }
 
-            // Lọc theo Trạng thái
+            // 4. Lọc theo Trạng thái
             var selectedStatus = status?.ToList() ?? new List<string>();
             if (selectedStatus.Count > 0 && !selectedStatus.Contains("all"))
             {
@@ -163,28 +140,52 @@ namespace school_event_management.Controllers
                 );
             }
 
-            var data = query.OrderByDescending(e => e.NgayBatDau).ToList();
+            // 5. XỬ LÝ SẮP XẾP
+            if (sort == "newest")
+            {
+                query = query.Where(e => DbFunctions.TruncateTime(e.NgayBatDauDangKy) == today)
+                             .OrderByDescending(e => e.MaEvent);
+            }
+            else if (sort == "upcoming")
+            {
+                DateTime tomorrow = today.AddDays(1);
+                query = query.Where(e => e.NgayBatDau >= tomorrow)
+                             .OrderBy(e => e.NgayBatDau);
+            }
+            else if (sort == "popular")
+            {
+                query = query.OrderByDescending(e => e.SoLuongDaDangKy);
+            }
+            else
+            {
+                query = query.OrderByDescending(e => e.NgayBatDau);
+            }
+
+            // 6. PHÂN TRANG
+            var totalItems = query.Count();
+            var data = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.CurrentSort = sort;
+
             LoadFavoriteData();
             return View(data);
         }
 
-
+        // Users/EventDetail
         public ActionResult EventDetail(int? id)
         {
             if (id == null) return RedirectToAction("Events");
+
             string currentStudentId = GetCurrentStudentId();
-            System.Diagnostics.Debug.WriteLine("ID: " + currentStudentId);
             ViewBag.SinhVien = db.SinhViens.Include(s => s.Vien).FirstOrDefault(s => s.ID == currentStudentId);
 
-            //So Cho Con Lai
             var tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == id);
             ViewBag.tinhTrang = tinhTrang;
-
-            //Phan Tram
-            if (tinhTrang != null && tinhTrang.SoLuongToiDa > 0)
-                ViewBag.phanTram = tinhTrang.SoLuongDaDangKy * 100 / tinhTrang.SoLuongToiDa;
-            else
-                ViewBag.phanTram = 0;
+            ViewBag.phanTram = (tinhTrang != null && tinhTrang.SoLuongToiDa > 0)
+                ? tinhTrang.SoLuongDaDangKy * 100 / tinhTrang.SoLuongToiDa
+                : 0;
 
             db.Configuration.ProxyCreationEnabled = false;
 
@@ -196,20 +197,12 @@ namespace school_event_management.Controllers
 
             if (ev == null) return HttpNotFound();
 
-            bool daDangKy = db.DangKySuKiens.Any(d => d.MaEvent == id&& d.IDSinhVien == currentStudentId && !d.TrangThai.Contains("hủy"));
+            bool daDangKy = db.DangKySuKiens.Any(d =>
+                d.MaEvent == id && d.IDSinhVien == currentStudentId && !d.TrangThai.Contains("Hủy"));
             ViewBag.DaDangKy = daDangKy;
 
-            //Time 
             DateTime ngayHetHan = ev.NgayHetHanDangKy ?? DateTime.Now;
-            DateTime ngayHienTai = DateTime.Now.Date;
-            TimeSpan difference = ngayHetHan - ngayHienTai;
-            int soNgayConLai = difference.Days;
-            ViewBag.SoNgayConLai = soNgayConLai;
-
-            if (!string.IsNullOrEmpty(ev.LinkZalo))
-            {
-                ViewBag.QRCodeBase64 = QRCodeHelper.GenerateQRCodeFromLink(ev.LinkZalo);
-            }
+            ViewBag.SoNgayConLai = (ngayHetHan.Date - DateTime.Now.Date).Days;
 
             LoadFavoriteData();
             return View(ev);
@@ -222,53 +215,40 @@ namespace school_event_management.Controllers
             ViewBag.ActivePage = "registrations";
 
             string studentId = GetCurrentStudentId();
-            int currentYear = DateTime.Now.Year; // Lấy năm hiện tại (2026)
+            int currentYear = DateTime.Now.Year;
 
-            var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
-            ViewBag.SinhVien = sv;
-
-            // --- LOGIC THỐNG KÊ THEO NĂM ---
-
-            // 1. Tổng Đăng Ký Trong Năm (Tất cả trừ trạng thái Hủy)
-            ViewData["TongDangKyNam"] = db.DangKySuKiens
+            ViewBag.SinhVien = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            int tongHoanThanh = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
-                       && d.NgayDangKy.Year == currentYear
-                       && d.TrangThai != "hủy");
+                         && d.NgayDangKy.Year == currentYear
+                         && d.TrangThai.Trim() == "Đã hoàn thành");
 
-            // 2. Tổng Hoàn Thành Trong Năm
-            ViewData["TongHoanThanhNam"] = db.DangKySuKiens
+            int tongHuy = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
-                       && d.NgayDangKy.Year == currentYear
-                       && d.TrangThai.Trim() == "Đã hoàn thành");
+                         && d.NgayDangKy.Year == currentYear
+                         && d.TrangThai.ToLower() == "hủy");
 
-            // 3. Tổng Hủy Trong Năm
-            ViewData["TongHuyNam"] = db.DangKySuKiens
-                .Count(d => d.IDSinhVien == studentId
-                       && d.NgayDangKy.Year == currentYear
-                       && d.TrangThai.ToLower() == "hủy");
+            ViewData["TongHoanThanhNam"] = tongHoanThanh;
+            ViewData["TongHuyNam"] = tongHuy;
+            ViewData["TongDangKyNam"] = tongHoanThanh + tongHuy;
 
-            // --- DỮ LIỆU CHO CÁC TAB ---
             var today = DateTime.Today;
 
-            // Sự kiện sắp tới (Tab Đã đăng ký)
             ViewBag.DaDangKy = db.DangKySuKiens
                 .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
                 .Where(d => d.IDSinhVien == studentId && d.TrangThai == "Đã đăng ký" && d.EVENT.NgayBatDau >= today)
                 .OrderBy(d => d.EVENT.NgayBatDau).ToList();
 
-            // Tab Đã tham dự
             ViewBag.DaThamDu = db.DangKySuKiens
                 .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
                 .Where(d => d.IDSinhVien == studentId && d.TrangThai.Trim() == "Đã hoàn thành")
                 .OrderByDescending(d => d.EVENT.NgayBatDau).ToList();
 
-            // Tab Đã hủy
             ViewBag.DaHuy = db.DangKySuKiens
                 .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
-                .Where(d => d.IDSinhVien == studentId && (d.TrangThai == "hủy" || d.TrangThai == "Quá hạn"))
+                .Where(d => d.IDSinhVien == studentId && (d.TrangThai == "Hủy" || d.TrangThai == "Quá hạn"))
                 .OrderByDescending(d => d.NgayDangKy).ToList();
 
-            // Tab Đã lưu
             ViewBag.DaLuu = db.SuKienYeuThiches
                 .Where(f => f.IDSinhVien == studentId)
                 .OrderByDescending(f => f.NgayLuu).AsEnumerable()
@@ -280,33 +260,47 @@ namespace school_event_management.Controllers
                     TrangThai = "Đã lưu"
                 }).ToList();
 
-
             return View("~/Views/Users/Registrations/Registrations.cshtml");
         }
 
-        // Thêm vào yêu thích
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult AddFavorite(int maEvent)
+        public JsonResult ToggleFavorite(int maEvent)
         {
             try
             {
                 string studentId = GetCurrentStudentId();
-                // Kiểm tra tồn tại
-                if (db.SuKienYeuThiches.Any(f => f.MaEvent == maEvent && f.IDSinhVien == studentId))
-                    return Json(new { success = true });
-
-                var favorite = new SuKienYeuThich
+                if (string.IsNullOrEmpty(studentId))
                 {
-                    MaEvent = maEvent,
-                    IDSinhVien = studentId,
-                    NgayLuu = DateTime.Now,
-                    TrangThai = "Luu"
-                };
+                    return Json(new { success = false, message = "Vui lòng đăng nhập để lưu sự kiện." });
+                }
 
-                db.SuKienYeuThiches.Add(favorite);
-                db.SaveChanges();
-                return Json(new { success = true });
+                // Kiểm tra xem sự kiện đã được lưu chưa
+                var favorite = db.SuKienYeuThiches.FirstOrDefault(f => f.MaEvent == maEvent && f.IDSinhVien == studentId);
+
+                bool isFavorite = false;
+
+                if (favorite != null)
+                {
+                    // Đã lưu -> Bỏ lưu
+                    db.SuKienYeuThiches.Remove(favorite);
+                    db.SaveChanges();
+                    isFavorite = false;
+                }
+                else
+                {
+                    // Chưa lưu -> Thêm mới
+                    db.SuKienYeuThiches.Add(new SuKienYeuThich
+                    {
+                        MaEvent = maEvent,
+                        IDSinhVien = studentId,
+                        NgayLuu = DateTime.Now,
+                        TrangThai = "Luu"
+                    });
+                    db.SaveChanges();
+                    isFavorite = true;
+                }
+
+                return Json(new { success = true, isFavorite = isFavorite });
             }
             catch (Exception ex)
             {
@@ -314,30 +308,39 @@ namespace school_event_management.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult RemoveFavorite(int maEvent)
-        {
-            string studentId = GetCurrentStudentId();
-            var favorite = db.SuKienYeuThiches.FirstOrDefault(f => f.MaEvent == maEvent && f.IDSinhVien == studentId);
-
-            if (favorite != null)
-            {
-                db.SuKienYeuThiches.Remove(favorite);
-                db.SaveChanges();
-            }
-
-            return Json(new { success = true });
-        }
-
-        //Xác nhận đăng ký
+        // Xác nhận đăng ký sự kiện
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ConfirmRegister(int eventId)
         {
             string studentId = GetCurrentStudentId();
 
-            var daDangKy = db.DangKySuKiens.Any(d =>d.MaEvent == eventId&& d.IDSinhVien == studentId&& !d.TrangThai.ToLower().Contains("hủy"));
+            var ev = db.EVENTs.FirstOrDefault(e => e.MaEvent == eventId);
+            if (ev == null)
+            {
+                TempData["Error"] = "Sự kiện không tồn tại.";
+                return RedirectToAction("EventDetail", new { id = eventId });
+            }
+
+            DateTime now = DateTime.Now;
+
+            //KIỂM TRA CHƯA TỚI NGÀY ĐĂNG KÝ
+            if (ev.NgayBatDauDangKy.HasValue && now < ev.NgayBatDauDangKy.Value)
+            {
+                TempData["Error"] = $"Sự kiện này sẽ mở đăng ký vào lúc {ev.NgayBatDauDangKy.Value.ToString("HH:mm dd/MM/yyyy")}.";
+                return RedirectToAction("EventDetail", new { id = eventId });
+            }
+
+            // KIỂM TRA ĐÃ QUÁ HẠN ĐĂNG KÝ
+            if (ev.NgayHetHanDangKy.HasValue && now.Date > ev.NgayHetHanDangKy.Value.Date)
+            {
+                TempData["Error"] = "Sự kiện này đã hết hạn đăng ký.";
+                return RedirectToAction("EventDetail", new { id = eventId });
+            }
+
+            // KIỂM TRA ĐÃ ĐĂNG KÝ RỒI
+            bool daDangKy = db.DangKySuKiens.Any(d =>
+                d.MaEvent == eventId && d.IDSinhVien == studentId && !d.TrangThai.ToLower().Contains("Hủy"));
 
             if (daDangKy)
             {
@@ -345,10 +348,11 @@ namespace school_event_management.Controllers
                 return RedirectToAction("EventDetail", new { id = eventId });
             }
 
+            // KIỂM TRA ĐÃ ĐẦY CHỖ
             var tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == eventId);
             if (tinhTrang == null || tinhTrang.SoChoConLai <= 0)
             {
-                TempData["Error"] = "Sự kiện này đã hết chỗ mất rồi!";
+                TempData["Error"] = "Sự kiện này đã đầy (hết chỗ).";
                 return RedirectToAction("EventDetail", new { id = eventId });
             }
 
@@ -364,18 +368,16 @@ namespace school_event_management.Controllers
                 }
                 else
                 {
-                    var reg = new DangKySuKien
+                    db.DangKySuKiens.Add(new DangKySuKien
                     {
                         MaEvent = eventId,
                         IDSinhVien = studentId,
                         NgayDangKy = DateTime.Now,
                         TrangThai = "Đã đăng ký"
-                    };
-                    db.DangKySuKiens.Add(reg);
+                    });
                 }
 
                 db.SaveChanges();
-
                 TempData["ShowSuccessModal"] = true;
                 return RedirectToAction("EventDetail", new { id = eventId });
             }
@@ -393,29 +395,187 @@ namespace school_event_management.Controllers
         public ActionResult HuyDangKy(int maEvent)
         {
             string studentId = GetCurrentStudentId();
-
             var dangKy = db.DangKySuKiens.FirstOrDefault(d => d.MaEvent == maEvent && d.IDSinhVien == studentId);
+
             if (dangKy == null)
             {
                 TempData["Error"] = "Không tìm thấy đăng ký.";
                 return RedirectToAction("Registrations");
             }
 
-            dangKy.TrangThai = "hủy";
+            dangKy.TrangThai = "Hủy";
             db.SaveChanges();
 
             TempData["Success"] = "Đã hủy đăng ký thành công.";
-            TempData["ShowSuccessModal"] = false;
             return RedirectToAction("Registrations");
         }
 
-        // Schedule
-        public ActionResult Schedule()
+        // Users/Schedule
+        public ActionResult Schedule(int offset = 0)
         {
-            ViewBag.Title = "Lịch của tôi";
+            ViewBag.Title = "Lịch sự kiện của tôi";
             ViewBag.ActivePage = "schedule";
-            return View();
+
+            string studentId = GetCurrentStudentId();
+            if (string.IsNullOrEmpty(studentId))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // 1. Tính toán ngày dựa trên offset
+            // offset = 0 (Tuần này), offset = 1 (Tuần sau), offset = -1 (Tuần trước)
+            DateTime baseDate = DateTime.Today.AddDays(offset * 7);
+
+            int diff = (7 + (baseDate.DayOfWeek - DayOfWeek.Monday)) % 7;
+            DateTime startOfWeek = baseDate.AddDays(-1 * diff).Date;
+            DateTime endOfWeek = startOfWeek.AddDays(7).AddTicks(-1);
+
+            // 2. Truy vấn sự kiện
+            var eventsInWeek = db.DangKySuKiens
+                .Include(d => d.EVENT)
+                .Include(d => d.EVENT.DiaDiem)
+                .Include(d => d.EVENT.DanhMuc)
+                .Where(d => d.IDSinhVien == studentId
+                         && d.TrangThai != "Hủy"
+                         && d.EVENT.NgayBatDau >= startOfWeek
+                         && d.EVENT.NgayBatDau <= endOfWeek)
+                .OrderBy(d => d.EVENT.NgayBatDau)
+                .ToList();
+
+            // 3. Truyền dữ liệu ra View
+            ViewBag.StartOfWeek = startOfWeek;
+            ViewBag.EndOfWeek = endOfWeek;
+            ViewBag.WeekOffset = offset; // Truyền offset ra View để làm nút Bấm
+
+            return View(eventsInWeek);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
+        }
+
+        //Thong tin ca nhan nguoi dung
+        [HttpGet]
+        public ActionResult Profile(string id = "") // Đón thêm tham số id từ URL
+        {
+            // 1. Xác định xem đang muốn xem hồ sơ của ai
+            string currentUserId = GetCurrentStudentId();
+
+            // Nếu URL không truyền id vào, thì mặc định là xem hồ sơ của chính mình
+            string targetId = string.IsNullOrEmpty(id) ? currentUserId : id;
+
+            // 2. Tìm người đó trong database
+            var sv = db.SinhViens.FirstOrDefault(s => s.ID == targetId);
+
+            if (sv == null)
+            {
+                // Nếu nhập bậy ID trên URL không có thật -> Về trang chủ
+                if (!string.IsNullOrEmpty(id))
+                {
+                    TempData["Error"] = "Không tìm thấy hồ sơ này!";
+                    return RedirectToAction("Index", "Home");
+                }
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // 3. Đánh dấu xem đây có phải là hồ sơ của chính User đang đăng nhập hay không
+            // Nếu là true -> Được phép sửa. Nếu là false -> Chỉ xem.
+            ViewBag.IsCurrentUser = (currentUserId == targetId);
+
+            int currentMonth = DateTime.Now.Month;
+            int currentYear = DateTime.Now.Year;
+
+            // 4. TÍNH ĐIỂM RÈN LUYỆN (Tính cho targetId)
+            int currentSemester = (currentMonth >= 1 && currentMonth <= 5) ? 1 : 2;
+            int namHocBatDau = (currentMonth >= 1 && currentMonth <= 5) ? currentYear - 1 : currentYear;
+
+            var queryDRL = db.DangKySuKiens.Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành");
+            if (currentSemester == 1)
+            {
+                queryDRL = queryDRL.Where(d => d.EVENT.NgayBatDau.Year == currentYear && d.EVENT.NgayBatDau.Month >= 1 && d.EVENT.NgayBatDau.Month <= 5);
+            }
+            else
+            {
+                queryDRL = queryDRL.Where(d => d.EVENT.NgayBatDau.Year == currentYear && d.EVENT.NgayBatDau.Month >= 6 && d.EVENT.NgayBatDau.Month <= 12);
+            }
+
+            ViewBag.DRL = queryDRL.Select(d => (int?)d.EVENT.DRL).Sum() ?? 0;
+            ViewBag.HocKy = currentSemester;
+            ViewBag.Nam = namHocBatDau;
+
+            // 5. LẤY DANH SÁCH SỰ KIỆN ĐÃ TỔ CHỨC (Của targetId)
+            ViewBag.CurrentYear = currentYear;
+            ViewBag.SuKienTrongNam = db.EVENTs
+                .Where(e => e.NguoiDang == targetId
+                         && e.NgayBatDau.Year == currentYear
+                         && e.IsHidden == false)
+                .OrderByDescending(e => e.NgayBatDau)
+                .ToList();
+
+            ViewBag.ThanhTich = new List<string> {
+        "Sinh viên 5 tốt cấp trường 2025",
+        "Top 10 cuộc thi Hackathon Khoa CNTT",
+        "Tích cực tham gia Mùa hè xanh"
+    };
+
+            ViewBag.Title = ViewBag.IsCurrentUser ? "Hồ sơ cá nhân" : $"Hồ sơ: {sv.Ten}";
+            ViewBag.ActivePage = "profile";
+
+            return View(sv);
+        }
+
+        // --- XỬ LÝ CẬP NHẬT THÔNG TIN ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateProfile(SinhVien model)
+        {
+            string studentId = GetCurrentStudentId();
+            var sv = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+
+            if (sv != null)
+            {
+                // Chỉ cho phép cập nhật những thông tin này (Không cho đổi MSSV hoặc Tên)
+                sv.NgayThangNamSinh = model.NgayThangNamSinh;
+                sv.SoDienThoai = model.SoDienThoai;
+                sv.Email = model.Email;
+                // sv.Lop = model.Lop; // Tùy bạn có cho sinh viên tự đổi lớp không
+
+                db.SaveChanges();
+                TempData["Success"] = "Cập nhật thông tin thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Không tìm thấy thông tin sinh viên.";
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+        //tim kiem thong minh tren navbar
+        [HttpGet]
+        public ActionResult SmartSearch(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return RedirectToAction("Index");
+            }
+
+            string searchKeyword = keyword.Trim();
+
+            // Kiểm tra xem từ khóa có trùng với bất kỳ ID Sinh viên / CLB nào không
+            var userExists = db.SinhViens.Any(s => s.ID.ToLower() == searchKeyword.ToLower());
+
+            if (userExists)
+            {
+                // Chuyển hướng sang trang Profile của người đó
+                return RedirectToAction("Profile", "Users", new { id = searchKeyword });
+            }
+
+            // Chuyển hướng sang trang Sự kiện để tìm tên sự kiện
+            return RedirectToAction("Events", "Users", new { keyword = searchKeyword });
+        }
     }
 }
+

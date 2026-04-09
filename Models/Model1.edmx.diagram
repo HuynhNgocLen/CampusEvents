@@ -25,6 +25,7 @@
         <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_NGHANH" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_Favorites_SinhVien" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_VIEN" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" Width="1.5" PointX="10.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
