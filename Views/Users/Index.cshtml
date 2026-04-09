@@ -21,11 +21,11 @@
                 <p class="ce-hero__sub">
                     Tìm kiếm hàng trăm sự kiện học thuật, thể thao, văn hóa và workshop đang chờ bạn tham gia.
                 </p>
-                <div class="ce-hero__search">
+                <form action="@Url.Action("SmartSearch", "Users")" method="GET" class="ce-hero__search">
                     <span class="material-symbols-outlined si">search</span>
-                    <input type="search" id="hero-search" placeholder="Tìm sự kiện, CLB, workshop…" />
-                    <button class="ce-hero__search-btn" type="button">Tìm kiếm</button>
-                </div>
+                    <input type="search" name="keyword" id="hero-search" placeholder="Tìm mã CLB, mã Sinh viên hoặc Sự kiện…" required />
+                    <button class="ce-hero__search-btn" type="submit">Tìm kiếm</button>
+                </form>
                 <div class="ce-hero__stats">
                     <div class="ce-hero__stat">
                         <div>

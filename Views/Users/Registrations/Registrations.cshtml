@@ -1,11 +1,10 @@
 ﻿@* Views/Users/Registrations/Registrations.cshtml *@
-@using shcool_event_management.Models   @* ← Sửa namespace *@
+@using shcool_event_management.Models
 @{
     ViewBag.Title = "Đăng ký của tôi";
     ViewBag.ActivePage = "registrations";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
 
-    // Lấy dữ liệu từ ViewBag
     var sv = ViewBag.SinhVien as SinhVien;
     var DaDangKy = ViewBag.DaDangKy as List<DangKySuKien> ?? new List<DangKySuKien>();
     var daThamDu = ViewBag.DaThamDu as List<DangKySuKien> ?? new List<DangKySuKien>();
@@ -17,14 +16,10 @@
     int tongThamDu = ViewBag.TongThamDu ?? 0;
     int tongSapToi = ViewBag.TongSapToi ?? 0;
 
-    // Thông tin sinh viên
-    string tenHienThi = sv != null ? (sv.Ten ?? sv.Ten ?? "Sinh Viên")
-                                   : (ViewBag.UserName as string ?? "Sinh Viên");
-
+    string tenHienThi = sv != null ? (sv.Ten ?? "Sinh Viên") : (ViewBag.UserName as string ?? "Sinh Viên");
     string maSV = sv?.ID ?? "---";
-    string lop = sv?.MaNghanh ?? sv?.MaNghanh ?? "";
+    string lop = sv?.MaNghanh ?? "";
 
-    // Tạo avatar (2 chữ cái đầu)
     string avatar = "SV";
     if (!string.IsNullOrWhiteSpace(tenHienThi))
     {
@@ -33,30 +28,26 @@
          ? (words[0][0].ToString() + words[1][0].ToString()).ToUpper()
          : words[0].Substring(0, Math.Min(2, words[0].Length)).ToUpper();
     }
+
+    <style>
+        /* CSS bổ sung để đảm bảo dropdown không bị trắng xóa trong Dark Mode */
+        .form-select option {
+            background-color: var(--surface-2) !important;
+            color: var(--text) !important;
+        }
+
+        /* Hiệu ứng khi hover vào vùng lọc */
+        #filterDay:hover, #filterMonth:hover, #filterYear:hover {
+            background-color: rgba(var(--primary-rgb), 0.05) !important;
+            border-radius: 4px;
+        }
+    </style>
 }
 
-@* TempData alerts *@
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show mx-3 mt-3" role="alert">
-        <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px">check_circle</span>
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
-        <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px">error</span>
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
 
 <div class="container py-4">
     <div class="row g-4">
-
-        <!-- Sidebar -->
+        @* Sidebar *@
         @Html.Partial("~/Views/Users/Registrations/_Sidebar.cshtml", new
         {
             SinhVien = sv,
@@ -69,24 +60,58 @@
             Avatar = avatar
         })
 
-        <!-- Main Content -->
         <div class="col-lg-9">
-            <h1 class="ce-section-title mb-4 ce-reveal">Đăng ký của tôi</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4 ce-reveal flex-wrap gap-2">
+                <h1 class="ce-section-title mb-0">Đăng ký của tôi</h1>
 
+                @* Bộ lọc thời gian *@
+                <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 flex-wrap"
+                     style="background: var(--surface-2); border: 1px solid var(--border); transition: all 0.3s ease;">
+
+                    <span class="material-symbols-outlined" style="font-size:18px; color: var(--text-muted);">filter_alt</span>
+
+                    <select id="filterDay" class="form-select form-select-sm border-0 shadow-none bg-transparent"
+                            style="width: auto; color: var(--text); cursor: pointer; font-weight: 500;">
+                        <option value="" style="background: var(--surface); color: var(--text);">Ngày</option>
+                        @for (int i = 1; i <= 31; i++)
+                        {
+                            <option value="@i" style="background: var(--surface); color: var(--text);">@i</option>
+                        }
+                    </select>
+
+                    <select id="filterMonth" class="form-select form-select-sm border-0 shadow-none bg-transparent"
+                            style="width: auto; color: var(--text); cursor: pointer; font-weight: 500;">
+                        <option value="" style="background: var(--surface); color: var(--text);">Tháng</option>
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i" style="background: var(--surface); color: var(--text);">@i</option>
+                        }
+                    </select>
+
+                    <select id="filterYear" class="form-select form-select-sm border-0 shadow-none bg-transparent"
+                            style="width: auto; color: var(--text); cursor: pointer; font-weight: 500;">
+                        <option value="" style="background: var(--surface); color: var(--text);">Năm</option>
+                        @for (int i = DateTime.Now.Year - 1; i <= DateTime.Now.Year + 1; i++)
+                        {
+                            <option value="@i" style="background: var(--surface); color: var(--text);">@i</option>
+                        }
+                    </select>
+
+                    <button class="ce-btn ce-btn-ghost p-1" id="clearDateFilter"
+                            style="display:none; color: var(--danger); border-radius: 50%;" title="Xóa lọc">
+                        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+                    </button>
+                </div>
+
+            </div>
+
+            @* Tabs điều hướng *@
             <div class="ce-tabs-wrapper ce-reveal">
                 <div class="ce-tabs mb-4">
-                    <button class="ce-tab-btn active" data-tab="tab-upcoming">
-                        Đã đăng ký
-                    </button>
-                    <button class="ce-tab-btn" data-tab="tab-attended">
-                        Đã tham dự
-                    </button>
-                    <button class="ce-tab-btn" data-tab="tab-cancelled">
-                        Đã huỷ
-                    </button>
-                    <button class="ce-tab-btn" data-tab="tab-saved">
-                        Đã lưu
-                    </button>
+                    <button class="ce-tab-btn active" data-tab="tab-upcoming">Đã đăng ký</button>
+                    <button class="ce-tab-btn" data-tab="tab-attended">Đã tham dự</button>
+                    <button class="ce-tab-btn" data-tab="tab-cancelled">Đã huỷ</button>
+                    <button class="ce-tab-btn" data-tab="tab-saved">Đã lưu</button>
                 </div>
 
                 @Html.Partial("~/Views/Users/Registrations/_Upcoming.cshtml", DaDangKy)
@@ -98,76 +123,119 @@
     </div>
 </div>
 
-    @* Modals *@
-    @Html.Partial("~/Views/Users/Registrations/_Modals.cshtml", new { QRDict = qrDict })
+@Html.Partial("~/Views/Users/Registrations/_Modals.cshtml", new { QRDict = qrDict })
 
-    @section scripts {
-        <script>
-        function fastRemoveFavorite(btn, eventId) {
-            const card = document.getElementById('saved-item-' + eventId);
-            if (!card) return;
+@section scripts {
+    <script>
+        // 1. HÀM BỎ LƯU SỰ KIỆN (FAST REMOVE)
+        function fastRemoveFavorite(btn, maEventId) {
 
-            card.style.transition = 'all 0.4s ease';
-            card.style.opacity = '0';
-            card.style.transform = 'translateX(50px)';
-            card.style.pointerEvents = 'none';
+            const card = document.getElementById('saved-item-' + maEventId);
+            if (card) card.style.opacity = '0.5';
 
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-            const formData = new FormData();
-            formData.append('maEvent', eventId);
-            if (token) {
-                formData.append('__RequestVerificationToken', token);
-            }
-
-            fetch('@Url.Action("RemoveFavorite", "Users")', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => {
-                if (!res.ok) throw new Error('Network response was not ok');
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    setTimeout(() => {
-                        card.remove();
-                        if (document.querySelectorAll('.saved-card').length === 0) {
-                            location.reload();
+            $.ajax({
+                url: '/Users/ToggleFavorite',
+                type: 'POST',
+                data: { maEvent: maEventId },
+                success: function (res) {
+                    if (res.success) {
+                        if (!res.isFavorite) {
+                            $(card).fadeOut(400, function () {
+                                $(this).remove();
+                                if ($('.saved-card').length === 0) {
+                                    location.reload(); // Load lại để hiện trạng thái trống
+                                }
+                            });
                         }
-                    }, 400);
-                } else {
-                    alert(data.message || 'Không thể bỏ lưu!');
-                    resetCard(card);
+                    } else {
+                        alert(res.message || "Có lỗi xảy ra");
+                        if (card) card.style.opacity = '1';
+                    }
+                },
+                error: function () {
+                    alert("Lỗi kết nối máy chủ!");
+                    if (card) card.style.opacity = '1';
                 }
-            })
-            .catch(err => {
-                console.error('Lỗi:', err);
-                alert('Có lỗi xảy ra, vui lòng thử lại.');
-                resetCard(card);
             });
         }
 
-        function resetCard(card) {
-            card.style.opacity = '1';
-            card.style.transform = 'none';
-            card.style.pointerEvents = 'auto';
-            }
+        // 2. KHỞI TẠO KHI LOAD XONG TRANG
+        document.addEventListener('DOMContentLoaded', function () {
+            // Xử lý chuyển Tab
+            const tabs = document.querySelectorAll('.ce-tab-btn');
+            const panes = document.querySelectorAll('.ce-tab-pane');
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const tabs = document.querySelectorAll('.ce-tab-btn');
-                const panes = document.querySelectorAll('.ce-tab-pane');
-
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        const target = tab.getAttribute('data-tab');
-                        tabs.forEach(t => t.classList.remove('active'));
-                        panes.forEach(p => p.classList.remove('active'));
-                        tab.classList.add('active');
-                        const pane = document.getElementById(target);
-                        if (pane) pane.classList.add('active');
-                    });
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panes.forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    const pane = document.getElementById(target);
+                    if (pane) pane.classList.add('active');
                 });
             });
-        </script>
-    }
+
+            // Xử lý bộ lọc ngày tháng
+            const filterDay = document.getElementById('filterDay');
+            const filterMonth = document.getElementById('filterMonth');
+            const filterYear = document.getElementById('filterYear');
+            const clearFilterBtn = document.getElementById('clearDateFilter');
+
+            function applyDateFilters() {
+                const valDay = filterDay.value;
+                const valMonth = filterMonth.value;
+                const valYear = filterYear.value;
+                const panes = document.querySelectorAll('.ce-tab-pane');
+
+                panes.forEach(pane => {
+                    const allCards = pane.querySelectorAll('.filter-card-item');
+                    let visibleCount = 0;
+
+                    allCards.forEach(card => {
+                        const dateStr = card.getAttribute('data-date');
+                        if (!dateStr) return;
+
+                        const [cYear, cMonth, cDay] = dateStr.split('-');
+                        const matchDay = !valDay || parseInt(valDay) === parseInt(cDay);
+                        const matchMonth = !valMonth || parseInt(valMonth) === parseInt(cMonth);
+                        const matchYear = !valYear || parseInt(valYear) === parseInt(cYear);
+
+                        if (matchDay && matchMonth && matchYear) {
+                            card.style.display = '';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    // Hiển thị thông báo nếu lọc không ra kết quả
+                    let emptyMsg = pane.querySelector('.filter-empty-msg');
+                    if ((valDay || valMonth || valYear) && visibleCount === 0 && allCards.length > 0) {
+                        if (!emptyMsg) {
+                            emptyMsg = document.createElement('div');
+                            emptyMsg.className = 'filter-empty-msg ce-empty text-center py-5';
+                            emptyMsg.innerHTML = `<span class="material-symbols-outlined" style="font-size:52px; opacity:.6;">search_off</span><div class="ce-empty__title mt-3">Không có sự kiện nào khớp</div>`;
+                            pane.appendChild(emptyMsg);
+                        }
+                        emptyMsg.style.display = 'block';
+                    } else if (emptyMsg) {
+                        emptyMsg.style.display = 'none';
+                    }
+                });
+
+                clearFilterBtn.style.display = (valDay || valMonth || valYear) ? 'inline-flex' : 'none';
+            }
+
+            if (filterDay) {
+                filterDay.addEventListener('change', applyDateFilters);
+                filterMonth.addEventListener('change', applyDateFilters);
+                filterYear.addEventListener('change', applyDateFilters);
+                clearFilterBtn.addEventListener('click', function () {
+                    filterDay.value = ''; filterMonth.value = ''; filterYear.value = '';
+                    applyDateFilters();
+                });
+            }
+        });
+    </script>
+}

@@ -35,5 +35,6 @@ namespace shcool_event_management.Models
         public virtual DbSet<Vien> Viens { get; set; }
         public virtual DbSet<vw_SoChoConLai> vw_SoChoConLai { get; set; }
         public virtual DbSet<vw_UserStatsByYear> vw_UserStatsByYear { get; set; }
+        public virtual DbSet<vw_DiemRenLuyenTheoKy> vw_DiemRenLuyenTheoKy { get; set; }
     }
 }
