@@ -316,24 +316,24 @@
 
                     <div class="row g-3 text-muted" style="font-size:.88rem">
                         <div class="col-12">
-                            <strong>Họ và tên:</strong>
+                            <strong style="color:var(--text)">Họ và tên:</strong>
                             <span style="color:var(--text)">@(ViewBag.SinhVien?.Ten ?? "N/A")</span>
                         </div>
                         <div class="col-sm-6">
-                            <strong>Mã sinh viên:</strong>
+                            <strong style="color:var(--text)">Mã sinh viên:</strong>
                             <span style="color:var(--text)">@Session["StudentId"]</span>
                         </div>
                         <div class="col-sm-6">
-                            <strong>Lớp:</strong>
+                            <strong style="color:var(--text)">Lớp:</strong>
                             <span style="color:var(--text)">@(ViewBag.SinhVien?.Lop ?? "N/A")</span>
                         </div>
                         <div class="col-12">
-                            <strong>Khoa / Viện:</strong>
+                            <strong style="color:var(--text)">Khoa / Viện:</strong>
                             <span style="color:var(--text)">@(ViewBag.SinhVien?.Vien?.TenVien ?? "N/A")</span>
                         </div>
 
                         <div class="col-sm-6">
-                            <strong>Ngày sinh:</strong>
+                            <strong style="color:var(--text)">Ngày sinh:</strong>
                             <span style="color:var(--text)">
                                 @(ViewBag.SinhVien?.NgayThangNamSinh != null
                                     ? ViewBag.SinhVien.NgayThangNamSinh.ToString("dd/MM/yyyy")
@@ -342,14 +342,14 @@
                         </div>
 
                         <div class="col-sm-6">
-                            <strong>SĐT:</strong>
+                            <strong style="color:var(--text)">SĐT:</strong>
                             <span style="color:var(--text)">
                                 @(string.IsNullOrEmpty(ViewBag.SinhVien?.SoDienThoai) ? "Chưa thêm SĐT" : ViewBag.SinhVien.SoDienThoai)
                             </span>
                         </div>
 
                         <div class="col-12">
-                            <strong>Email:</strong>
+                            <strong style="color:var(--text)">Email:</strong>
                             <span style="color:var(--text)">
                                 @(string.IsNullOrEmpty(ViewBag.SinhVien?.Email) ? "Chưa thêm Email" : ViewBag.SinhVien.Email)
                             </span>
@@ -417,7 +417,7 @@
         </div>
         <div class="ce-modal-body">
             <div class="d-flex gap-2 p-2" style="background:var(--surface-2); border-radius:8px; border:1px solid var(--border)">
-                <input type="text" id="email-input" value="" readonly style="flex:1; border:none; background:transparent; font-size:.85rem; outline:none">
+                <input type="text" id="email-input" value="" readonly style="flex:1; border:none; background:transparent; font-size:.85rem; outline:none; color:var(--text-muted)">
                 <button class="ce-btn ce-btn-primary ce-btn-sm" onclick="copyToClipboard('email-input', 'Đã copy email!')">Copy</button>
             </div>
         </div>
