@@ -19,7 +19,7 @@
     <link href="@Url.Content("~/Content/campus-components.css")" rel="stylesheet" />
     <link href="@Url.Content("~/Content/campus-pages.css")" rel="stylesheet" />
     <link href="@Url.Content("~/Content/campus-filter.css")" rel="stylesheet" />
-
+    <link href="@Url.Content("~/Content/campus-profile.css")" rel="stylesheet" />
     @RenderSection("styles", required: false)
 </head>
 <body>
@@ -76,12 +76,12 @@
                         }
                         @initials
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px;">
-                        <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Users")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px">person</span> Hồ sơ cá nhân</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px; background: var(--surface);">
+                        <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Users")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">person</span> Hồ sơ cá nhân</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Users")"><span class="material-symbols-outlined v-align-middle me-" style="font-size:20px">assignment_turned_in</span> Tổng quan đăng ký</a></li>
+                        <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Users")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-" style="font-size:20px; color: var(--text);">assignment_turned_in</span> Tổng quan đăng ký</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px">logout</span> Đăng xuất</a></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px;">logout</span> Đăng xuất</a></li>
                     </ul>
                 </div>
             }
