@@ -226,11 +226,15 @@ namespace school_event_management.Controllers
             int tongHuy = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
                          && d.NgayDangKy.Year == currentYear
-                         && d.TrangThai.ToLower() == "hủy");
+                         && d.TrangThai.ToLower() == "Hủy");
+            int tongDangKy = db.DangKySuKiens
+                .Count(d => d.IDSinhVien == studentId
+                         && d.NgayDangKy.Year == currentYear
+                         && d.TrangThai.Trim() == "Đã đăng ký");
 
             ViewData["TongHoanThanhNam"] = tongHoanThanh;
             ViewData["TongHuyNam"] = tongHuy;
-            ViewData["TongDangKyNam"] = tongHoanThanh + tongHuy;
+            ViewData["TongDangKyNam"] = tongHoanThanh + tongDangKy;
 
             var today = DateTime.Today;
 
@@ -458,20 +462,14 @@ namespace school_event_management.Controllers
 
         //Thong tin ca nhan nguoi dung
         [HttpGet]
-        public ActionResult Profile(string id = "") // Đón thêm tham số id từ URL
+        public ActionResult Profile(string id = "")
         {
-            // 1. Xác định xem đang muốn xem hồ sơ của ai
             string currentUserId = GetCurrentStudentId();
-
-            // Nếu URL không truyền id vào, thì mặc định là xem hồ sơ của chính mình
             string targetId = string.IsNullOrEmpty(id) ? currentUserId : id;
-
-            // 2. Tìm người đó trong database
             var sv = db.SinhViens.FirstOrDefault(s => s.ID == targetId);
-
+                
             if (sv == null)
             {
-                // Nếu nhập bậy ID trên URL không có thật -> Về trang chủ
                 if (!string.IsNullOrEmpty(id))
                 {
                     TempData["Error"] = "Không tìm thấy hồ sơ này!";
@@ -480,16 +478,22 @@ namespace school_event_management.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // 3. Đánh dấu xem đây có phải là hồ sơ của chính User đang đăng nhập hay không
-            // Nếu là true -> Được phép sửa. Nếu là false -> Chỉ xem.
             ViewBag.IsCurrentUser = (currentUserId == targetId);
 
             int currentMonth = DateTime.Now.Month;
             int currentYear = DateTime.Now.Year;
 
-            // 4. TÍNH ĐIỂM RÈN LUYỆN (Tính cho targetId)
             int currentSemester = (currentMonth >= 1 && currentMonth <= 5) ? 1 : 2;
             int namHocBatDau = (currentMonth >= 1 && currentMonth <= 5) ? currentYear - 1 : currentYear;
+
+            var lichSuThamGia = db.DangKySuKiens
+                .Include(d => d.EVENT)
+                .Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành")
+                .OrderByDescending(d => d.EVENT.NgayBatDau)
+                .ToList();
+
+            ViewBag.DaThamDu = lichSuThamGia;
+            ViewBag.TongHoanThanh = lichSuThamGia.Count;
 
             var queryDRL = db.DangKySuKiens.Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành");
             if (currentSemester == 1)
