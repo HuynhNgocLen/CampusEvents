@@ -272,6 +272,7 @@
     <Content Include="Content\campus-navbar.css" />
     <Content Include="Content\campus-pages.css" />
     <Content Include="Content\campus-variables.css" />
+    <Content Include="Content\campus-profile.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
