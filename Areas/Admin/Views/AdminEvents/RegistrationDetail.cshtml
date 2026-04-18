@@ -1,0 +1,182 @@
+@model IEnumerable<shcool_event_management.Models.DangKySuKien>
+
+@{
+    var ev = (shcool_event_management.Models.EVENT)ViewBag.Event;
+    int totalReg = (int)ViewBag.TotalReg;
+    int page = (int)ViewBag.Page;
+    int pageSize = (int)ViewBag.PageSize;
+    int totalPage = (int)ViewBag.TotalPage;
+
+    ViewBag.Title = "Chi tiết đăng ký - " + (ev?.TenEvent ?? "Sự kiện");
+    ViewBag.ActiveMenu = "events";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="ca-content">
+
+    <!-- Breadcrumb -->
+    <nav class="ca-breadcrumb">
+        <a href="@Url.Action("Index", "AdminEvents", new { area = "Admin" })">Quản lý sự kiện</a>
+        <span class="sep">›</span>
+        <span class="current">Chi tiết đăng ký</span>
+    </nav>
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+
+        <div style="flex: 1;">
+            <h1 class="ca-reg-title">@(ev?.TenEvent ?? "Không tìm thấy sự kiện")</h1>
+            <div class="ca-reg-meta" style="margin-top: 0.5rem;">
+                @{
+                    string statusClass = ev?.TrangThai switch
+                    {
+                        "Đang diễn ra" => "ce-badge ce-badge-success",
+                        "Sắp diễn ra" => "ce-badge ce-badge-primary",
+                        "Đã kết thúc" => "ce-badge ce-badge-neutral",
+                        "Bản nháp" => "ce-badge ce-badge-neutral",
+                        _ => "ce-badge ce-badge-neutral"
+                    };
+                }
+                <span class="@statusClass">@ev?.TrangThai</span>
+
+                <span class="ce-badge ce-badge-neutral">
+                    <span class="material-symbols-outlined" style="font-size:15px;">calendar_today</span>
+                    @ev?.NgayBatDau.ToString("dd/MM/yyyy HH:mm")
+                </span>
+            </div>
+        </div>
+
+        <div class="ca-stat-widget">
+            <div class="ca-stat-widget__label">TỔNG SỐ ĐĂNG KÝ</div>
+            <div class="ca-stat-widget__val">@totalReg.ToString("N0")</div>
+        </div>
+    </div>
+
+    <div class="ca-table-wrap">
+        <div class="ca-table-toolbar">
+            <div class="ca-table-toolbar__title">
+                Danh sách sinh viên đã đăng ký
+                <span class="ca-table-count">@totalReg bản ghi</span>
+            </div>
+
+            @if (totalReg > 0)
+            {
+                <a href="@Url.Action("ExportExcel", "AdminEvents", new { id = ev?.MaEvent })"
+                   class="ce-btn ce-btn-primary ce-btn-sm">
+                    <span class="material-symbols-outlined">download</span>
+                    Xuất Excel
+                </a>
+            }
+        </div>
+
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Họ và tên</th>
+                        <th>Mã SV</th>
+                        <th>Lớp</th>
+                        <th>Email</th>
+                        <th>Ngày đăng ký</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6">
+                                <div class="ce-empty">
+                                    <span class="material-symbols-outlined">person_off</span>
+                                    <div class="ce-empty__title">Chưa có sinh viên nào đăng ký</div>
+                                    <div class="ce-empty__sub">Khi có sinh viên đăng ký, danh sách sẽ xuất hiện tại đây.</div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            var sv = item.SinhVien;
+                            if (sv == null)
+                            {
+                                continue;   // Đã sửa: thêm dấu ngoặc {}
+                            }
+
+                            var colors = new[] { "#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899" };
+                            var color = colors[Math.Abs(sv.ID.GetHashCode()) % colors.Length];
+
+                            var nameParts = sv.Ten?.Split(' ') ?? new string[0];
+                            var initials = nameParts.Length >= 2
+                                ? (nameParts.Last()[0].ToString() + nameParts[0][0].ToString()).ToUpper()
+                                : (sv.Ten?.Substring(0, 1) ?? "?").ToUpper();
+
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:.75rem;">
+                                        <div class="ca-table-avatar" style="background:@color; color:white;">
+                                            @initials
+                                        </div>
+                                        <div class="ca-table-name">@sv.Ten</div>
+                                    </div>
+                                </td>
+                                <td><strong>@sv.ID</strong></td>
+                                <td>@(sv.Lop ?? "—")</td>
+                                <td style="color:var(--text-muted);">@(sv.Email ?? "—")</td>
+                                <td style="white-space:nowrap; color:var(--text-muted);">
+                                    @item.NgayDangKy.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td>
+                                    <span class="ce-badge
+                                        @(item.TrangThai == "Đã xác nhận" ? "ce-badge-success" :
+                                          item.TrangThai == "Đã huỷ" ? "ce-badge-danger" : "ce-badge-neutral")">
+                                        @item.TrangThai
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang -->
+        @if (totalPage > 1)
+        {
+            <div class="ca-table-footer">
+                <span class="ca-table-info">
+                    Hiển thị @((page-1)*pageSize + 1) – @Math.Min(page * pageSize, totalReg) / @totalReg sinh viên
+                </span>
+
+                <ul class="ce-pagination">
+                    <li class="@(page == 1 ? "disabled" : "")">
+                        <a href="@Url.Action("RegistrationDetail", new { id = ev?.MaEvent, page = page - 1 })">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </a>
+                    </li>
+
+                    @for (int p = 1; p <= totalPage; p++)
+                    {
+                        bool showPage = (p == 1 || p == totalPage || (p >= page - 2 && p <= page + 2));
+                        if (showPage)
+                        {
+                            <li class="@(p == page ? "active" : "")">
+                                <a href="@Url.Action("RegistrationDetail", new { id = ev?.MaEvent, page = p })">@p</a>
+                            </li>
+                        }
+                        else if ((p == page - 3 || p == page + 3))
+                        {
+                            <li class="disabled"><a>…</a></li>
+                        }
+                    }
+
+                    <li class="@(page == totalPage ? "disabled" : "")">
+                        <a href="@Url.Action("RegistrationDetail", new { id = ev?.MaEvent, page = page + 1 })">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+</div>

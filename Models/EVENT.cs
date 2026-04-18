@@ -46,6 +46,7 @@ namespace shcool_event_management.Models
         public Nullable<int> DRL { get; set; }
         public Nullable<System.DateTime> NgayBatDauDangKy { get; set; }
         public bool IsHidden { get; set; }
+        public string AnhBia { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }

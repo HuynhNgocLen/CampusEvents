@@ -61,6 +61,7 @@
           <Property Name="DRL" Type="int" />
           <Property Name="NgayBatDauDangKy" Type="datetime" />
           <Property Name="IsHidden" Type="bit" Nullable="false" />
+          <Property Name="AnhBia" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -261,6 +262,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="sp_AutoUpdate_TrangThaiEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="school_event_managementModelStoreContainer">
           <EntitySet Name="DangKySuKien" EntityType="Self.DangKySuKien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
@@ -408,6 +410,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="DRL" Type="Int32" />
           <Property Name="NgayBatDauDangKy" Type="DateTime" Precision="3" />
           <Property Name="IsHidden" Type="Boolean" Nullable="false" />
+          <Property Name="AnhBia" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MaNghanh">
           <Key>
@@ -654,6 +657,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
             <End Role="SinhVien" EntitySet="SinhViens" />
           </AssociationSet>
           <EntitySet Name="vw_DiemRenLuyenTheoKy" EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" />
+          <FunctionImport Name="sp_AutoUpdate_TrangThaiEvent" />
         </EntityContainer>
         <EntityType Name="vw_DiemRenLuyenTheoKy">
           <Key>
@@ -703,6 +707,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <EntitySetMapping Name="EVENTs">
             <EntityTypeMapping TypeName="school_event_managementModel.EVENT">
               <MappingFragment StoreEntitySet="EVENT">
+                <ScalarProperty Name="AnhBia" ColumnName="AnhBia" />
                 <ScalarProperty Name="IsHidden" ColumnName="IsHidden" />
                 <ScalarProperty Name="NgayBatDauDangKy" ColumnName="NgayBatDauDangKy" />
                 <ScalarProperty Name="DRL" ColumnName="DRL" />
@@ -805,6 +810,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_AutoUpdate_TrangThaiEvent" FunctionName="school_event_managementModel.Store.sp_AutoUpdate_TrangThaiEvent" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
