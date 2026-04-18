@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewBag.Title != null ? ViewBag.Title + " — " : "")CampusEvents Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+          rel="stylesheet" />
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/campus-variables.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/campus-base.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/campus-components.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/campus-admin.css")" />
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <!-- Thông báo thành công / lỗi -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" style="margin: 15px 20px;">
+            <strong>Thành công!</strong> @TempData["Success"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" style="margin: 15px 20px;">
+            <strong>Lỗi!</strong> @TempData["Error"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    <div class="ca-shell">
+        <aside class="ca-sidebar" id="adminSidebar" aria-label="Admin navigation">
+
+            <a href="@Url.Action("Index", "AdminDashboard", new { area = "Admin" })"
+               class="ca-sidebar__brand"
+               title="Trang chủ Admin">
+                <div class="ca-sidebar__logo-icon">
+                    <span class="material-symbols-outlined">event</span>
+                </div>
+                <div>
+                    <div class="ca-sidebar__brand-name">CampusEvents</div>
+                    <div class="ca-sidebar__brand-role">Academic Curator</div>
+                </div>
+            </a>
+
+            <nav class="ca-sidebar__nav">
+
+                <span class="ca-nav-section-label">Tổng quan</span>
+
+                <li>
+                    <a href="@Url.Action("Dashboard", "AdminEvents", new { area = "Admin" })"
+                       class="@(ViewBag.ActiveMenu == "dashboard" ? "ca-nav-item active" : "ca-nav-item")">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        Dashboard
+                    </a>
+                </li>
+
+                <a href="@Url.Action("Index", "AdminEvents", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "events" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "events" ? "page" : null)">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    Sự kiện
+                </a>
+
+                <span class="ca-nav-section-label">Nội dung</span>
+
+                <a href="@Url.Action("Create", "AdminEvents", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "create" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "create" ? "page" : null)">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    Tạo bài đăng
+                </a>
+
+                <span class="ca-nav-section-label">Báo cáo</span>
+
+                <a href="@Url.Action("Index", "AdminStatistics", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "statistics" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "statistics" ? "page" : null)">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    Thống kê
+                </a>
+
+                <span class="ca-nav-section-label">Hệ thống</span>
+
+                <a href="@Url.Action("Index", "AdminSettings", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "settings" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "settings" ? "page" : null)">
+                    <span class="material-symbols-outlined">settings</span>
+                    Cài đặt
+                </a>
+
+                <div style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border);">
+                    <a href="@Url.Action("Logout", "AdminAuth", new { area = "Admin" })"
+                       class="ca-nav-item"
+                       style="color:var(--danger);">
+                        <span class="material-symbols-outlined">logout</span>
+                        Đăng xuất
+                    </a>
+                </div>
+
+            </nav>
+        </aside>
+
+        <div class="ca-main">
+            <header class="ca-header" role="banner">
+                <button class="ce-navbar__toggler" type="button"
+                        id="sidebarToggle"
+                        aria-controls="adminSidebar"
+                        aria-label="Mở menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+
+                <div class="ca-header__search">
+                    <span class="material-symbols-outlined ca-header__search-icon">search</span>
+                    <input type="search"
+                           id="adminGlobalSearch"
+                           placeholder="@(ViewBag.SearchPlaceholder ?? "Tìm kiếm nội dung...")"
+                           autocomplete="off" />
+                </div>
+
+                <div class="ca-header__actions">
+
+                    <button class="ca-header__icon-btn" type="button"
+                            title="Thông báo" id="btnNotifications">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="ca-header__notif-dot" id="notifDot"></span>
+                    </button>
+
+                    <button class="ca-header__icon-btn" type="button" title="Trợ giúp & Tài liệu">
+                        <span class="material-symbols-outlined">help</span>
+                    </button>
+
+                    <a href="@Url.Action("Profile", "AdminSettings", new { area = "Admin" })"
+                       class="ca-header__profile"
+                       title="Hồ sơ Admin">
+                        @if (!string.IsNullOrEmpty(ViewBag.AdminAvatar?.ToString()))
+                        {
+                            <div class="ca-header__avatar">
+                                <img src="@ViewBag.AdminAvatar" alt="Avatar" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="ca-header__avatar-initials">AC</div>
+                        }
+                        <div>
+                            <div class="ca-header__profile-name">@(ViewBag.AdminName ?? "Admin Campus")</div>
+                            <div class="ca-header__profile-role">@(ViewBag.AdminRole ?? "Administrator Profile")</div>
+                        </div>
+                    </a>
+
+                </div>
+            </header>
+
+            <main class="ca-content" id="mainContent" role="main">
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="ce-toast-wrap">
+                        <div class="ce-toast ce-toast-success" role="alert">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            @TempData["Success"]
+                        </div>
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="ce-toast-wrap">
+                        <div class="ce-toast ce-toast-error" role="alert">
+                            <span class="material-symbols-outlined">error</span>
+                            @TempData["Error"]
+                        </div>
+                    </div>
+                }
+
+                @RenderBody()
+
+            </main>
+
+            <footer class="ca-footer" role="contentinfo">
+                <span>© 2024 Campus Management Suite &nbsp;·&nbsp; System Version 2.1.0-STABLE</span>
+                <div class="ca-footer__links">
+                    <a href="#">System Status</a>
+                    <a href="#">API Documentation</a>
+                    <a href="#">Support</a>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            document.querySelectorAll('.ce-toast').forEach(function (el) {
+                setTimeout(function () {
+                    el.style.transition = 'opacity .4s';
+                    el.style.opacity = '0';
+                    setTimeout(function () { el.remove(); }, 400);
+                }, 4000);
+            });
+
+            // Mobile sidebar toggle
+            var btn = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('adminSidebar');
+            if (btn && sidebar) {
+                btn.addEventListener('click', function () {
+                    sidebar.classList.toggle('open');
+                });
+                // Close on outside click
+                document.addEventListener('click', function (e) {
+                    if (sidebar.classList.contains('open') &&
+                        !sidebar.contains(e.target) &&
+                        !btn.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            }
+        })();
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

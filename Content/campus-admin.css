@@ -1,0 +1,871 @@
+/* ============================================================
+   Content/campus-admin.css
+   Admin Portal – Sidebar · Header · Layout · Cards · Table
+   Upload Zone · Rich-text overrides
+   Bổ sung cho: campus-variables.css + campus-base.css + campus-components.css
+   ============================================================ */
+
+/* ══════════════════════════════════════════════════════════════
+   1. SHELL LAYOUT  (Sidebar + Main Column)
+   ══════════════════════════════════════════════════════════════ */
+.ca-shell {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.ca-sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    scrollbar-width: none;
+}
+
+    .ca-sidebar::-webkit-scrollbar {
+        display: none;
+    }
+
+/* Brand / Logo area */
+.ca-sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.1rem 1.25rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.ca-sidebar__logo-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+    .ca-sidebar__logo-icon .material-symbols-outlined {
+        font-size: 20px;
+    }
+
+.ca-sidebar__brand-name {
+    font-size: .95rem;
+    font-weight: var(--fw-black);
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.ca-sidebar__brand-role {
+    font-size: .7rem;
+    color: var(--text-muted);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+}
+
+/* Nav */
+.ca-sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    padding: .875rem .75rem 1.25rem;
+    flex: 1;
+    gap: .15rem;
+}
+
+.ca-nav-section-label {
+    font-size: .65rem;
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-light);
+    padding: .75rem .5rem .3rem;
+    display: block;
+}
+
+.ca-nav-item {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .5rem .75rem;
+    border-radius: var(--radius);
+    font-size: .875rem;
+    font-weight: var(--fw-medium);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all var(--transition);
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-main);
+}
+
+    .ca-nav-item .material-symbols-outlined {
+        font-size: 19px;
+        flex-shrink: 0;
+        transition: color var(--transition);
+    }
+
+    .ca-nav-item:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .ca-nav-item.active {
+        background: var(--primary-light);
+        color: var(--primary);
+        font-weight: var(--fw-semibold);
+    }
+
+        .ca-nav-item.active .material-symbols-outlined {
+            color: var(--primary);
+        }
+
+/* ── Main column (right of sidebar) ─────────────────────────── */
+.ca-main {
+    flex: 1;
+    margin-left: var(--sidebar-w);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   2. HEADER (top bar inside .ca-main)
+   ══════════════════════════════════════════════════════════════ */
+.ca-header {
+    height: 62px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-xs);
+}
+
+/* Search */
+.ca-header__search {
+    position: relative;
+    flex: 1;
+    max-width: 360px;
+}
+
+    .ca-header__search input {
+        width: 100%;
+        height: 38px;
+        padding: 0 1rem 0 2.5rem;
+        border-radius: var(--radius-full);
+        border: 1.5px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text);
+        font-family: var(--font-main);
+        font-size: .84rem;
+        outline: none;
+        transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+        .ca-header__search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(19,127,236,.1);
+            background: var(--surface);
+        }
+
+.ca-header__search-icon {
+    position: absolute;
+    left: .7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px !important;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Action buttons cluster */
+.ca-header__actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-left: auto;
+}
+
+.ca-header__icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    flex-shrink: 0;
+}
+
+    .ca-header__icon-btn:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: rgba(19,127,236,.3);
+    }
+
+    .ca-header__icon-btn .material-symbols-outlined {
+        font-size: 19px;
+    }
+
+.ca-header__notif-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    background: var(--danger);
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    display: none;
+}
+
+    .ca-header__notif-dot.visible {
+        display: block;
+    }
+
+/* Profile chip */
+.ca-header__profile {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .35rem .6rem .35rem .35rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition);
+    border: 1px solid transparent;
+    flex-shrink: 0;
+}
+
+    .ca-header__profile:hover {
+        background: var(--surface-2);
+        border-color: var(--border);
+    }
+
+.ca-header__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+    .ca-header__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.ca-header__avatar-initials {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-size: .75rem;
+    font-weight: var(--fw-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ca-header__profile-name {
+    font-size: .83rem;
+    font-weight: var(--fw-semibold);
+    color: var(--text);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.ca-header__profile-role {
+    font-size: .68rem;
+    color: var(--text-muted);
+    line-height: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   3. CONTENT AREA + PAGE TYPOGRAPHY
+   ══════════════════════════════════════════════════════════════ */
+.ca-content {
+    flex: 1;
+    padding: 1.75rem 2rem;
+    max-width: 1400px;
+    width: 100%;
+}
+
+.ca-page-title {
+    font-size: 1.75rem;
+    font-weight: var(--fw-black);
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: .3rem;
+}
+
+.ca-page-sub {
+    font-size: .875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.75rem;
+}
+
+/* ── Breadcrumb ───────────────────────────────────────────────── */
+.ca-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+    .ca-breadcrumb a {
+        color: var(--text-muted);
+        text-decoration: none;
+    }
+
+        .ca-breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+    .ca-breadcrumb .sep {
+        color: var(--border);
+    }
+
+    .ca-breadcrumb .current {
+        color: var(--text);
+        font-weight: var(--fw-semibold);
+    }
+
+/* ══════════════════════════════════════════════════════════════
+   4. CARD (Admin variant – extends .ce-card)
+   ══════════════════════════════════════════════════════════════ */
+.ca-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.ca-card__header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: .875rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.ca-card__header-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+    .ca-card__header-icon .material-symbols-outlined {
+        font-size: 16px;
+    }
+
+.ca-card__title {
+    font-size: .9rem;
+    font-weight: var(--fw-bold);
+    color: var(--text);
+}
+
+/* ── Form helpers ─────────────────────────────────────────────── */
+.ca-form-group {
+    margin-bottom: 1.1rem;
+}
+
+.ca-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 600px) {
+    .ca-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   5. CREATE PAGE LAYOUT  (2-column: main + sidebar)
+   ══════════════════════════════════════════════════════════════ */
+.ca-create-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.ca-create-side {
+    position: sticky;
+    top: calc(62px + 1.5rem);
+}
+
+@media (max-width: 900px) {
+    .ca-create-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .ca-create-side {
+        position: static;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6. UPLOAD / DRAG-DROP ZONE
+   ══════════════════════════════════════════════════════════════ */
+.ca-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
+    position: relative;
+    background: var(--surface-2);
+}
+
+    .ca-upload-zone:hover,
+    .ca-upload-zone.drag-over {
+        border-color: var(--primary);
+        background: var(--primary-light);
+    }
+    /* Hide actual file input but make zone clickable */
+    .ca-upload-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+.ca-upload-icon-wrap {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    pointer-events: none;
+}
+
+    .ca-upload-icon-wrap .material-symbols-outlined {
+        font-size: 24px;
+    }
+
+.ca-upload-title {
+    font-size: .88rem;
+    font-weight: var(--fw-semibold);
+    color: var(--text);
+    pointer-events: none;
+}
+
+.ca-upload-sub {
+    font-size: .74rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Upload quality badge */
+.ca-upload-quality {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .74rem;
+    color: #16a34a;
+    font-weight: var(--fw-semibold);
+    margin-top: .5rem;
+}
+
+    .ca-upload-quality .material-symbols-outlined {
+        font-size: 16px;
+    }
+
+/* Preview (shown after file selected) */
+.ca-upload-preview {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 16/9;
+}
+
+    .ca-upload-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+.ca-upload-preview__remove {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.55);
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+    .ca-upload-preview__remove:hover {
+        background: var(--danger);
+    }
+
+    .ca-upload-preview__remove .material-symbols-outlined {
+        font-size: 16px;
+    }
+
+/* ══════════════════════════════════════════════════════════════
+   7. ADMIN TABLE  (Danh sách sinh viên, v.v.)
+   ══════════════════════════════════════════════════════════════ */
+.ca-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* Table toolbar */
+.ca-table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+.ca-table-toolbar__title {
+    font-size: .95rem;
+    font-weight: var(--fw-bold);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.ca-table-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-size: .72rem;
+    font-weight: var(--fw-semibold);
+    color: var(--text-muted);
+}
+
+/* Scrollable table container */
+.ca-table-scroll {
+    overflow-x: auto;
+}
+
+.ca-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .84rem;
+}
+
+    .ca-table thead th {
+        padding: .7rem 1rem;
+        text-align: left;
+        font-size: .7rem;
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--text-muted);
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+        .ca-table thead th:first-child {
+            border-radius: 0;
+        }
+
+    .ca-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background var(--transition);
+    }
+
+        .ca-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .ca-table tbody tr:hover {
+            background: var(--primary-light);
+        }
+
+    .ca-table tbody td {
+        padding: .75rem 1rem;
+        color: var(--text);
+        vertical-align: middle;
+    }
+
+/* Avatar initials cell */
+.ca-table-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .72rem;
+    font-weight: var(--fw-black);
+    flex-shrink: 0;
+    color: #fff;
+}
+
+/* Student name column */
+.ca-table-name {
+    font-weight: var(--fw-semibold);
+    color: var(--text);
+}
+
+.ca-table-id {
+    font-size: .75rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+/* Table pagination row */
+.ca-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .875rem 1.25rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.ca-table-info {
+    font-size: .78rem;
+    color: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   8. REGISTRATION DETAIL PAGE
+   ══════════════════════════════════════════════════════════════ */
+.ca-reg-header {
+    margin-bottom: 1.5rem;
+}
+
+.ca-reg-title {
+    font-size: 1.75rem;
+    font-weight: var(--fw-black);
+    color: var(--text);
+    margin-bottom: .5rem;
+    line-height: 1.2;
+}
+
+.ca-reg-meta {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+/* Stat widget (Tổng đăng ký card) */
+.ca-stat-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    text-align: right;
+    min-width: 160px;
+}
+
+.ca-stat-widget__label {
+    font-size: .68rem;
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    margin-bottom: .25rem;
+}
+
+.ca-stat-widget__val {
+    font-size: 2.2rem;
+    font-weight: var(--fw-black);
+    color: var(--primary);
+    line-height: 1;
+}
+
+.ca-stat-widget__trend {
+    font-size: .72rem;
+    color: var(--success);
+    font-weight: var(--fw-semibold);
+    margin-top: .2rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   9. FOOTER
+   ══════════════════════════════════════════════════════════════ */
+.ca-footer {
+    padding: .875rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .74rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    gap: .5rem;
+    background: var(--surface);
+}
+
+.ca-footer__links {
+    display: flex;
+    gap: 1rem;
+}
+
+    .ca-footer__links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: var(--fw-semibold);
+    }
+
+        .ca-footer__links a:hover {
+            color: var(--primary);
+        }
+
+/* ══════════════════════════════════════════════════════════════
+   10. CKEDITOR 5 INTEGRATION OVERRIDES
+   ══════════════════════════════════════════════════════════════ */
+.ck.ck-editor__main .ck-editor__editable {
+    min-height: 220px;
+    border-color: var(--border) !important;
+    border-radius: 0 0 var(--radius) var(--radius) !important;
+    font-family: var(--font-main);
+    font-size: .9rem;
+    color: var(--text);
+    background: var(--surface) !important;
+}
+
+.ck.ck-toolbar {
+    border-color: var(--border) !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    background: var(--surface-2) !important;
+}
+
+.ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(19,127,236,.12) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   11. DARK MODE PATCHES
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] .ca-sidebar,
+[data-theme="dark"] .ca-header,
+[data-theme="dark"] .ca-footer {
+    background: var(--surface);
+}
+
+[data-theme="dark"] .ca-upload-zone {
+    background: var(--surface-2);
+}
+
+[data-theme="dark"] .ck.ck-toolbar,
+[data-theme="dark"] .ck.ck-editor__main .ck-editor__editable {
+    background: var(--surface-2) !important;
+    color: var(--text) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   12. RESPONSIVE – Collapse sidebar on small screens
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 991px) {
+    .ca-sidebar {
+        transform: translateX(-100%);
+    }
+
+        .ca-sidebar.open {
+            transform: translateX(0);
+            box-shadow: var(--shadow-lg);
+        }
+
+    .ca-main {
+        margin-left: 0;
+    }
+
+    .ca-content {
+        padding: 1.25rem 1rem;
+    }
+
+    .ca-header {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ca-page-title {
+        font-size: 1.35rem;
+    }
+
+    .ca-table-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

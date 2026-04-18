@@ -12,6 +12,8 @@ namespace shcool_event_management.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class school_event_managementEntities : DbContext
     {
@@ -36,5 +38,10 @@ namespace shcool_event_management.Models
         public virtual DbSet<vw_SoChoConLai> vw_SoChoConLai { get; set; }
         public virtual DbSet<vw_UserStatsByYear> vw_UserStatsByYear { get; set; }
         public virtual DbSet<vw_DiemRenLuyenTheoKy> vw_DiemRenLuyenTheoKy { get; set; }
+    
+        public virtual int sp_AutoUpdate_TrangThaiEvent()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_AutoUpdate_TrangThaiEvent");
+        }
     }
 }

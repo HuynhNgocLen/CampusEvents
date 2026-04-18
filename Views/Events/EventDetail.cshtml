@@ -1,0 +1,462 @@
+﻿@model shcool_event_management.Models.EVENT
+@{
+    ViewBag.Title = "Chi tiết Sự kiện";
+    ViewBag.ActivePage = "events";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+
+    bool isSaved = ViewBag.SavedEventIds != null && ((List<int>)ViewBag.SavedEventIds).Contains(Model.MaEvent);
+
+    // LOGIC KIỂM TRA TRẠNG THÁI NÚT ĐĂNG KÝ
+    DateTime now = DateTime.Now;
+
+    // Chưa tới ngày mở đăng ký
+    bool isNotStarted = Model.NgayBatDauDangKy.HasValue && now < Model.NgayBatDauDangKy.Value;
+
+    // Đã quá hạn đăng ký
+    bool isExpired = Model.NgayHetHanDangKy.HasValue && now.Date > Model.NgayHetHanDangKy.Value.Date;
+
+    // Đã đầy (hết chỗ)
+    bool isFull = ViewBag.tinhTrang != null && ViewBag.tinhTrang.SoChoConLai <= 0;
+
+    //Sinh viên đã đăng ký rồi
+    bool daDangKy = ViewBag.DaDangKy != null && (bool)ViewBag.DaDangKy;
+}
+
+<div class="container py-4">
+
+    @* Back *@
+    <a href="@Url.Action("Events","Events")"
+       style="display:inline-flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:600;color:var(--text-muted);margin-bottom:1.25rem">
+        <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
+        Quay lại danh sách
+    </a>
+
+    <div class="row g-4">
+
+        @* ── LEFT: Event info ── *@
+        <div class="col-lg-8">
+
+            @* Banner *@
+            <div class="ce-event-banner ce-reveal mb-4">
+                <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0e2a44,#137fec 55%,#38bdf8)"></div>
+                <div class="ce-event-banner__overlay"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);opacity:.1">
+                    <span class="material-symbols-outlined" style="font-size:140px;color:#fff">computer</span>
+                </div>
+                <div class="ce-event-banner__content">
+                    <div class="d-flex gap-2 mb-2 flex-wrap">
+                        <span class="ce-badge ce-badge-primary">@(Model.DanhMuc.TenDanhMuc) </span>
+                        @if (ViewBag.tinhTrang.SoChoConLai != null)
+                        {
+                            var tt = ViewBag.tinhTrang;
+
+                            if (@tt.SoChoConLai <= 0)
+                            {
+                                <span class="ce-badge ce-badge-danger">Hết chỗ</span>
+                            }
+                            else if (@tt.SoChoConLai <= 10)
+                            {
+                                <span class="ce-badge ce-badge-warning">Sắp đầy (Còn @tt.SoChoConLai chỗ)</span>
+                            }
+                            else
+                            {
+                                <span class="ce-badge ce-badge-success">Còn chỗ</span>
+                            }
+                        }
+                    </div>
+                    <h1>@(Model?.TenEvent)</h1>
+                    <p style="opacity:.82;font-size:.88rem;margin-top:.4rem">
+                        Tổ chức bởi <strong>@(Model.Vien.TenVien)</strong>
+                    </p>
+                </div>
+            </div>
+
+            @* Info grid *@
+            <div class="ce-info-grid ce-reveal mb-4">
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">calendar_today</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Ngày tổ chức</div>
+                        <div class="ce-info-item__val">@Model.NgayBatDau.ToString("dddd, dd/MM/yyyy")</div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">schedule</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Thời gian</div>
+                        <div class="ce-info-item__val">
+                            @if (Model.GioBatDau.HasValue && Model.GioKetThuc.HasValue)
+                            {@($"{Model.GioBatDau.Value.ToString(@"hh\:mm")} – {Model.GioKetThuc.Value.ToString(@"hh\:mm")}") }
+                            else
+                            {<text> Chưa cập nhật</text>}
+                        </div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">location_on</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Địa điểm</div>
+                        <div class="ce-info-item__val">@(Model.DiaDiem.TenDiaDiem) </div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">person</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Người phụ trách</div>
+                        <div class="ce-info-item__val">@(Model.NguoiDang)</div>
+                    </div>
+                </div>
+            </div>
+
+            @* Description *@
+            <div class="ce-card p-4 ce-reveal mb-4">
+                <h3 class="ce-section-title mb-3">Mô tả sự kiện</h3>
+                <div style="font-size:.875rem;color:var(--text-muted);line-height:1.85">
+                    @if (!string.IsNullOrEmpty(Model.MoTa))
+                    {
+                        @Html.Raw(Model.MoTa.Replace("\n", "<br/>"))
+                    }
+                    else
+                    {
+                        <p>Tech Symposium 2025 là sự kiện học thuật thường niên lớn nhất của Khoa Công nghệ Thông tin.</p>
+                        <p class="mt-2">Chủ đề năm nay: <strong style="color:var(--text)">Trí tuệ nhân tạo &amp; Tương lai số</strong> – bao gồm Machine Learning, Cloud, Cybersecurity và Blockchain.</p>
+                        <p class="mt-2">Cơ hội kết nối với chuyên gia, tìm hiểu thực tập và tham gia thi hackathon.</p>
+                    }
+                </div>
+
+                <div class="mt-4">
+                    <h5 style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">Chương trình</h5>
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var s in new[] {
+                            new { Time="08:00", Label="Đón tiếp & Check-in" },
+                            new { Time="08:30", Label="Khai mạc & Phát biểu chào mừng" },
+                            new { Time="09:00", Label="Keynote: AI trong kỷ nguyên số" },
+                            new { Time="10:30", Label="Phiên workshop song song (4 chủ đề)" },
+                            new { Time="12:00", Label="Nghỉ trưa & Networking" },
+                            new { Time="13:30", Label="Cuộc thi Hackathon 4 tiếng" },
+                            new { Time="17:00", Label="Trao giải & Bế mạc" },
+                        })
+                        {
+                            <div style="display:flex;align-items:center;gap:.875rem;padding:.55rem .875rem;background:var(--surface-2);border-radius:var(--radius);font-size:.83rem">
+                                <span style="font-weight:700;color:var(--primary);min-width:38px">@s.Time</span>
+                                <span style="color:var(--text)">@s.Label</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        @* ── RIGHT: Registration card ── *@
+        <div class="col-lg-4">
+            <div class="ce-sticky-reg ce-reveal">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 style="font-size:1.05rem;font-weight:800;margin:0">Đăng ký tham dự</h4>
+                    <span class="ce-badge ce-badge-primary">@(Model.GiaVe == 0 || Model.GiaVe == null ? "Miễn phí" : Model.GiaVe.Value.ToString("N0") + "đ")</span>
+                </div>
+
+                @* Capacity *@
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span style="font-size:.78rem;color:var(--text-muted)">Số chỗ</span>
+                        <span style="font-size:.78rem;font-weight:700;color:var(--danger)">@ViewBag.tinhTrang.SoLuongToiDa</span>
+                    </div>
+                    <div class="ce-cap-bar">
+                        <div class="ce-cap-bar__fill high" style="width:@(Math.Round((double)ViewBag.phanTram))%"></div>
+                    </div>
+                    <p style="font-size:.73rem;color:var(--text-muted);margin-top:.35rem">Số chỗ còn lại: @ViewBag.tinhTrang.SoChoConLai</p>
+                </div>
+
+                @* Deadline *@
+                <div style="background:var(--surface-2);border-radius:var(--radius);padding:.8rem;margin-bottom:1.1rem">
+                    <div style="display:flex;align-items:center;gap:.5rem;font-size:.83rem">
+                        <span class="material-symbols-outlined" style="font-size:17px;color:var(--accent)">timer</span>
+                        <div>
+                            <div style="font-weight:600;color:var(--text)">
+                                Hạn đăng ký: @(Model.NgayHetHanDangKy.HasValue ? Model.NgayHetHanDangKy.Value.ToString("dd/MM/yyyy") : "Không thời hạn")
+                            </div>
+                            <div style="font-size:.73rem;color:var(--text-muted)">
+                                @if (ViewBag.SoNgayConLai > 0)
+                                {
+                                    <span>Còn @ViewBag.SoNgayConLai ngày</span>
+                                }
+                                else if (ViewBag.SoNgayConLai == 0)
+                                {
+                                    <span style="color:orange">Hết hạn trong hôm nay</span>
+                                }
+                                else
+                                {
+                                    <span style="color:red; font-weight:bold;">Đã hết hạn đăng ký</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ==================================================
+                    HIỂN THỊ NÚT ĐĂNG KÝ DỰA THEO TRẠNG THÁI
+                    ================================================== *@
+                @if (daDangKy)
+                {
+                    <button class="ce-btn ce-btn-block ce-btn-lg mb-2" type="button" disabled
+                            style="background-color: var(--surface-3); color: var(--text-muted); cursor: not-allowed;">
+                        <span class="material-symbols-outlined">task_alt</span> Đã đăng ký tham gia
+                    </button>
+                }
+                else if (isNotStarted)
+                {
+                    <button class="ce-btn ce-btn-block ce-btn-lg mb-2" type="button" disabled
+                            style="background-color: var(--surface-3); color: var(--text-muted); cursor: not-allowed;">
+                        <span class="material-symbols-outlined">schedule</span> Mở lúc @Model.NgayBatDauDangKy.Value.ToString("HH:mm - dd/MM/yyyy")
+                    </button>
+                }
+                else if (isExpired)
+                {
+                    <button class="ce-btn ce-btn-block ce-btn-lg mb-2" type="button" disabled
+                            style="background-color: #dc3545; color: white; cursor: not-allowed;">
+                        <span class="material-symbols-outlined">event_busy</span> Đã hết hạn đăng ký
+                    </button>
+                }
+                else if (isFull)
+                {
+                    <button class="ce-btn ce-btn-block ce-btn-lg mb-2" type="button" disabled
+                            style="background-color: #6c757d; color: white; cursor: not-allowed;">
+                        <span class="material-symbols-outlined">group_off</span> Sự kiện đã đầy
+                    </button>
+                }
+                else
+                {
+                    <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg mb-2" type="button"
+                            onclick="ceOpenModal('modal-register')">
+                        <span class="material-symbols-outlined">how_to_reg</span> Đăng ký ngay
+                    </button>
+                }
+                @* ================================================== *@
+
+            <button class="ce-btn ce-btn-ghost ce-btn-block @(isSaved ? "saved" : "")"
+                    type="button"
+                    onclick="toggleFavorite(this, @Model.MaEvent)">
+                <span class="material-symbols-outlined" style="font-size:16px">
+                    @(isSaved ? "favorite" : "favorite_border")
+                </span>
+                <span class="btn-text">@(isSaved ? "Đã lưu sự kiện" : "Lưu sự kiện")</span>
+            </button>
+
+                @* Share *@
+                <div class="mt-3 pt-3" style="border-top:1px solid var(--border)">
+                    <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.55rem">Chia sẻ</p>
+                    <div class="d-flex gap-2">
+                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1"
+                                onclick="copyToClipboard('url-input', 'Đã copy liên kết!')">
+                            <span class="material-symbols-outlined" style="font-size:14px">link</span> Link
+                        </button>
+                        <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1" onclick="openEmailDialog('@Model.Email')">
+                            <span class="material-symbols-outlined" style="font-size:14px">mail</span> Email
+                        </button>
+
+                        @* Chỉ hiển thị nút Zalo nếu đã đăng ký *@
+                        @if (daDangKy)
+                        {
+                            <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1; color: var(--primary); font-weight: bold;"
+                                    onclick="ceOpenModal('modal-success')">
+                                <span class="material-symbols-outlined" style="font-size:14px">qr_code_2</span> Mã QR
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<input type="text" id="url-input" style="position: absolute; left: -9999px;" readonly />
+
+@* REGISTER MODAL *@
+<div class="ce-modal-overlay" id="modal-register">
+    <div class="ce-modal-box" style="max-width: 480px;">
+        <div class="ce-modal-header">
+            <h5>
+                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px">how_to_reg</span>
+                Xác nhận đăng ký tham gia
+            </h5>
+            <button class="ce-modal-close" onclick="ceCloseModal('modal-register')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        @using (Html.BeginForm("ConfirmRegister", "Events", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="eventId" value="@Model.MaEvent" />
+
+            <div class="ce-modal-body">
+
+                @* Tóm tắt sự kiện *@
+                <div style="background:var(--primary-light); border-radius:var(--radius); padding:1rem; margin-bottom:1.25rem; border:1px solid rgba(19,127,236,.18)">
+                    <div style="font-weight:700; color:var(--text); margin-bottom:.4rem">@Model.TenEvent</div>
+                    <div style="font-size:.82rem; color:var(--text-muted); line-height:1.55">
+                        📅 @Model.NgayBatDau.ToString("dddd, dd/MM/yyyy")<br>
+                        🕒 @(Model.GioBatDau.HasValue && Model.GioKetThuc.HasValue
+                            ? $"{Model.GioBatDau.Value.ToString(@"hh\:mm")} – {Model.GioKetThuc.Value.ToString(@"hh\:mm")}"
+                            : "Chưa cập nhật")<br>
+                        📍 @Model.DiaDiem.TenDiaDiem
+                    </div>
+                </div>
+
+                @* Thông tin sinh viên *@
+                <div class="ce-card p-4 mb-4" style="background:var(--surface-2); border:1px solid var(--border)">
+                    <h6 style="font-size:.9rem; font-weight:700; margin-bottom:1rem; color:var(--primary); display:flex; align-items:center; gap:.5rem">
+                        <span class="material-symbols-outlined">badge</span>
+                        Thông tin người đăng ký
+                    </h6>
+
+                    <div class="row g-3 text-muted" style="font-size:.88rem">
+                        <div class="col-12">
+                            <strong style="color:var(--text)">Họ và tên:</strong>
+                            <span style="color:var(--text)">@(ViewBag.SinhVien?.Ten ?? "N/A")</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <strong style="color:var(--text)">Mã sinh viên:</strong>
+                            <span style="color:var(--text)">@Session["StudentId"]</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <strong style="color:var(--text)">Lớp:</strong>
+                            <span style="color:var(--text)">@(ViewBag.SinhVien?.Lop ?? "N/A")</span>
+                        </div>
+                        <div class="col-12">
+                            <strong style="color:var(--text)">Khoa / Viện:</strong>
+                            <span style="color:var(--text)">@(ViewBag.SinhVien?.Vien?.TenVien ?? "N/A")</span>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <strong style="color:var(--text)">Ngày sinh:</strong>
+                            <span style="color:var(--text)">
+                                @(ViewBag.SinhVien?.NgayThangNamSinh != null
+                                    ? ViewBag.SinhVien.NgayThangNamSinh.ToString("dd/MM/yyyy")
+                                    : "Chưa cập nhật")
+                            </span>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <strong style="color:var(--text)">SĐT:</strong>
+                            <span style="color:var(--text)">
+                                @(string.IsNullOrEmpty(ViewBag.SinhVien?.SoDienThoai) ? "Chưa thêm SĐT" : ViewBag.SinhVien.SoDienThoai)
+                            </span>
+                        </div>
+
+                        <div class="col-12">
+                            <strong style="color:var(--text)">Email:</strong>
+                            <span style="color:var(--text)">
+                                @(string.IsNullOrEmpty(ViewBag.SinhVien?.Email) ? "Chưa thêm Email" : ViewBag.SinhVien.Email)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="font-size:.82rem; color:var(--text-muted); background:var(--surface-3); padding:1rem; border-radius:var(--radius); border-left:4px solid #f59e0b">
+                    <strong>Lưu ý:</strong> Thông tin được lấy từ hồ sơ cá nhân của bạn.
+                    Vui lòng kiểm tra chính xác trước khi xác nhận.
+                </div>
+
+            </div>
+
+            <div class="ce-modal-footer">
+                <button type="button" class="ce-btn ce-btn-ghost" onclick="ceCloseModal('modal-register')">Huỷ</button>
+                <button type="submit" class="ce-btn ce-btn-primary ce-btn-lg">
+                    <span class="material-symbols-outlined">how_to_reg</span>
+                    Xác nhận đăng ký
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@* ══════════ SUCCESS MODAL ══════════ *@
+<div class="ce-modal-overlay" id="modal-success">
+    <div class="ce-modal-box" style="max-width:400px;text-align:center">
+        <div class="ce-modal-body" style="padding:2.25rem 1.75rem">
+            <div style="width:68px;height:68px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;color:#16a34a">
+                <span class="material-symbols-outlined" style="font-size:34px">check_circle</span>
+            </div>
+            <h4 style="font-weight:800;margin-bottom:.4rem">Đăng ký thành công!</h4>
+            <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.4rem">
+                Bạn đã đăng ký <strong>@Model.TenEvent</strong>.<br />Email xác nhận đã được gửi.
+            </p>
+            <div style="background:var(--surface-2);border-radius:var(--radius-lg);padding:1.1rem;margin-bottom:1.25rem;text-align:center">
+                <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.65rem">Mã QR Check-in</p>
+                <div style="width:110px;height:110px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto">
+                    @if (ViewBag.QRCodeBase64 != null)
+                    {
+                        <img src="@ViewBag.QRCodeBase64" style="width:100px;height:100px" />
+                    }
+                    else
+                    {
+                        <span class="material-symbols-outlined" style="color:var(--text-muted)">qr_code_2</span>
+                    }
+                </div>
+                <p style="font-size:.73rem;color:var(--text-muted);margin-top:.55rem">Xuất trình khi tham gia sự kiện</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Registrations","Registration")" class="ce-btn ce-btn-outline" style="flex:1">Xem đăng ký</a>
+                <button class="ce-btn ce-btn-primary" style="flex:1" onclick="ceCloseModal('modal-success')">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ══════════ MODAL EMAIL DIALOG ══════════ *@
+<div class="ce-modal-overlay" id="modal-email-dialog">
+    <div class="ce-modal-box" style="max-width:400px">
+        <div class="ce-modal-header">
+            <h5>Email liên hệ BTC</h5>
+            <button class="ce-modal-close" onclick="ceCloseModal('modal-email-dialog')"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="ce-modal-body">
+            <div class="d-flex gap-2 p-2" style="background:var(--surface-2); border-radius:8px; border:1px solid var(--border)">
+                <input type="text" id="email-input" value="" readonly style="flex:1; border:none; background:transparent; font-size:.85rem; outline:none; color:var(--text-muted)">
+                <button class="ce-btn ce-btn-primary ce-btn-sm" onclick="copyToClipboard('email-input', 'Đã copy email!')">Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/A-user-events.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.getElementById('url-input')) {
+                document.getElementById('url-input').value = window.location.href;
+            }
+        });
+
+        function openEmailDialog(email) {
+            document.getElementById('email-input').value = email;
+            ceOpenModal('modal-email-dialog');
+        }
+
+        function copyToClipboard(inputId, message) {
+            var copyText = document.getElementById(inputId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value).then(function () {
+                if (typeof CeToast !== 'undefined') {
+                    CeToast.show(message, 'success');
+                } else {
+                    alert(message);
+                }
+                ceCloseModal(inputId === 'url-input' ? 'modal-copy-link' : 'modal-email-dialog');
+            });
+        }
+    </script>
+}
+
+@if (TempData["ShowSuccessModal"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            ceOpenModal('modal-success');
+        });
+    </script>
+}
