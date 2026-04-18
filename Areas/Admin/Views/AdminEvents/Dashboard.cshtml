@@ -1,0 +1,144 @@
+﻿@model shcool_event_management.Areas.Admin.ViewModels.EventDashboardViewModel
+@{
+    ViewBag.Title = "Dashboard - Quản trị sự kiện";
+    ViewBag.ActiveMenu = "dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    // Bảo vệ null
+    var m = Model ?? new shcool_event_management.Areas.Admin.ViewModels.EventDashboardViewModel();
+}
+
+<div class="ca-content">
+
+    <h1 class="ca-page-title">Tổng quan hệ thống</h1>
+    <p class="ca-page-sub">Chào mừng quay lại! Đây là bức tranh tổng thể về hoạt động sự kiện.</p>
+
+    <!-- Thống kê Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+
+        <div class="ca-stat-card">
+            <div class="ca-stat-card__icon">
+                <span class="material-symbols-outlined">event</span>
+            </div>
+            <div>
+                <div class="ca-stat-card__label">TỔNG SỰ KIỆN</div>
+                <div class="ca-stat-card__val">@m.TotalEvents</div>
+            </div>
+        </div>
+
+        <div class="ca-stat-card">
+            <div class="ca-stat-card__icon">
+                <span class="material-symbols-outlined">schedule</span>
+            </div>
+            <div>
+                <div class="ca-stat-card__label">SẮP DIỄN RA</div>
+                <div class="ca-stat-card__val">@m.UpcomingEvents</div>
+            </div>
+        </div>
+
+        <div class="ca-stat-card">
+            <div class="ca-stat-card__icon">
+                <span class="material-symbols-outlined">play_circle</span>
+            </div>
+            <div>
+                <div class="ca-stat-card__label">ĐANG DIỄN RA</div>
+                <div class="ca-stat-card__val">@m.OngoingEvents</div>
+            </div>
+        </div>
+
+        <div class="ca-stat-card">
+            <div class="ca-stat-card__icon">
+                <span class="material-symbols-outlined">how_to_reg</span>
+            </div>
+            <div>
+                <div class="ca-stat-card__label">TỔNG ĐĂNG KÝ</div>
+                <div class="ca-stat-card__val">@m.TotalRegistrations.ToString("N0")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ca-create-layout">
+
+        <!-- Sự kiện sắp diễn ra -->
+        <div>
+            <div class="ca-card">
+                <div class="ca-card__header">
+                    <div class="ca-card__header-icon">
+                        <span class="material-symbols-outlined">upcoming</span>
+                    </div>
+                    <div class="ca-card__title">Sự kiện sắp diễn ra</div>
+                </div>
+
+                @if (m.UpcomingList != null && m.UpcomingList.Any())
+                {
+                    foreach (var e in m.UpcomingList)
+                    {
+                        <div class="ce-reg-item" style="margin-bottom: 0.75rem;">
+                            <div class="ce-reg-item__thumb" style="background: var(--primary-light); color: var(--primary); font-weight: bold;">
+                                @e.DanhMuc?.MaDanhMuc
+                            </div>
+                            <div class="ce-reg-item__info">
+                                <div class="ce-reg-item__title">@e.TenEvent</div>
+                                <div class="ce-reg-item__sub">
+                                    @e.NgayBatDau.ToString("dd/MM/yyyy HH:mm") — @(e.SoLuongDaDangKy)/@(e.SoLuongToiDa) người
+                                </div>
+                            </div>
+                            <a href="@Url.Action("RegistrationDetail", new { id = e.MaEvent })"
+                               class="ce-btn ce-btn-sm ce-btn-outline">Xem DS</a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="ce-empty">
+                        <span class="material-symbols-outlined">event_busy</span>
+                        <div class="ce-empty__title">Hiện chưa có sự kiện sắp diễn ra</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Thống kê theo danh mục -->
+        <div>
+            <div class="ca-card">
+                <div class="ca-card__header">
+                    <div class="ca-card__header-icon">
+                        <span class="material-symbols-outlined">pie_chart</span>
+                    </div>
+                    <div class="ca-card__title">Thống kê theo danh mục</div>
+                </div>
+
+                <table class="ca-table" style="margin-top: 0.5rem;">
+                    <thead>
+                        <tr>
+                            <th>Danh mục</th>
+                            <th>Số sự kiện</th>
+                            <th>Tổng đăng ký</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (m.CategoryStats != null && m.CategoryStats.Any())
+                        {
+                            foreach (var item in m.CategoryStats)
+                            {
+                                <tr>
+                                    <td><strong>@item.Category</strong></td>
+                                    <td>@item.Count</td>
+                                    <td>@item.TotalReg.ToString("N0")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                                    Chưa có dữ liệu thống kê theo danh mục
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
