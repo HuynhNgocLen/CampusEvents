@@ -37,7 +37,7 @@ function toggleFavorite(btn, maEvent) {
     var iconSpan = btn.querySelector('.material-symbols-outlined');
     var textSpan = btn.querySelector('.btn-text');
 
-    fetch('/Users/ToggleFavorite', {
+    fetch('/Events/ToggleFavorite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ maEvent: maEvent })
@@ -173,7 +173,7 @@ function updateFilterCount() {
 /* ── Tìm kiếm (Enter) ── */
 var handleSearch = function (e) {
     if (e.key === 'Enter' && e.target.value.trim()) {
-        window.location.href = '/Users/Events?q=' + encodeURIComponent(e.target.value.trim());
+        window.location.href = '/Events/Events?q=' + encodeURIComponent(e.target.value.trim());
     }
 };
 
