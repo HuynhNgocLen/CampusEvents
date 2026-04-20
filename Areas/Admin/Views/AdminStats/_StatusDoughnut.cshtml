@@ -1,0 +1,29 @@
+﻿<div class="ca-card">
+    <div class="ca-card__header">
+        <div class="ca-card__header-icon"><span class="material-symbols-outlined">donut_large</span></div>
+        <div class="ca-card__title">Phân bổ trạng thái sự kiện</div>
+    </div>
+    <div class="ca-card__body" style="display:flex;align-items:center;gap:1.5rem">
+        <div style="width:180px;height:180px;flex-shrink:0"><canvas id="statusChart"></canvas></div>
+        <div style="display:flex;flex-direction:column;gap:.5rem;flex:1">
+            @if (ViewBag.ByStatus != null)
+            {
+                string[] statusColors = { "#137fec", "#16a34a", "#64748b", "#dc2626", "#d97706" };
+                int si = 0;
+                foreach (var s in ViewBag.ByStatus)
+                {
+                    var statusName = s.GetType().GetProperty("Status")?.GetValue(s, null)?.ToString() ?? "N/A";
+                    var countValue = s.GetType().GetProperty("Count")?.GetValue(s, null) ?? 0;
+                    string col = statusColors[si % statusColors.Length];
+
+                    <div style="display:flex;align-items:center;gap:.5rem;font-size:.8rem">
+                        <span class="legend-dot" style="background:@col"></span>
+                        <span style="flex:1; font-weight: bold; color: @col">@statusName</span>
+                        <strong>@countValue</strong>
+                    </div>
+                    si++;
+                }
+            }
+        </div>
+    </div>
+</div>

@@ -869,3 +869,100 @@
         align-items: flex-start;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   13. SIDEBAR OVERLAY (mobile backdrop + desktop toggle)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Backdrop mờ phía sau sidebar khi mở trên mobile */
+.ca-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 199;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    animation: fadeOverlay .2s ease;
+}
+.ca-sidebar-overlay.visible { display: block; }
+
+@keyframes fadeOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Nút toggle hamburger — ẩn trên desktop, hiện trên mobile */
+.ca-sidebar-toggle {
+    display: none;
+}
+@media (max-width: 991px) {
+    .ca-sidebar-toggle { display: flex; }
+}
+
+/* Desktop: sidebar luôn hiện, nút toggle dùng để thu/mở */
+@media (min-width: 992px) {
+    /* Trạng thái thu gọn khi user bấm toggle trên desktop */
+    .ca-shell.sidebar-collapsed .ca-sidebar {
+        width: 64px;
+    }
+
+    .ca-shell.sidebar-collapsed .ca-sidebar__brand-name,
+    .ca-shell.sidebar-collapsed .ca-sidebar__brand-role,
+    .ca-shell.sidebar-collapsed .ca-nav-section-label,
+    .ca-shell.sidebar-collapsed .ca-nav-item span:not(.material-symbols-outlined) {
+        display: none;
+    }
+
+    .ca-shell.sidebar-collapsed .ca-sidebar__brand {
+        justify-content: center;
+        padding: 1rem .75rem;
+    }
+
+    .ca-shell.sidebar-collapsed .ca-nav-item {
+        justify-content: center;
+        padding: .6rem;
+    }
+
+    .ca-shell.sidebar-collapsed .ca-main {
+        margin-left: 64px;
+    }
+
+    .ca-shell.sidebar-collapsed .ca-sidebar__nav {
+        align-items: center;
+    }
+
+    /* Tooltip khi hover lúc collapsed */
+    .ca-shell.sidebar-collapsed .ca-nav-item span:not(.material-symbols-outlined) {
+        display: none;
+    }
+    .ca-shell.sidebar-collapsed .ca-nav-item:hover::after {
+        content: attr(data-label);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--text);
+        color: var(--surface);
+        font-size: .75rem;
+        font-weight: 600;
+        padding: .3rem .65rem;
+        border-radius: var(--radius);
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 300;
+        box-shadow: var(--shadow-md);
+    }
+
+    .ca-sidebar {
+        transition: width .25s cubic-bezier(.4,0,.2,1);
+    }
+    .ca-main {
+        transition: margin-left .25s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* Nút toggle hiện trên desktop ở header */
+    .ca-sidebar-toggle {
+        display: flex;
+    }
+}

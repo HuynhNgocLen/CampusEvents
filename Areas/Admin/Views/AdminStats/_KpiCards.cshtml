@@ -1,0 +1,28 @@
+﻿<div class="kpi-row">
+    <div class="kpi-card">
+        <div class="kpi-card__label">Tổng sự kiện</div>
+        <div class="kpi-card__val">@ViewBag.TotalEvents</div>
+        <div class="kpi-card__sub neu"><span class="material-symbols-outlined">event</span>Toàn hệ thống</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-card__label">Tổng đăng ký</div>
+        <div class="kpi-card__val">@ViewBag.TotalRegistrations.ToString("N0")</div>
+        <div class="kpi-card__sub up"><span class="material-symbols-outlined">trending_up</span>Năm @ViewBag.Year</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-card__label">Tỷ lệ tham gia</div>
+        <div class="kpi-card__val">@ViewBag.ParticipationRate<span style="font-size:1.1rem">%</span></div>
+        <div class="kpi-card__sub up"><span class="material-symbols-outlined">trending_up</span>Đã xác nhận / Tổng ĐK</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-card__label">Lượt xem sự kiện</div>
+        <div class="kpi-card__val">
+            @{
+                int views = ViewBag.TotalViews;
+                string displayViews = views > 1000 ? (views / 1000.0).ToString("0.#") + "K" : views.ToString();
+            }
+            @displayViews
+        </div>
+        <div class="kpi-card__sub neu"><span class="material-symbols-outlined">visibility</span>Tổng lượt xem</div>
+    </div>
+</div>
