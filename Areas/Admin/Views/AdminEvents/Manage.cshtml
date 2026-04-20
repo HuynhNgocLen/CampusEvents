@@ -1,0 +1,262 @@
+@model List<shcool_event_management.Models.EVENT>
+@{
+    ViewBag.Title = "Quản lý bài đăng — CampusEvents Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    int page      = (int)(ViewBag.Page ?? 1);
+    int totalPage = (int)(ViewBag.TotalPage ?? 1);
+    int total     = (int)(ViewBag.Total ?? 0);
+    string search = ViewBag.Search as string;
+    string status = ViewBag.Status as string;
+    string cat    = ViewBag.Cat as string;
+    var danhMucs  = ViewBag.DanhMucs as List<shcool_event_management.Models.DanhMuc>;
+
+    Func<int,string> pageUrl = p => Url.Action("Manage","AdminEvents",
+        new { area="Admin", page=p, search, status, cat });
+}
+
+@section styles {
+<style>
+.filter-bar {
+    display:flex; gap:.65rem; align-items:center; flex-wrap:wrap;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:.875rem 1.1rem;
+    margin-bottom:1.25rem; box-shadow:var(--shadow-sm);
+}
+.filter-bar label { font-size:.75rem; font-weight:700; color:var(--text-muted); white-space:nowrap; }
+.filter-bar select, .filter-bar input[type=search] {
+    height:36px; padding:0 .75rem; border:1.5px solid var(--border);
+    border-radius:var(--radius); background:var(--surface-2); color:var(--text);
+    font-family:var(--font-main); font-size:.82rem; outline:none;
+    transition:border-color .18s, box-shadow .18s;
+}
+.filter-bar select:focus, .filter-bar input[type=search]:focus {
+    border-color:var(--primary); box-shadow:0 0 0 3px rgba(19,127,236,.1);
+}
+.filter-bar .sep { width:1px; height:28px; background:var(--border); }
+.toggle-hidden-btn {
+    width:34px; height:34px; border:1.5px solid var(--border); border-radius:var(--radius);
+    background:var(--surface-2); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--text-muted); transition:all .18s; font-size:17px;
+}
+.toggle-hidden-btn:hover, .toggle-hidden-btn.toggling { background:var(--primary-light); color:var(--primary); border-color:rgba(19,127,236,.35); }
+
+.page-btn {
+    width:32px; height:32px; border-radius:var(--radius); border:1px solid var(--border);
+    background:var(--surface); font-family:var(--font-main); font-size:.78rem;
+    font-weight:600; color:var(--text-muted); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none; transition:all .18s;
+}
+.page-btn:hover, .page-btn.active {
+    background:var(--primary); color:#fff; border-color:var(--primary);
+}
+.page-btn.disabled { opacity:.4; pointer-events:none; }
+</style>
+}
+
+<div class="ca-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;">
+        <h1 class="ca-page-title">Quản lý bài đăng</h1>
+        <div style="display:flex;gap:.5rem;">
+            <a href="@Url.Action("Create","AdminEvents",new{area="Admin"})" class="ce-btn ce-btn-primary">
+                <span class="material-symbols-outlined">add</span>Tạo mới
+            </a>
+        </div>
+    </div>
+    <p class="ca-page-sub">Tìm kiếm, lọc, chỉnh sửa và quản lý tất cả sự kiện trong hệ thống.</p>
+
+    @* Filter bar *@
+    <form method="get" action="@Url.Action("Manage","AdminEvents",new{area="Admin"})">
+        <div class="filter-bar">
+            <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-light);">filter_list</span>
+
+            <div style="position:relative;flex:1;max-width:300px;">
+                <span class="material-symbols-outlined" style="position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:16px;color:var(--text-light);pointer-events:none">search</span>
+                <input type="search" name="search" value="@search"
+                       placeholder="Tìm theo tên sự kiện..."
+                       style="padding-left:2.1rem;width:100%;"/>
+            </div>
+
+            <div class="sep"></div>
+
+            <label>Trạng thái</label>
+            <select name="status">
+                <option value="">Tất cả</option>
+                <option value="Sắp diễn ra" @(status=="Sắp diễn ra"?"selected":"")>Sắp diễn ra</option>
+                <option value="Đang diễn ra" @(status=="Đang diễn ra"?"selected":"")>Đang diễn ra</option>
+                <option value="Đã kết thúc"  @(status=="Đã kết thúc"?"selected":"")>Đã kết thúc</option>
+                <option value="Đã hủy"        @(status=="Đã hủy"?"selected":"")>Đã hủy</option>
+            </select>
+
+            <label>Danh mục</label>
+            <select name="cat">
+                <option value="">Tất cả</option>
+                @if (danhMucs != null)
+                {
+                    foreach (var dm in danhMucs)
+                    {
+                        <option value="@dm.MaDanhMuc" @(cat==dm.MaDanhMuc?"selected":"")>@dm.TenDanhMuc</option>
+                    }
+                }
+            </select>
+
+            <button type="submit" class="ce-btn ce-btn-primary ce-btn-sm">
+                <span class="material-symbols-outlined">search</span>Lọc
+            </button>
+            @if (!string.IsNullOrWhiteSpace(search) || !string.IsNullOrWhiteSpace(status) || !string.IsNullOrWhiteSpace(cat))
+            {
+                <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})" class="ce-btn ce-btn-outline ce-btn-sm">
+                    <span class="material-symbols-outlined">close</span>Xóa lọc
+                </a>
+            }
+        </div>
+    </form>
+
+    @* Table *@
+    <div class="ca-table-wrap">
+        <div class="ca-table-toolbar">
+            <div class="ca-table-toolbar__title">
+                <span class="material-symbols-outlined" style="font-size:18px;color:var(--primary)">list_alt</span>
+                Danh sách sự kiện
+                <span class="ca-table-count">@total bản ghi</span>
+            </div>
+            <a href="@Url.Action("ExportExcel","AdminEvents",new{area="Admin"})" class="ce-btn ce-btn-outline ce-btn-sm">
+                <span class="material-symbols-outlined">download</span>Xuất Excel
+            </a>
+        </div>
+
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px">#</th>
+                        <th>Tên sự kiện</th>
+                        <th>Danh mục</th>
+                        <th>Ngày tổ chức</th>
+                        <th>Đăng ký</th>
+                        <th>Trạng thái</th>
+                        <th>Hiển thị</th>
+                        <th style="width:120px;text-align:center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+                                <span class="material-symbols-outlined" style="font-size:36px;display:block;margin-bottom:.5rem;color:var(--text-light)">inbox</span>
+                                Không có dữ liệu phù hợp
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int idx = (page - 1) * (int)(ViewBag.PageSize ?? 10) + 1;
+                        foreach (var ev in Model)
+                        {
+                            double pct = ev.SoLuongToiDa > 0
+                                ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa, 0) : 0;
+
+                            string badgeClass = ev.TrangThai == "Sắp diễn ra" ? "ce-badge ce-badge-info"
+                                : ev.TrangThai == "Đang diễn ra" ? "ce-badge ce-badge-success"
+                                : ev.TrangThai == "Đã hủy" ? "ce-badge ce-badge-danger"
+                                : "ce-badge ce-badge-default";
+
+                            <tr>
+                                <td style="color:var(--text-muted);font-size:.78rem">@idx</td>
+                                <td>
+                                    <div style="font-weight:600;font-size:.85rem;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@ev.TenEvent</div>
+                                    <div style="font-size:.72rem;color:var(--text-muted);margin-top:1px;">@ev.MaVien · DRL: @ev.DRL</div>
+                                </td>
+                                <td>
+                                    @if (ev.DanhMuc != null)
+                                    {
+                                        <span class="ce-badge ce-badge-default">@ev.DanhMuc.TenDanhMuc</span>
+                                    }
+                                </td>
+                                <td style="font-size:.82rem;white-space:nowrap">@ev.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:.4rem;min-width:110px">
+                                        <div style="flex:1;height:5px;background:var(--border);border-radius:999px;overflow:hidden;">
+                                            <div style="width:@pct%;height:100%;background:var(--primary);border-radius:999px;"></div>
+                                        </div>
+                                        <span style="font-size:.72rem;color:var(--text-muted);white-space:nowrap">@ev.SoLuongDaDangKy/@ev.SoLuongToiDa</span>
+                                    </div>
+                                </td>
+                                <td><span class="@badgeClass">@ev.TrangThai</span></td>
+                                <td style="text-align:center">
+                                    <button class="toggle-hidden-btn" id="hideBtn-@ev.MaEvent"
+                                            data-id="@ev.MaEvent" data-hidden="@ev.IsHidden.ToString().ToLower()"
+                                            title="@(ev.IsHidden==true ? "Đang ẩn — Nhấn để hiện" : "Đang hiện — Nhấn để ẩn")"
+                                            onclick="toggleHidden(@ev.MaEvent, this)">
+                                        <span class="material-symbols-outlined">@(ev.IsHidden == true ? "visibility_off" : "visibility")</span>
+                                    </button>
+                                </td>
+                                <td style="text-align:center">
+                                    <div style="display:flex;gap:.3rem;justify-content:center;">
+                                        <a href="@Url.Action("RegistrationDetail","AdminEvents",new{area="Admin",id=ev.MaEvent})"
+                                           class="ce-btn ce-btn-sm ce-btn-outline" title="Danh sách đăng ký">
+                                            <span class="material-symbols-outlined">group</span>
+                                        </a>
+                                        <a href="@Url.Action("Edit","AdminEvents",new{area="Admin",id=ev.MaEvent})"
+                                           class="ce-btn ce-btn-sm ce-btn-outline" title="Chỉnh sửa">
+                                            <span class="material-symbols-outlined">edit</span>
+                                        </a>
+                                        <button class="ce-btn ce-btn-sm ce-btn-danger" title="Xóa"
+                                                onclick="return confirm('Xóa sự kiện này?') && this.closest('form') ? true : false">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            idx++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* Pagination *@
+        <div class="ca-table-footer">
+            <div class="ca-table-info">
+                Trang @page / @totalPage &nbsp;·&nbsp; @total bản ghi
+            </div>
+            <div style="display:flex;gap:.35rem;align-items:center;">
+                <a class="page-btn @(page<=1 ? "disabled" : "")" href="@pageUrl(page-1)">
+                    <span class="material-symbols-outlined" style="font-size:16px">chevron_left</span>
+                </a>
+                @for (int p = Math.Max(1, page - 2); p <= Math.Min(totalPage, page + 2); p++)
+                {
+                    <a class="page-btn @(p == page ? "active" : "")" href="@pageUrl(p)">@p</a>
+                }
+                <a class="page-btn @(page>=totalPage ? "disabled" : "")" href="@pageUrl(page+1)">
+                    <span class="material-symbols-outlined" style="font-size:16px">chevron_right</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+function toggleHidden(id, btn) {
+    btn.classList.add('toggling');
+    btn.disabled = true;
+    fetch('@Url.Action("ToggleHidden","AdminEvents",new{area="Admin"})', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'id=' + id + '&__RequestVerificationToken=' + document.querySelector('input[name=__RequestVerificationToken]')?.value
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const ico = btn.querySelector('.material-symbols-outlined');
+            ico.textContent = data.isHidden ? 'visibility_off' : 'visibility';
+            btn.title = data.isHidden ? 'Đang ẩn — Nhấn để hiện' : 'Đang hiện — Nhấn để ẩn';
+        }
+    })
+    .finally(() => { btn.classList.remove('toggling'); btn.disabled = false; });
+}
+</script>
+@Html.AntiForgeryToken()
+}

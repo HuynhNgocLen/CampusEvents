@@ -223,7 +223,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminDashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminEventsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminSettingsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminStatsController.cs" />
     <Compile Include="Areas\Admin\ViewModels\EventDashboardViewModel.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
@@ -313,6 +316,7 @@
     <Content Include="Content\campus-pages.css" />
     <Content Include="Content\campus-variables.css" />
     <Content Include="Content\campus-profile.css" />
+    <Content Include="Content\AdminStats.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -414,7 +418,16 @@
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Create.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\RegistrationDetail.cshtml" />
-    <Content Include="Areas\Admin\Views\AdminEvents\Dashboard.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminDashboard\Dashboard.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminStats\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminEvents\Manage.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminEvents\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminEvents\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminStats\_KpiCards.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminStats\_StatusDoughnut.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminStats\_CategoryTable.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminStats\_TopTables.cshtml" />
     <None Include="packages\jQuery.3.7.0\Content\Scripts\jquery-3.7.0-vsdoc.js" />
     <Content Include="packages\jQuery.3.7.0\Content\Scripts\jquery-3.7.0.js" />
     <Content Include="packages\jQuery.3.7.0\Content\Scripts\jquery-3.7.0.min.js" />
@@ -696,6 +709,8 @@
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\campus-app.js" />
     <Content Include="Scripts\A-user-events.js" />
+    <Content Include="Scripts\AdminDashboard.js" />
+    <Content Include="Scripts\A-StatsScripts.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -739,7 +754,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\EventDashboardViewModel\" />
     <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>

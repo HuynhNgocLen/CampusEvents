@@ -1,0 +1,175 @@
+@{
+    int currentYear = (int)(ViewBag.Year ?? DateTime.Now.Year);
+}
+
+<div class="ca-table-wrap" id="top-tables-wrap">
+
+    <div class="ca-table-toolbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+        <div style="display:flex;gap:.25rem">
+            <button class="top-tab-btn active" data-type="dangky"
+                    onclick="switchTopTab(this,'dangky')">
+                <span class="material-symbols-outlined" style="font-size:16px">how_to_reg</span>
+                Đăng ký
+            </button>
+            <button class="top-tab-btn" data-type="yeuthich"
+                    onclick="switchTopTab(this,'yeuthich')">
+                <span class="material-symbols-outlined" style="font-size:16px">favorite</span>
+                Yêu thích
+            </button>
+            <button class="top-tab-btn" data-type="luotxem"
+                    onclick="switchTopTab(this,'luotxem')">
+                <span class="material-symbols-outlined" style="font-size:16px">visibility</span>
+                Lượt xem
+            </button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:.5rem">
+            <span style="font-size:.8rem;color:var(--text-muted)">Năm:</span>
+            <select id="top-year-select" onchange="reloadTopTable()"
+                    style="height:34px;padding:0 .65rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.82rem;outline:none">
+                @for (int y = DateTime.Now.Year; y >= 2020; y--)
+                {
+                    <option value="@y" @(y == currentYear ? "selected" : "")>@y</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="ca-table-scroll">
+        <table class="ca-table" id="top-table">
+            <thead id="top-thead">
+                <tr>
+                    <th style="width:36px">#</th>
+                    <th>Tên sự kiện</th>
+                    <th>Danh mục</th>
+                    <th>Đăng ký</th>
+                    <th>Tối đa</th>
+                    <th>Tỷ lệ</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody id="top-tbody">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                    <span class="material-symbols-outlined" style="font-size:2rem;display:block;margin-bottom:.4rem">hourglass_empty</span>
+                    Đang tải...
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .top-tab-btn {
+        display: inline-flex; align-items: center; gap: .35rem;
+        padding: .38rem .8rem;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-2);
+        color: var(--text-muted);
+        font-family: var(--font-main);
+        font-size: .82rem; font-weight: 600;
+        cursor: pointer;
+        transition: all .18s ease;
+    }
+    .top-tab-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .top-tab-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+</style>
+
+<script>
+    var _currentTopType = 'dangky';
+
+    var _topHeaders = {
+        dangky:   ['#','Tên sự kiện','Danh mục','Đăng ký','Tối đa','Tỷ lệ','Trạng thái'],
+        yeuthich: ['#','Tên sự kiện','Danh mục','Yêu thích','Trạng thái'],
+        luotxem:  ['#','Tên sự kiện','Danh mục','Lượt xem','Trạng thái']
+    };
+
+    function switchTopTab(btn, type) {
+        document.querySelectorAll('.top-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _currentTopType = type;
+        reloadTopTable();
+    }
+
+    function reloadTopTable() {
+        var year = document.getElementById('top-year-select').value;
+        var url  = '@Url.Action("GetTopEvents", "AdminStats", new { area = "Admin" })'
+                 + '?type=' + _currentTopType + '&year=' + year;
+
+        // Render header
+        var heads = _topHeaders[_currentTopType];
+        var thHtml = heads.map(h => '<th>' + h + '</th>').join('');
+        document.getElementById('top-thead').innerHTML = '<tr>' + thHtml + '</tr>';
+
+        // Loading
+        var colspan = heads.length;
+        document.getElementById('top-tbody').innerHTML =
+            '<tr><td colspan="' + colspan + '" style="text-align:center;padding:2rem;color:var(--text-muted)">' +
+            '<span class="material-symbols-outlined" style="font-size:2rem;display:block;margin-bottom:.4rem">hourglass_empty</span>Đang tải...</td></tr>';
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => renderTopTable(data, _currentTopType, colspan))
+            .catch(() => {
+                document.getElementById('top-tbody').innerHTML =
+                    '<tr><td colspan="' + colspan + '" style="text-align:center;padding:2rem;color:var(--danger)">Lỗi tải dữ liệu</td></tr>';
+            });
+    }
+
+    function renderTopTable(rows, type, colspan) {
+        if (!rows || rows.length === 0) {
+            document.getElementById('top-tbody').innerHTML =
+                '<tr><td colspan="' + colspan + '" style="text-align:center;padding:2rem;color:var(--text-muted)">Không có dữ liệu</td></tr>';
+            return;
+        }
+
+        var badgeMap = {
+            'Sắp diễn ra': 'ce-badge ce-badge-info',
+            'Đang diễn ra': 'ce-badge ce-badge-success',
+            'Đã hủy':       'ce-badge ce-badge-danger',
+            'Đã kết thúc':  'ce-badge ce-badge-default'
+        };
+
+        var html = '';
+        rows.forEach(function(te, i) {
+            var badge = badgeMap[te.TrangThai] || 'ce-badge ce-badge-default';
+            if (type === 'dangky') {
+                var pct = te.SoLuongToiDa > 0 ? Math.round(te.SoLuongDaDangKy * 100 / te.SoLuongToiDa) : 0;
+                html += '<tr>' +
+                    '<td style="font-weight:700">' + (i+1) + '</td>' +
+                    '<td><strong style="font-size:.85rem">' + te.TenEvent + '</strong></td>' +
+                    '<td>' + (te.TenDanhMuc || '') + '</td>' +
+                    '<td><strong style="color:var(--primary)">' + te.SoLuongDaDangKy + '</strong></td>' +
+                    '<td>' + te.SoLuongToiDa + '</td>' +
+                    '<td><div style="display:flex;align-items:center;gap:.4rem;min-width:100px">' +
+                        '<div style="flex:1;height:5px;background:var(--border);border-radius:999px;overflow:hidden">' +
+                            '<div style="width:' + pct + '%;height:100%;background:var(--primary);border-radius:999px"></div>' +
+                        '</div>' +
+                        '<span style="font-size:.72rem;color:var(--text-muted)">' + pct + '%</span>' +
+                    '</div></td>' +
+                    '<td><span class="' + badge + '">' + te.TrangThai + '</span></td>' +
+                    '</tr>';
+            } else if (type === 'yeuthich') {
+                html += '<tr>' +
+                    '<td style="font-weight:700">' + (i+1) + '</td>' +
+                    '<td><strong style="font-size:.85rem">' + te.TenEvent + '</strong></td>' +
+                    '<td>' + (te.TenDanhMuc || '') + '</td>' +
+                    '<td><strong style="color:#e11d48">' + te.SoYeuThich + '</strong> <span style="font-size:.75rem;color:var(--text-muted)">lượt</span></td>' +
+                    '<td><span class="' + badge + '">' + te.TrangThai + '</span></td>' +
+                    '</tr>';
+            } else {
+                html += '<tr>' +
+                    '<td style="font-weight:700">' + (i+1) + '</td>' +
+                    '<td><strong style="font-size:.85rem">' + te.TenEvent + '</strong></td>' +
+                    '<td>' + (te.TenDanhMuc || '') + '</td>' +
+                    '<td><strong style="color:#7c3aed">' + te.LuotXem.toLocaleString() + '</strong> <span style="font-size:.75rem;color:var(--text-muted)">lượt</span></td>' +
+                    '<td><span class="' + badge + '">' + te.TrangThai + '</span></td>' +
+                    '</tr>';
+            }
+        });
+
+        document.getElementById('top-tbody').innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () { reloadTopTable(); });
+</script>
