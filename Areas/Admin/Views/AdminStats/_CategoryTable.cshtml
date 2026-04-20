@@ -1,0 +1,46 @@
+﻿<div class="ca-card">
+    <div class="ca-card__header">
+        <div class="ca-card__header-icon"><span class="material-symbols-outlined">category</span></div>
+        <div class="ca-card__title">Thống kê theo danh mục</div>
+    </div>
+    <div class="ca-card-body" style="overflow:hidden">
+        <table class="ca-table">
+            <thead>
+                <tr>
+                    <th>Danh mục</th>
+                    <th>Sự kiện</th>
+                    <th>Tổng ĐK</th>
+                    <th>TB ĐK/SK</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.ByCategory != null)
+                {
+                    // Đổi từ 'dynamic' sang 'var'
+                    foreach (var c in ViewBag.ByCategory)
+                    {
+                        // Dùng Reflection để "lách" qua lỗi Anonymous Type
+                        var ten = c.GetType().GetProperty("Ten")?.GetValue(c, null)?.ToString() ?? "N/A";
+                        var soEvent = c.GetType().GetProperty("SoEvent")?.GetValue(c, null) ?? 0;
+                        var tongDK = c.GetType().GetProperty("TongDangKy")?.GetValue(c, null) ?? 0;
+
+                        <tr>
+                            <td><strong>@ten</strong></td>
+                            <td>@soEvent</td>
+                            <td>@Convert.ToInt32(tongDK).ToString("N0")</td>
+                            <td>
+                                @(Convert.ToInt32(soEvent) > 0
+                                    ? Math.Round(Convert.ToDouble(tongDK) / Convert.ToDouble(soEvent), 1)
+                                    : 0)
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" style="text-align:center;padding:2rem;">Chưa có dữ liệu</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

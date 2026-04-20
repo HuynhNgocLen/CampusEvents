@@ -1,0 +1,278 @@
+﻿/* File: ~/Content/AdminStats.css */
+
+/* --- Biến màu sắc toàn cục --- */
+:root {
+    --primary: #137fec;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --purple: #7c3aed;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --surface-1: #ffffff;
+    --surface-2: #f8fafc;
+    --radius: 12px;
+    --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* --- Layout cơ bản --- */
+.ca-content {
+    padding: 1.5rem;
+    font-family: var(--font-main);
+    color: var(--text);
+    background: var(--surface-2);
+    min-height: 100vh;
+}
+
+.ca-page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.ca-page-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* --- Nút bấm --- */
+.ce-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.ce-btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+}
+
+    .ce-btn-primary:hover {
+        background: #0f67c2;
+        color: #fff;
+    }
+
+/* --- Thẻ KPI (4 ô trên cùng) --- */
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+    background: var(--surface-1);
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.kpi-card__label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-card__val {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.kpi-card__sub {
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+    .kpi-card__sub span.material-symbols-outlined {
+        font-size: 16px;
+    }
+
+    .kpi-card__sub.up {
+        color: var(--success);
+    }
+
+    .kpi-card__sub.neu {
+        color: var(--text-muted);
+    }
+
+/* --- Grid 2 cột cho Biểu đồ & Bảng --- */
+.two-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 992px) {
+    .two-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Khung Card chung (Cho Chart và Table) --- */
+.ca-card {
+    background: var(--surface-1);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ca-card__header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.ca-card__header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: var(--primary);
+}
+
+    .ca-card__header-icon span {
+        font-size: 18px;
+    }
+
+.ca-card__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.ca-card__body, .ca-card-body {
+    padding: 1.25rem;
+    flex: 1;
+}
+
+/* --- Bảng dữ liệu (Table) --- */
+.ca-table-wrap {
+    background: var(--surface-1);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+
+.ca-table-toolbar {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.ca-table-toolbar__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.ca-table-count {
+    background: var(--surface-2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.ca-table-scroll {
+    overflow-x: auto;
+}
+
+.ca-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+    .ca-table th {
+        padding: 0.85rem 1rem;
+        background: var(--surface-2);
+        color: var(--text-muted);
+        font-weight: 600;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .ca-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+        vertical-align: middle;
+    }
+
+    .ca-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .ca-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+/* --- Badge Trạng thái & Legend --- */
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.ce-badge {
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.ce-badge-info {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.ce-badge-success {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.ce-badge-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.ce-badge-default {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* --- Fix hiển thị Canvas Chart --- */
+.chart-box {
+    position: relative;
+    width: 100%;
+}

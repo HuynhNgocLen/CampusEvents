@@ -1,0 +1,147 @@
+@using shcool_event_management.Models
+@{
+    ViewBag.Title = "Thống kê — CampusEvents Admin";
+    ViewBag.ActiveMenu = "stats";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    int year = (int)(ViewBag.Year ?? DateTime.Now.Year);
+    string semester = (string)(ViewBag.Semester ?? "");
+    string semLabel = semester == "hk1" ? "Học kỳ 1 (T8–T12)"
+                    : semester == "hk2" ? "Học kỳ 2 (T1–T5)"
+                    : semester == "hk3" ? "Học kỳ 3 (T6–T7)"
+                    : "Cả năm";
+
+    int totalEvents = (int)(ViewBag.TotalEvents ?? 0);
+    int totalReg = (int)(ViewBag.TotalRegistrations ?? 0);
+    int totalViews = (int)(ViewBag.TotalViews ?? 0);
+    double partRate = (double)(ViewBag.ParticipationRate ?? 0);
+    int activeStudents = (int)(ViewBag.ActiveStudents ?? 0);
+    double avgDRL = (double)(ViewBag.AvgDRL ?? 0);
+
+    string monthLabelsJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MonthlyLabels ?? new string[12]);
+    string monthCountsJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MonthlyCounts ?? new int[12]);
+    string weekLabelsJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.WeeklyLabels ?? new string[0]);
+    string weekCountsJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.WeeklyCounts ?? new int[0]);
+}
+
+@section styles {
+    <link href="~/Content/AdminStats.css" rel="stylesheet" />
+}
+
+<div class="ca-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+        <h1 class="ca-page-title">Thống kê &amp; Báo cáo</h1>
+        <div style="display:flex;gap:.5rem;align-items:center">
+            @using (Html.BeginForm("Index", "AdminStats", new { area = "Admin" }, FormMethod.Get))
+            {
+                <select name="year" onchange="this.form.submit()" style="height:38px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.83rem;outline:none">
+                    @for (int y = DateTime.Now.Year; y >= 2020; y--)
+                    {
+                        <option value="@y" @(y == year ? "selected" : "")>Năm @y</option>
+                    }
+                </select>
+                <select name="semester" onchange="this.form.submit()" style="height:38px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.83rem;outline:none">
+                    <option value="" @(semester == "" ? "selected" : "")>Cả năm</option>
+                    <option value="hk1" @(semester == "hk1" ? "selected" : "")>HK1 — T8 đến T12</option>
+                    <option value="hk2" @(semester == "hk2" ? "selected" : "")>HK2 — T1 đến T5</option>
+                    <option value="hk3" @(semester == "hk3" ? "selected" : "")>HK3 — T6 đến T7</option>
+                </select>
+            }
+            <a href="@Url.Action("ExportReport","AdminStats",new{area="Admin",year,semester})" class="ce-btn ce-btn-primary">
+                <span class="material-symbols-outlined">download</span>Xuất Excel
+            </a>
+        </div>
+    </div>
+    <p class="ca-page-sub">Phân tích toàn diện hoạt động sự kiện năm @year — @semLabel.</p>
+
+    @* GỌI FILE PARTIAL: KPI ROW *@
+    @Html.Partial("_KpiCards")
+
+    <div class="two-col">
+        @* Monthly Chart *@
+        <div class="ca-card">
+            <div class="ca-card__header">
+                <div class="ca-card__header-icon"><span class="material-symbols-outlined">bar_chart</span></div>
+                <div class="ca-card__title ca-card__title--monthly">Đăng ký theo tháng — @year (@semLabel)</div>
+            </div>
+            <div class="ca-card__body">
+                <div class="chart-box" style="height:260px"><canvas id="monthlyChart"></canvas></div>
+            </div>
+        </div>
+
+        @* GỌI FILE PARTIAL: STATUS DOUGHNUT *@
+        @Html.Partial("_StatusDoughnut")
+    </div>
+
+    @* Weekly trend *@
+    <div class="ca-card" style="margin-bottom:1.25rem">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon"><span class="material-symbols-outlined">show_chart</span></div>
+            <div class="ca-card__title">Xu hướng đăng ký — 12 tuần gần nhất</div>
+        </div>
+        <div class="ca-card__body">
+            <div class="chart-box" style="height:200px"><canvas id="weeklyChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="two-col">
+        @* GỌI FILE PARTIAL: CATEGORY TABLE *@
+        @Html.Partial("_CategoryTable")
+
+        @* Extra KPIs (Sinh viên tích cực & DRL) *@
+        <div style="display:flex; flex-direction:column; gap:1.25rem">
+            <div class="ca-card">
+                <div class="ca-card__header">
+                    <div class="ca-card__header-icon" style="background:var(--success-light,#dcfce7);color:var(--success,#16a34a)"><span class="material-symbols-outlined">school</span></div>
+                    <div class="ca-card__title">Sinh viên tích cực</div>
+                </div>
+                <div class="ca-card__body" style="text-align:center;padding:1.5rem">
+                    <div style="font-size:3rem;font-weight:800;color:var(--success,#16a34a)">@activeStudents</div>
+                    <div style="font-size:.82rem;color:var(--text-muted);margin-top:.35rem">Sinh viên tham gia ≥ 5 sự kiện</div>
+                </div>
+            </div>
+            <div class="ca-card">
+                <div class="ca-card__header">
+                    <div class="ca-card__header-icon" style="background:var(--purple-light,#ede9fe);color:var(--purple,#7c3aed)"><span class="material-symbols-outlined">grade</span></div>
+                    <div class="ca-card__title">Trung bình DRL</div>
+                </div>
+                <div class="ca-card__body" style="text-align:center;padding:1.5rem">
+                    <div style="font-size:3rem;font-weight:800;color:var(--purple,#7c3aed)">@avgDRL.ToString("0.0")</div>
+                    <div style="font-size:.82rem;color:var(--text-muted);margin-top:.35rem">Điểm rèn luyện trung bình / sự kiện</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* GỌI FILE PARTIAL: TOP TABLES (Đăng ký / Yêu thích / Lượt xem) *@
+    @Html.Partial("_TopTables")
+</div>
+
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+        const MONTH_LABELS = @Html.Raw(monthLabelsJson);
+        const MONTH_DATA   = @Html.Raw(monthCountsJson);
+        const CURRENT_SEMESTER = '@semester';
+        const WEEK_LABELS  = @Html.Raw(weekLabelsJson);
+        const WEEK_DATA    = @Html.Raw(weekCountsJson);
+
+        @{
+            var byStatusList = (System.Collections.IEnumerable)ViewBag.ByStatus;
+            var statusLabels = new System.Collections.Generic.List<string>();
+            var statusCounts = new System.Collections.Generic.List<int>();
+            if (byStatusList != null)
+            {
+                foreach (var s in byStatusList)
+                {
+                    var t = s.GetType();
+                    statusLabels.Add(t.GetProperty("Status")?.GetValue(s, null)?.ToString() ?? "N/A");
+                    statusCounts.Add(Convert.ToInt32(t.GetProperty("Count")?.GetValue(s, null) ?? 0));
+                }
+            }
+        }
+        const STATUS_LABELS = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(statusLabels));
+        const STATUS_DATA   = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(statusCounts));
+    </script>
+
+    <script src="~/Scripts/A-StatsScripts.js"></script>
+}

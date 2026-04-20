@@ -1,382 +1,356 @@
 @model shcool_event_management.Models.EVENT
 @{
-    ViewBag.Title = "Tạo sự kiện mới - Admin";
+    ViewBag.Title = "Tạo sự kiện mới — CampusEvents Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var danhMucList   = ViewBag.DanhMucList as List<SelectListItem>;
+    var diaDiemList   = ViewBag.DiaDiemList as List<SelectListItem>;
+    var vienList      = ViewBag.VienList    as List<SelectListItem>;
+}
+
+@section styles {
+<link href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/contents.css" rel="stylesheet"/>
+<style>
+.create-layout {
+    display:grid;
+    grid-template-columns:1fr 340px;
+    gap:1.5rem;
+    align-items:start;
+}
+.sticky-sidebar { position:sticky; top:calc(var(--header-h,62px) + 1.25rem); }
+
+.form-section-label {
+    font-size:.72rem; font-weight:800; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--text-muted);
+    margin-bottom:.75rem; padding-bottom:.45rem;
+    border-bottom:1px solid var(--border);
+}
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+
+.upload-zone {
+    border:2px dashed var(--border); border-radius:var(--radius-lg);
+    padding:2.25rem; text-align:center; cursor:pointer;
+    transition:all .2s; background:var(--surface-2);
+}
+.upload-zone:hover, .upload-zone.drag-over {
+    border-color:var(--primary); background:var(--primary-light);
+}
+.upload-zone .material-symbols-outlined { font-size:38px; color:var(--text-light); display:block; margin-bottom:.5rem; }
+.upload-zone__title { font-size:.9rem; font-weight:700; margin-bottom:.25rem; }
+.upload-zone__sub { font-size:.75rem; color:var(--text-muted); }
+
+.preview-wrap { position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:16/9; display:none; }
+.preview-wrap img { width:100%; height:100%; object-fit:cover; }
+.preview-remove {
+    position:absolute; top:.5rem; right:.5rem; width:28px; height:28px;
+    border-radius:50%; background:rgba(0,0,0,.55); border:none; color:#fff;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .18s;
+}
+.preview-remove:hover { background:var(--danger); }
+.preview-remove .material-symbols-outlined { font-size:15px; }
+
+.stat-preview {
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:.75rem 1rem;
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:.75rem;
+}
+.stat-preview__label { font-size:.72rem; color:var(--text-muted); font-weight:600; }
+.stat-preview__val { font-size:1.2rem; font-weight:800; color:var(--text); }
+
+.publish-btn {
+    width:100%; padding:.7rem; border-radius:var(--radius);
+    font-family:var(--font-main); font-size:.88rem; font-weight:700;
+    cursor:pointer; border:none; display:flex; align-items:center;
+    justify-content:center; gap:.4rem; transition:all .18s;
+}
+.publish-btn-primary { background:var(--primary); color:#fff; }
+.publish-btn-primary:hover { background:var(--primary-dark, #0e62c4); }
+.publish-btn-outline { background:transparent; border:1.5px solid var(--border); color:var(--text-muted); margin-top:.5rem; }
+.publish-btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+
+.char-counter { float:right; font-size:.7rem; color:var(--text-light); margin-bottom:.3rem; }
+</style>
 }
 
 <div class="ca-content">
+    @* Breadcrumb *@
     <div class="ca-breadcrumb">
-        <a href="@Url.Action("Index", "AdminEvents")">Quản lý sự kiện</a>
-        <span class="sep">›</span>
-        <span class="current">Tạo sự kiện mới</span>
+        <a href="@Url.Action("Dashboard","AdminDashboard",new{area="Admin"})">Dashboard</a>
+        <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
+        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})">Quản lý bài đăng</a>
+        <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
+        <span>Tạo sự kiện mới</span>
     </div>
 
     <h1 class="ca-page-title">Tạo sự kiện mới</h1>
-    <p class="ca-page-sub">Vui lòng nhập đầy đủ thông tin. Các trường có dấu <span class="text-danger">*</span> là bắt buộc.</p>
+    <p class="ca-page-sub">Điền đầy đủ thông tin bên dưới để xuất bản sự kiện lên hệ thống.</p>
 
-    @using (Html.BeginForm("Create", "AdminEvents", FormMethod.Post, new
-    {
-        enctype = "multipart/form-data",
-        id = "createEventForm"
-    }))
+    @Html.ValidationSummary(false, "", new { @class = "ce-alert ce-alert-error", style = "margin-bottom:1.25rem;" })
+
+    @using (Html.BeginForm("Create","AdminEvents", new{area="Admin"}, FormMethod.Post, new { enctype="multipart/form-data", id="createForm" }))
     {
         @Html.AntiForgeryToken()
+        <div class="create-layout">
 
-        <div class="ca-create-layout">
-
-            <!-- ==================== CỘT CHÍNH ==================== -->
+            @* ── LEFT COLUMN ─────────────────────────────────────── *@
             <div>
+                @* Card: Thông tin cơ bản *@
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">info</span></div>
+                        <div class="ca-card__title">Thông tin cơ bản</div>
+                    </div>
+                    <div class="ca-card__body">
+                        <div class="ca-form-group">
+                            <label class="ca-form-label">Tên sự kiện <span class="ca-required">*</span></label>
+                            @Html.TextBoxFor(m => m.TenEvent, new { @class = "ca-form-input", placeholder = "VD: Hội thảo Chuyển đổi số 2025", maxlength = "200", id = "txtTenEvent" })
+                            @Html.ValidationMessageFor(m => m.TenEvent, "", new { @class = "ca-form-error" })
+                        </div>
 
-                <!-- 1. ẢNH BÌA -->
+                        <div class="form-row">
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Danh mục <span class="ca-required">*</span></label>
+                                @Html.DropDownListFor(m => m.MaDanhMuc, danhMucList ?? new List<SelectListItem>(),
+                                    "— Chọn danh mục —", new { @class = "ca-form-select" })
+                                @Html.ValidationMessageFor(m => m.MaDanhMuc, "", new { @class = "ca-form-error" })
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Viện tổ chức <span class="ca-required">*</span></label>
+                                @Html.DropDownListFor(m => m.MaVien, vienList ?? new List<SelectListItem>(),
+                                    "— Chọn viện —", new { @class = "ca-form-select" })
+                                @Html.ValidationMessageFor(m => m.MaVien, "", new { @class = "ca-form-error" })
+                            </div>
+                        </div>
+
+                        <div class="ca-form-group">
+                            <label class="ca-form-label">Địa điểm tổ chức <span class="ca-required">*</span></label>
+                            @Html.DropDownListFor(m => m.MaDiaDiem, diaDiemList ?? new List<SelectListItem>(),
+                                "— Chọn địa điểm —", new { @class = "ca-form-select" })
+                            @Html.ValidationMessageFor(m => m.MaDiaDiem, "", new { @class = "ca-form-error" })
+                        </div>
+
+                        <div class="form-row">
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Ngày &amp; giờ bắt đầu <span class="ca-required">*</span></label>
+                                @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-ddTHH:mm}",
+                                    new { @class = "ca-form-input", type = "datetime-local" })
+                                @Html.ValidationMessageFor(m => m.NgayBatDau, "", new { @class = "ca-form-error" })
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Hạn đăng ký</label>
+                                @Html.TextBoxFor(m => m.NgayHetHanDangKy, "{0:yyyy-MM-dd}",
+                                    new { @class = "ca-form-input", type = "date" })
+                                <div class="ca-form-hint">Để trống nếu không giới hạn</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Card: Nội dung *@
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">description</span></div>
+                        <div class="ca-card__title">Nội dung sự kiện</div>
+                    </div>
+                    <div class="ca-card__body">
+                        <div class="ca-form-group">
+                            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem">
+                                <label class="ca-form-label" style="margin-bottom:0">Mô tả ngắn</label>
+                                <span class="char-counter" id="descCounter">0/300</span>
+                            </div>
+                            @Html.TextAreaFor(m => m.MoTaNgan, new { @class = "ca-form-textarea", rows = 3,
+                                placeholder = "Tóm tắt ngắn gọn về sự kiện (hiển thị trên card preview)...",
+                                maxlength = 300, id = "txtMoTaNgan" })
+                        </div>
+                        <div class="ca-form-group">
+                            <label class="ca-form-label">Nội dung chi tiết</label>
+                            @Html.TextAreaFor(m => m.NoiDung, new { id = "richContent", name = "NoiDung" })
+                        </div>
+                    </div>
+                </div>
+
+                @* Card: Ảnh bìa *@
                 <div class="ca-card">
                     <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">image</span>
-                        </div>
-                        <div class="ca-card__title">Ảnh bìa sự kiện <span class="text-danger">*</span></div>
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">image</span></div>
+                        <div class="ca-card__title">Ảnh bìa sự kiện</div>
                     </div>
-                    <div class="ca-upload-zone" id="uploadZone">
-                        <input type="file"
-                               name="coverImage"
-                               id="coverImageInput"
-                               accept="image/jpeg,image/png"
-                               required />
+                    <div class="ca-card__body">
+                        <input type="file" id="coverImageInput" name="coverImage"
+                               accept="image/jpeg,image/png" style="display:none"/>
 
-                        <div id="uploadContent">
-                            <div class="ca-upload-icon-wrap">
-                                <span class="material-symbols-outlined">cloud_upload</span>
-                            </div>
-                            <div class="ca-upload-title">Kéo thả hoặc click để chọn ảnh bìa</div>
-                            <div class="ca-upload-sub">JPG / PNG • Tối đa 5 MB • Tỷ lệ khuyến nghị 16:9</div>
+                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('coverImageInput').click()">
+                            <span class="material-symbols-outlined">cloud_upload</span>
+                            <div class="upload-zone__title">Kéo &amp; thả ảnh vào đây</div>
+                            <div class="upload-zone__sub">hoặc click để chọn từ máy tính · JPG / PNG · Tối đa 5 MB · Khuyến nghị 1280×720px</div>
                         </div>
 
-                        <div id="previewArea" class="ca-upload-preview" style="display: none;">
-                            <img id="previewImg" src="" alt="Preview ảnh bìa">
-                            <button type="button" id="removePreviewBtn" class="ca-upload-preview__remove">
+                        <div class="preview-wrap" id="previewWrap">
+                            <img id="previewImg" src="" alt="Preview"/>
+                            <button type="button" class="preview-remove" id="previewRemove" title="Xóa ảnh">
                                 <span class="material-symbols-outlined">close</span>
                             </button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 2. THÔNG TIN CƠ BẢN -->
-                <div class="ca-card">
-                    <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">event</span>
-                        </div>
-                        <div class="ca-card__title">Thông tin cơ bản</div>
-                    </div>
-
-                    <div class="ca-form-group">
-                        <label class="ce-form-label">Tên sự kiện <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.TenEvent, new
-                        {
-                            @class = "ce-form-control",
-                            placeholder = "Ví dụ: Annual Tech Symposium 2026",
-                            required = "required",
-                            maxlength = "250"
-                        })
-                    </div>
-
-                    <div class="ca-form-row">
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Danh mục <span class="text-danger">*</span></label>
-                            @Html.DropDownListFor(m => m.MaDanhMuc,
-                                (IEnumerable<SelectListItem>)ViewBag.DanhMucList,
-                                "-- Chọn danh mục --",
-                                new { @class = "ce-form-select", required = "required" })
-                        </div>
-
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Viện tổ chức <span class="text-danger">*</span></label>
-                            @Html.DropDownListFor(m => m.MaVien,
-                                (IEnumerable<SelectListItem>)ViewBag.VienList,
-                                "-- Chọn viện --",
-                                new { @class = "ce-form-select", required = "required" })
-                        </div>
-                    </div>
-
-                    <div class="ca-form-group">
-                        <label class="ce-form-label">Địa điểm <span class="text-danger">*</span></label>
-                        @Html.DropDownListFor(m => m.MaDiaDiem,
-                            (IEnumerable<SelectListItem>)ViewBag.DiaDiemList,
-                            "-- Chọn địa điểm --",
-                            new { @class = "ce-form-select", required = "required" })
-                    </div>
-
-                    <div class="ca-form-row">
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Email liên hệ</label>
-                            @Html.TextBoxFor(m => m.Email, new
-                            {
-                                @class = "ce-form-control",
-                                type = "email",
-                                placeholder = "example@school.edu.vn"
-                            })
-                        </div>
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Link Zalo</label>
-                            @Html.TextBoxFor(m => m.LinkZalo, new
-                            {
-                                @class = "ce-form-control",
-                                placeholder = "https://zalo.me/..."
-                            })
+                        <div style="margin-top:.6rem;display:flex;align-items:center;gap:.4rem;font-size:.73rem;color:var(--success);display:none" id="uploadQuality">
+                            <span class="material-symbols-outlined" style="font-size:15px">check_circle</span>
+                            Ảnh đạt chất lượng tốt
                         </div>
                     </div>
                 </div>
-
-                <!-- 3. THỜI GIAN SỰ KIỆN -->
-                <div class="ca-card">
-                    <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">schedule</span>
-                        </div>
-                        <div class="ca-card__title">Thời gian tổ chức sự kiện</div>
-                    </div>
-
-                    <div class="ca-form-row">
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Ngày & giờ bắt đầu <span class="text-danger">*</span></label>
-                            <input type="datetime-local"
-                                   name="NgayBatDau"
-                                   class="ce-form-control"
-                                   required />
-                        </div>
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Ngày & giờ kết thúc</label>
-                            <input type="datetime-local"
-                                   name="NgayKetThuc"
-                                   class="ce-form-control" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. THỜI GIAN ĐĂNG KÝ -->
-                <div class="ca-card">
-                    <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">how_to_reg</span>
-                        </div>
-                        <div class="ca-card__title">Thời gian đăng ký</div>
-                    </div>
-
-                    <div class="ca-form-row">
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Bắt đầu đăng ký</label>
-                            <input type="datetime-local"
-                                   name="NgayBatDauDangKy"
-                                   class="ce-form-control" />
-                        </div>
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Hết hạn đăng ký <span class="text-danger">*</span></label>
-                            <input type="date"
-                                   name="NgayHetHanDangKy"
-                                   class="ce-form-control"
-                                   required />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5. SỨC CHỨA & LỢI ÍCH -->
-                <div class="ca-card">
-                    <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">group</span>
-                        </div>
-                        <div class="ca-card__title">Sức chứa & Lợi ích</div>
-                    </div>
-
-                    <div class="ca-form-row">
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Số lượng tối đa <span class="text-danger">*</span></label>
-                            <input type="number"
-                                   name="SoLuongToiDa"
-                                   value="200"
-                                   min="10"
-                                   class="ce-form-control"
-                                   required />
-                        </div>
-                        <div class="ca-form-group">
-                            <label class="ce-form-label">Giá vé (VND)</label>
-                            <input type="number"
-                                   name="GiaVe"
-                                   value="0"
-                                   min="0"
-                                   step="1000"
-                                   class="ce-form-control" />
-                        </div>
-                    </div>
-
-                    <div class="ca-form-group">
-                        <label class="ce-form-label">Điểm rèn luyện (DRL)</label>
-                        <input type="number"
-                               name="DRL"
-                               value="0"
-                               min="0"
-                               class="ce-form-control" />
-                    </div>
-                </div>
-
-                <!-- 6. MÔ TẢ NGẮN -->
-                <div class="ca-card">
-                    <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">description</span>
-                        </div>
-                        <div class="ca-card__title">Mô tả ngắn gọn</div>
-                    </div>
-                    <div class="ca-form-group">
-                        @Html.TextAreaFor(m => m.MoTa, new
-                        {
-                            @class = "ce-form-control",
-                            rows = "4",
-                            placeholder = "Mô tả ngắn sẽ hiển thị ở trang chủ..."
-                        })
-                    </div>
-                </div>
-
-                <!-- 7. NỘI DUNG CHI TIẾT - CKEDITOR 5 -->
-                <div class="ca-card">
-                    <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">article</span>
-                        </div>
-                        <div class="ca-card__title">Nội dung chi tiết sự kiện <span class="text-danger">*</span></div>
-                    </div>
-                    <div class="ca-form-group">
-                        <label class="ce-form-label">Nhập chi tiết chương trình, lịch trình, quy định, diễn giả...</label>
-                        @Html.TextAreaFor(m => m.ChiTiet, new
-                        {
-                            id = "ChiTietEditor",
-                            @class = "ce-form-control",
-                            rows = "14",
-                            style = "display:none;"
-                        })
-                    </div>
-                </div>
-
             </div>
 
-            <!-- ==================== SIDEBAR ==================== -->
-            <div class="ca-create-side">
+            @* ── RIGHT COLUMN (sidebar) ───────────────────────────── *@
+            <div class="sticky-sidebar">
+
+                @* Publish card *@
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon" style="background:var(--success-light,#dcfce7);color:var(--success)">
+                            <span class="material-symbols-outlined">publish</span>
+                        </div>
+                        <div class="ca-card__title">Xuất bản</div>
+                    </div>
+                    <div class="ca-card__body">
+                        <button type="submit" name="btnAction" value="publish" class="publish-btn publish-btn-primary">
+                            <span class="material-symbols-outlined">publish</span>Đăng sự kiện
+                        </button>
+                        <button type="submit" name="btnAction" value="draft" class="publish-btn publish-btn-outline">
+                            <span class="material-symbols-outlined">save</span>Lưu nháp
+                        </button>
+                    </div>
+                </div>
+
+                @* Cài đặt đăng ký *@
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">tune</span></div>
+                        <div class="ca-card__title">Cài đặt đăng ký</div>
+                    </div>
+                    <div class="ca-card__body">
+                        <div class="ca-form-group">
+                            <label class="ca-form-label">Số lượng tối đa <span class="ca-required">*</span></label>
+                            @Html.TextBoxFor(m => m.SoLuongToiDa, new { @class = "ca-form-input",
+                                type = "number", min = 10, placeholder = "VD: 200" })
+                            <div class="ca-form-hint">Tối thiểu 10 người</div>
+                            @Html.ValidationMessageFor(m => m.SoLuongToiDa, "", new { @class = "ca-form-error" })
+                        </div>
+                        <div class="ca-form-group">
+                            <label class="ca-form-label">Điểm rèn luyện (DRL)</label>
+                            @Html.TextBoxFor(m => m.DRL, new { @class = "ca-form-input",
+                                type = "number", min = 0, max = 20, placeholder = "0–20" })
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-top:1px solid var(--border);margin-top:.25rem">
+                            <div>
+                                <div style="font-size:.84rem;font-weight:600">Ẩn sự kiện</div>
+                                <div style="font-size:.72rem;color:var(--text-muted)">Không hiện trên trang chủ</div>
+                            </div>
+                            <label style="position:relative;display:inline-flex;align-items:center;cursor:pointer">
+                                @Html.CheckBoxFor(m => m.IsHidden, new { id = "chkHidden", style = "opacity:0;width:0;height:0;position:absolute" })
+                                <div id="switchTrack" style="width:40px;height:22px;background:var(--border);border-radius:999px;position:relative;transition:background .2s;cursor:pointer" onclick="toggleSwitch()">
+                                    <div style="position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s" id="switchThumb"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                @* Preview stats *@
                 <div class="ca-card">
                     <div class="ca-card__header">
-                        <div class="ca-card__header-icon">
-                            <span class="material-symbols-outlined">check_circle</span>
-                        </div>
-                        <div class="ca-card__title">Kiểm tra trước khi đăng</div>
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">preview</span></div>
+                        <div class="ca-card__title">Xem trước thông tin</div>
                     </div>
-                    <ul style="font-size:0.85rem; line-height:1.6; padding-left:1.25rem; margin:0; color:var(--text-muted);">
-                        <li>Ảnh bìa rõ nét, kích thước phù hợp</li>
-                        <li>Thời gian bắt đầu phải sau thời điểm hiện tại</li>
-                        <li>Hạn đăng ký phải trước ngày bắt đầu sự kiện</li>
-                        <li>Số lượng tối đa ≥ 10 người</li>
-                        <li>Đã chọn đầy đủ: Tên, Danh mục, Viện, Địa điểm</li>
-                    </ul>
+                    <div class="ca-card__body" style="padding-top:.75rem">
+                        <div class="stat-preview">
+                            <div class="stat-preview__label">Đăng ký hiện tại</div>
+                            <div class="stat-preview__val">0</div>
+                        </div>
+                        <div class="stat-preview">
+                            <div class="stat-preview__label">Tỷ lệ lấp đầy</div>
+                            <div class="stat-preview__val">0%</div>
+                        </div>
+                        <div style="font-size:.73rem;color:var(--text-muted);text-align:center;margin-top:.5rem">
+                            Sự kiện mới — chưa có đăng ký
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- NÚT HÀNH ĐỘNG -->
-        <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; justify-content: flex-end;">
-            <button type="submit"
-                    name="btnAction"
-                    value="draft"
-                    class="ce-btn ce-btn-ghost ce-btn-lg">
-                <span class="material-symbols-outlined">save</span>
-                Lưu bản nháp
-            </button>
-
-            <button type="submit"
-                    name="btnAction"
-                    value="publish"
-                    class="ce-btn ce-btn-primary ce-btn-lg">
-                <span class="material-symbols-outlined">send</span>
-                Đăng sự kiện ngay
-            </button>
+            </div>@* end sticky sidebar *@
         </div>
     }
 </div>
 
-<!-- ========================== CKEDITOR 5 (ĐÃ SỬA LỖI) ========================== -->
-<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/48.0.0/ckeditor5.css" />
-<script src="https://cdn.ckeditor.com/ckeditor5/48.0.0/ckeditor5.umd.js"></script>
-
+@section scripts {
+<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let editorInstance = null;
+// ── CKEditor init ─────────────────────────────
+ClassicEditor.create(document.querySelector('#richContent'), {
+    toolbar: ['heading','|','bold','italic','underline','|',
+              'bulletedList','numberedList','|','link','blockQuote','|','undo','redo']
+}).catch(err => console.warn('CKEditor:', err));
 
-        // Sửa lỗi ClassicEditor is not defined
-        const CK = window.CKEDITOR || window.ClassicEditor;
-        if (typeof CK === 'undefined' || typeof CK.ClassicEditor === 'undefined') {
-            console.error('❌ CKEditor 5 chưa tải. Vui lòng kiểm tra kết nối mạng hoặc CDN.');
-            return;
-        }
+// ── Char counter ──────────────────────────────
+const txtDesc = document.getElementById('txtMoTaNgan');
+const counter = document.getElementById('descCounter');
+if (txtDesc && counter) {
+    const update = () => counter.textContent = txtDesc.value.length + '/300';
+    txtDesc.addEventListener('input', update);
+    update();
+}
 
-        const ClassicEditor = CK.ClassicEditor || CK;
+// ── Image upload preview ──────────────────────
+const input       = document.getElementById('coverImageInput');
+const zone        = document.getElementById('uploadZone');
+const previewWrap = document.getElementById('previewWrap');
+const previewImg  = document.getElementById('previewImg');
+const removeBtn   = document.getElementById('previewRemove');
+const qualityInfo = document.getElementById('uploadQuality');
 
-        ClassicEditor
-            .create(document.querySelector('#ChiTietEditor'), {
-                language: {
-                    ui: 'vi',
-                    content: 'vi'
-                },
-                toolbar: {
-                    items: [
-                        'heading', '|',
-                        'bold', 'italic', 'underline', '|',
-                        'fontSize', 'fontColor', 'fontBackgroundColor', '|',
-                        'bulletedList', 'numberedList', '|',
-                        'alignment', 'link', 'blockQuote', 'insertTable', '|',
-                        'undo', 'redo'
-                    ]
-                },
-                placeholder: 'Nhập nội dung chi tiết sự kiện tại đây...',
-                height: '420px'
-            })
-            .then(editor => {
-                editorInstance = editor;
-                console.log('✅ CKEditor 5 đã khởi tạo thành công!');
-            })
-            .catch(error => {
-                console.error('❌ Lỗi khởi tạo CKEditor:', error);
-            });
+function showPreview(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        previewImg.src = e.target.result;
+        zone.style.display = 'none';
+        previewWrap.style.display = 'block';
+        qualityInfo.style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+}
 
-        // Copy dữ liệu từ CKEditor vào textarea trước khi submit
-        const form = document.getElementById('createEventForm');
-        if (form) {
-            form.addEventListener('submit', function () {
-                if (editorInstance) {
-                    document.getElementById('ChiTietEditor').value = editorInstance.getData();
-                }
-            });
-        }
+input.addEventListener('change', e => { if (e.target.files[0]) showPreview(e.target.files[0]); });
+removeBtn.addEventListener('click', () => {
+    input.value = '';
+    previewWrap.style.display = 'none';
+    qualityInfo.style.display = 'none';
+    zone.style.display = 'block';
+    previewImg.src = '';
+});
 
-        // Preview ảnh bìa
-        const fileInput = document.getElementById('coverImageInput');
-        const uploadContent = document.getElementById('uploadContent');
-        const previewArea = document.getElementById('previewArea');
-        const previewImg = document.getElementById('previewImg');
-        const removeBtn = document.getElementById('removePreviewBtn');
+// Drag & drop
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && (f.type === 'image/jpeg' || f.type === 'image/png')) {
+        const dt = new DataTransfer(); dt.items.add(f);
+        input.files = dt.files; showPreview(f);
+    }
+});
 
-        fileInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImg.src = e.target.result;
-                    uploadContent.style.display = 'none';
-                    previewArea.style.display = 'block';
-                };
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-
-        removeBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            fileInput.value = '';
-            previewArea.style.display = 'none';
-            uploadContent.style.display = 'block';
-        });
-    });
+// ── Toggle switch ─────────────────────────────
+const chk   = document.getElementById('chkHidden');
+const track = document.getElementById('switchTrack');
+const thumb = document.getElementById('switchThumb');
+function toggleSwitch() {
+    chk.checked = !chk.checked;
+    track.style.background = chk.checked ? 'var(--primary)' : 'var(--border)';
+    thumb.style.transform   = chk.checked ? 'translateX(18px)' : 'translateX(0)';
+}
+// Init state
+track.style.background = chk.checked ? 'var(--primary)' : 'var(--border)';
+thumb.style.transform   = chk.checked ? 'translateX(18px)' : 'translateX(0)';
 </script>
+}

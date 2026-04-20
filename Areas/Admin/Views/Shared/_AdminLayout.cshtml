@@ -19,27 +19,11 @@
     @RenderSection("styles", required: false)
 </head>
 <body>
-    <!-- Thông báo thành công / lỗi -->
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" style="margin: 15px 20px;">
-            <strong>Thành công!</strong> @TempData["Success"]
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    }
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" style="margin: 15px 20px;">
-            <strong>Lỗi!</strong> @TempData["Error"]
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    }
-    <div class="ca-shell">
+    <div class="ca-sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="ca-shell" id="caShell">
+
         <aside class="ca-sidebar" id="adminSidebar" aria-label="Admin navigation">
 
             <a href="@Url.Action("Index", "AdminDashboard", new { area = "Admin" })"
@@ -59,53 +43,59 @@
                 <span class="ca-nav-section-label">Tổng quan</span>
 
                 <li>
-                    <a href="@Url.Action("Dashboard", "AdminEvents", new { area = "Admin" })"
-                       class="@(ViewBag.ActiveMenu == "dashboard" ? "ca-nav-item active" : "ca-nav-item")">
+                    <a href="@Url.Action("Dashboard", "AdminDashboard", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "dashboard" ? "active" : "")"
+                       data-label="Dashboard">
                         <span class="material-symbols-outlined">dashboard</span>
-                        Dashboard
+                        <span>Dashboard</span>
                     </a>
                 </li>
 
                 <a href="@Url.Action("Index", "AdminEvents", new { area = "Admin" })"
                    class="ca-nav-item @(ViewBag.ActiveMenu == "events" ? "active" : "")"
-                   aria-current="@(ViewBag.ActiveMenu == "events" ? "page" : null)">
+                   aria-current="@(ViewBag.ActiveMenu == "events" ? "page" : null)"
+                   data-label="Sự kiện">
                     <span class="material-symbols-outlined">calendar_month</span>
-                    Sự kiện
+                    <span>Sự kiện</span>
                 </a>
 
                 <span class="ca-nav-section-label">Nội dung</span>
 
                 <a href="@Url.Action("Create", "AdminEvents", new { area = "Admin" })"
                    class="ca-nav-item @(ViewBag.ActiveMenu == "create" ? "active" : "")"
-                   aria-current="@(ViewBag.ActiveMenu == "create" ? "page" : null)">
+                   aria-current="@(ViewBag.ActiveMenu == "create" ? "page" : null)"
+                   data-label="Tạo bài đăng">
                     <span class="material-symbols-outlined">add_circle</span>
-                    Tạo bài đăng
+                    <span>Tạo bài đăng</span>
                 </a>
 
                 <span class="ca-nav-section-label">Báo cáo</span>
 
-                <a href="@Url.Action("Index", "AdminStatistics", new { area = "Admin" })"
-                   class="ca-nav-item @(ViewBag.ActiveMenu == "statistics" ? "active" : "")"
-                   aria-current="@(ViewBag.ActiveMenu == "statistics" ? "page" : null)">
+                <a href="@Url.Action("Index", "AdminStats", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "stats" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "stats" ? "page" : null)"
+                   data-label="Thống kê">
                     <span class="material-symbols-outlined">bar_chart</span>
-                    Thống kê
+                    <span>Thống kê</span>
                 </a>
 
                 <span class="ca-nav-section-label">Hệ thống</span>
 
                 <a href="@Url.Action("Index", "AdminSettings", new { area = "Admin" })"
                    class="ca-nav-item @(ViewBag.ActiveMenu == "settings" ? "active" : "")"
-                   aria-current="@(ViewBag.ActiveMenu == "settings" ? "page" : null)">
+                   aria-current="@(ViewBag.ActiveMenu == "settings" ? "page" : null)"
+                   data-label="Cài đặt">
                     <span class="material-symbols-outlined">settings</span>
-                    Cài đặt
+                    <span>Cài đặt</span>
                 </a>
 
-                <div style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border);">
+                <div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)">
                     <a href="@Url.Action("Logout", "AdminAuth", new { area = "Admin" })"
                        class="ca-nav-item"
-                       style="color:var(--danger);">
+                       style="color:var(--danger)"
+                       data-label="Đăng xuất">
                         <span class="material-symbols-outlined">logout</span>
-                        Đăng xuất
+                        <span>Đăng xuất</span>
                     </a>
                 </div>
 
@@ -113,11 +103,15 @@
         </aside>
 
         <div class="ca-main">
+
             <header class="ca-header" role="banner">
-                <button class="ce-navbar__toggler" type="button"
+
+                <button class="ca-header__icon-btn ca-sidebar-toggle"
+                        type="button"
                         id="sidebarToggle"
                         aria-controls="adminSidebar"
-                        aria-label="Mở menu">
+                        aria-expanded="true"
+                        aria-label="Toggle menu">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
 
@@ -156,37 +150,34 @@
                         }
                         <div>
                             <div class="ca-header__profile-name">@(ViewBag.AdminName ?? "Admin Campus")</div>
-                            <div class="ca-header__profile-role">@(ViewBag.AdminRole ?? "Administrator Profile")</div>
+                            <div class="ca-header__profile-role">@(ViewBag.AdminRole ?? "Administrator")</div>
                         </div>
                     </a>
 
                 </div>
             </header>
 
+            @if (TempData["Success"] != null)
+            {
+                <div class="ce-toast-wrap">
+                    <div class="ce-toast ce-toast-success" role="alert">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        @TempData["Success"]
+                    </div>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="ce-toast-wrap">
+                    <div class="ce-toast ce-toast-error" role="alert">
+                        <span class="material-symbols-outlined">error</span>
+                        @TempData["Error"]
+                    </div>
+                </div>
+            }
+
             <main class="ca-content" id="mainContent" role="main">
-
-                @if (TempData["Success"] != null)
-                {
-                    <div class="ce-toast-wrap">
-                        <div class="ce-toast ce-toast-success" role="alert">
-                            <span class="material-symbols-outlined">check_circle</span>
-                            @TempData["Success"]
-                        </div>
-                    </div>
-                }
-
-                @if (TempData["Error"] != null)
-                {
-                    <div class="ce-toast-wrap">
-                        <div class="ce-toast ce-toast-error" role="alert">
-                            <span class="material-symbols-outlined">error</span>
-                            @TempData["Error"]
-                        </div>
-                    </div>
-                }
-
                 @RenderBody()
-
             </main>
 
             <footer class="ca-footer" role="contentinfo">
@@ -203,6 +194,66 @@
 
     <script>
         (function () {
+            var shell    = document.getElementById('caShell');
+            var sidebar  = document.getElementById('adminSidebar');
+            var overlay  = document.getElementById('sidebarOverlay');
+            var toggleBtn = document.getElementById('sidebarToggle');
+
+            var MOBILE_BP = 992;
+
+            if (window.innerWidth >= MOBILE_BP && localStorage.getItem('sidebarCollapsed') === '1') {
+                shell.classList.add('sidebar-collapsed');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            function isMobile() { return window.innerWidth < MOBILE_BP; }
+
+            function openMobile() {
+                sidebar.classList.add('open');
+                overlay.classList.add('visible');
+                toggleBtn.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobile() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('visible');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+
+            function toggleDesktop() {
+                var collapsed = shell.classList.toggle('sidebar-collapsed');
+                toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+            }
+
+            toggleBtn.addEventListener('click', function () {
+                if (isMobile()) {
+                    sidebar.classList.contains('open') ? closeMobile() : openMobile();
+                } else {
+                    toggleDesktop();
+                }
+            });
+
+            overlay.addEventListener('click', closeMobile);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && isMobile()) closeMobile();
+            });
+
+            window.addEventListener('resize', function () {
+                if (!isMobile()) {
+                    closeMobile();
+                }
+            });
+
+            sidebar.querySelectorAll('.ca-nav-item').forEach(function (item) {
+                item.addEventListener('click', function () {
+                    if (isMobile()) closeMobile();
+                });
+            });
+
             document.querySelectorAll('.ce-toast').forEach(function (el) {
                 setTimeout(function () {
                     el.style.transition = 'opacity .4s';
@@ -211,22 +262,6 @@
                 }, 4000);
             });
 
-            // Mobile sidebar toggle
-            var btn = document.getElementById('sidebarToggle');
-            var sidebar = document.getElementById('adminSidebar');
-            if (btn && sidebar) {
-                btn.addEventListener('click', function () {
-                    sidebar.classList.toggle('open');
-                });
-                // Close on outside click
-                document.addEventListener('click', function (e) {
-                    if (sidebar.classList.contains('open') &&
-                        !sidebar.contains(e.target) &&
-                        !btn.contains(e.target)) {
-                        sidebar.classList.remove('open');
-                    }
-                });
-            }
         })();
     </script>
 

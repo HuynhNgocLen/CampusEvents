@@ -1,0 +1,368 @@
+@{
+    ViewBag.Title = "Cài đặt — CampusEvents Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    string activeTab = ViewBag.ActiveTab as string ?? "general";
+    var admin = ViewBag.Admin as shcool_event_management.Models.SinhVien;
+}
+
+@section styles {
+<style>
+.settings-layout { display:grid; grid-template-columns:220px 1fr; gap:1.5rem; align-items:start; }
+.settings-sidenav { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:.4rem; box-shadow:var(--shadow-sm); position:sticky; top:calc(var(--header-h,62px) + 1.25rem); }
+.sn-item { display:flex; align-items:center; gap:.65rem; padding:.5rem .75rem; border-radius:var(--radius); font-size:.84rem; font-weight:500; color:var(--text-muted); cursor:pointer; text-decoration:none; transition:all .18s; }
+.sn-item .material-symbols-outlined { font-size:17px; flex-shrink:0; }
+.sn-item:hover, .sn-item.active { background:var(--primary-light); color:var(--primary); font-weight:600; }
+.sn-section { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-light); padding:.75rem .75rem .25rem; display:block; }
+
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:.85rem 0; border-bottom:1px solid var(--border); gap:1rem; }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-label { font-size:.87rem; font-weight:600; }
+.toggle-desc { font-size:.75rem; color:var(--text-muted); margin-top:.1rem; }
+.switch { position:relative; display:inline-flex; align-items:center; cursor:pointer; flex-shrink:0; }
+.switch input { opacity:0; width:0; height:0; position:absolute; }
+.sw-track { width:40px; height:22px; background:var(--border); border-radius:999px; position:relative; transition:background .2s; cursor:pointer; }
+.sw-track::after { content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s; }
+.switch input:checked + .sw-track { background:var(--primary); }
+.switch input:checked + .sw-track::after { transform:translateX(18px); }
+
+.danger-zone { background:var(--danger-light,#fee2e2); border:1.5px solid rgba(220,38,38,.25); border-radius:var(--radius-lg); padding:1.25rem 1.5rem; }
+.danger-zone__title { font-size:.88rem; font-weight:700; color:var(--danger); margin-bottom:.3rem; display:flex; align-items:center; gap:.4rem; }
+.danger-zone__title .material-symbols-outlined { font-size:18px; }
+.danger-zone__desc { font-size:.8rem; color:var(--danger); opacity:.8; margin-bottom:.875rem; }
+
+.strength-bar { display:flex; gap:3px; margin-top:.4rem; }
+.strength-bar__seg { flex:1; height:4px; border-radius:2px; background:var(--border); transition:background .2s; }
+
+.theme-picker { display:flex; gap:1rem; flex-wrap:wrap; }
+.theme-swatch { border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; width:130px; cursor:pointer; transition:border-color .2s; }
+.theme-swatch:hover { border-color:var(--primary); }
+.theme-swatch.selected { border-color:var(--primary); box-shadow:0 0 0 3px rgba(19,127,236,.18); }
+.theme-swatch__preview { height:64px; display:flex; align-items:center; padding:.5rem; gap:.4rem; }
+.theme-swatch__label { padding:.35rem .6rem; font-size:.75rem; font-weight:700; text-align:center; border-top:1px solid var(--border); }
+</style>
+}
+
+<div class="ca-content">
+    <h1 class="ca-page-title">Cài đặt hệ thống</h1>
+    <p class="ca-page-sub">Quản lý tài khoản, bảo mật và tuỳ chỉnh trải nghiệm sử dụng.</p>
+
+    <div class="settings-layout">
+
+        @* ── Sidenav ─────────────────────────────────────────── *@
+        <nav class="settings-sidenav">
+            <span class="sn-section">Tài khoản</span>
+            <a href="#" class="sn-item @(activeTab=="general"?"active":"")" onclick="switchTab(event,'general')">
+                <span class="material-symbols-outlined">manage_accounts</span>Thông tin chung
+            </a>
+            <a href="#" class="sn-item @(activeTab=="security"?"active":"")" onclick="switchTab(event,'security')">
+                <span class="material-symbols-outlined">lock</span>Bảo mật
+            </a>
+            <span class="sn-section">Hệ thống</span>
+            <a href="#" class="sn-item @(activeTab=="notifications"?"active":"")" onclick="switchTab(event,'notifications')">
+                <span class="material-symbols-outlined">notifications</span>Thông báo
+            </a>
+            <a href="#" class="sn-item @(activeTab=="appearance"?"active":"")" onclick="switchTab(event,'appearance')">
+                <span class="material-symbols-outlined">palette</span>Giao diện
+            </a>
+        </nav>
+
+        @* ── Panels ───────────────────────────────────────────── *@
+        <div>
+
+            @* ── GENERAL ──────────────────────────────────────── *@
+            <div class="tab-panel @(activeTab=="general"?"active":"")" id="tab-general">
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">manage_accounts</span></div>
+                        <div class="ca-card__title">Thông tin hồ sơ</div>
+                    </div>
+                    <div class="ca-card__body">
+                        @* Avatar preview *@
+                        <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+                            <div style="width:64px;height:64px;border-radius:50%;background:var(--primary-light);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--primary);flex-shrink:0">
+                                @(admin != null && !string.IsNullOrEmpty(admin.Ten) ? admin.Ten.Split(' ').Last().Substring(0,1).ToUpper() : "A")
+                            </div>
+                            <div>
+                                <div style="font-size:1rem;font-weight:700">@(admin?.Ten ?? "Admin Campus")</div>
+                                <div style="font-size:.8rem;color:var(--text-muted)">@(admin?.Email ?? "admin@university.edu.vn")</div>
+                                <div style="font-size:.75rem;color:var(--text-light);margin-top:.1rem">Mã SV: @(admin?.ID ?? "—")</div>
+                            </div>
+                        </div>
+
+                        @using (Html.BeginForm("SaveGeneral","AdminSettings",new{area="Admin"},FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                                <div class="ca-form-group">
+                                    <label class="ca-form-label">Họ và tên</label>
+                                    <input class="ca-form-input" name="fullName" value="@admin?.Ten" placeholder="Nhập họ tên"/>
+                                </div>
+                                <div class="ca-form-group">
+                                    <label class="ca-form-label">Mã số</label>
+                                    <input class="ca-form-input" value="@admin?.ID" readonly style="background:var(--surface-2);cursor:not-allowed"/>
+                                </div>
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Email</label>
+                                <input class="ca-form-input" type="email" name="email" value="@admin?.Email"/>
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Số điện thoại</label>
+                                <input class="ca-form-input" type="tel" name="phone" value="@admin?.SoDienThoai"/>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                                <div class="ca-form-group">
+                                    <label class="ca-form-label">Lớp</label>
+                                    <input class="ca-form-input" value="@admin?.Lop" readonly style="background:var(--surface-2);cursor:not-allowed"/>
+                                </div>
+                                <div class="ca-form-group">
+                                    <label class="ca-form-label">Ngành</label>
+                                    <input class="ca-form-input" value="@admin?.MaNghanh" readonly style="background:var(--surface-2);cursor:not-allowed"/>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:.5rem;justify-content:flex-end;padding-top:.875rem;border-top:1px solid var(--border);margin-top:.5rem">
+                                <button type="submit" class="ce-btn ce-btn-primary">
+                                    <span class="material-symbols-outlined">save</span>Lưu thông tin
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* ── SECURITY ──────────────────────────────────────── *@
+            <div class="tab-panel @(activeTab=="security"?"active":"")" id="tab-security">
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon" style="background:var(--warning-light,#fef3c7);color:var(--warning)"><span class="material-symbols-outlined">lock</span></div>
+                        <div class="ca-card__title">Đổi mật khẩu</div>
+                    </div>
+                    <div class="ca-card__body">
+                        @using (Html.BeginForm("ChangePassword","AdminSettings",new{area="Admin"},FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Mật khẩu hiện tại <span class="ca-required">*</span></label>
+                                <input class="ca-form-input" type="password" name="currentPassword" placeholder="••••••••" autocomplete="current-password"/>
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Mật khẩu mới <span class="ca-required">*</span></label>
+                                <input class="ca-form-input" type="password" name="newPassword"
+                                       id="newPwdInput" placeholder="Ít nhất 6 ký tự"
+                                       autocomplete="new-password" oninput="checkStrength(this.value)"/>
+                                <div class="strength-bar" id="strengthBar">
+                                    <div class="strength-bar__seg" id="seg1"></div>
+                                    <div class="strength-bar__seg" id="seg2"></div>
+                                    <div class="strength-bar__seg" id="seg3"></div>
+                                    <div class="strength-bar__seg" id="seg4"></div>
+                                </div>
+                                <div class="ca-form-hint" id="strengthLabel">Mật khẩu phải có ít nhất 6 ký tự</div>
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Xác nhận mật khẩu mới <span class="ca-required">*</span></label>
+                                <input class="ca-form-input" type="password" name="confirmPassword"
+                                       id="confirmPwdInput" placeholder="Nhập lại mật khẩu"
+                                       autocomplete="new-password" oninput="checkMatch()"/>
+                                <div class="ca-form-hint" id="matchHint" style="display:none"></div>
+                            </div>
+                            <div style="background:rgba(19,127,236,.06);border:1px solid rgba(19,127,236,.2);border-radius:var(--radius);padding:.75rem 1rem;display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.875rem">
+                                <span class="material-symbols-outlined" style="font-size:17px;color:var(--primary);flex-shrink:0;margin-top:.05rem">security</span>
+                                <span style="font-size:.78rem;color:var(--text-muted)">Mật khẩu được mã hóa bằng SHA-256 trước khi lưu vào cơ sở dữ liệu. Không ai có thể xem mật khẩu của bạn.</span>
+                            </div>
+                            <div style="display:flex;gap:.5rem;justify-content:flex-end">
+                                <button type="submit" class="ce-btn ce-btn-primary">
+                                    <span class="material-symbols-outlined">key</span>Đổi mật khẩu
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @* Danger zone *@
+                <div class="danger-zone">
+                    <div class="danger-zone__title"><span class="material-symbols-outlined">warning</span>Vùng nguy hiểm</div>
+                    <div class="danger-zone__desc">Hành động này không thể hoàn tác. Vui lòng suy nghĩ kỹ trước khi thực hiện.</div>
+                    @using (Html.BeginForm("Logout","AdminSettings",new{area="Admin"},FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="ce-btn ce-btn-danger" onclick="return confirm('Bạn chắc chắn muốn đăng xuất?')">
+                            <span class="material-symbols-outlined">logout</span>Đăng xuất khỏi hệ thống
+                        </button>
+                    }
+                </div>
+            </div>
+
+            @* ── NOTIFICATIONS ─────────────────────────────────── *@
+            <div class="tab-panel @(activeTab=="notifications"?"active":"")" id="tab-notifications">
+                <div class="ca-card">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">notifications</span></div>
+                        <div class="ca-card__title">Cài đặt thông báo</div>
+                    </div>
+                    <div class="ca-card__body">
+                        @using (Html.BeginForm("SaveNotifications","AdminSettings",new{area="Admin"},FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">Đăng ký mới</div>
+                                    <div class="toggle-desc">Nhận thông báo khi sinh viên đăng ký sự kiện</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="notif_new_reg" @(Session["Notif_NewReg"] as bool? == true ? "checked" : "")/>
+                                    <div class="sw-track"></div>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">Nhắc nhở sự kiện</div>
+                                    <div class="toggle-desc">Nhắc nhở 24 giờ trước khi sự kiện bắt đầu</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="notif_reminder" @(Session["Notif_Reminder"] as bool? == true ? "checked" : "")/>
+                                    <div class="sw-track"></div>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">Báo cáo hàng tuần</div>
+                                    <div class="toggle-desc">Gửi tóm tắt hoạt động vào mỗi thứ Hai 8:00 sáng</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="notif_week_report" @(Session["Notif_WeekReport"] as bool? == true ? "checked" : "")/>
+                                    <div class="sw-track"></div>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">Thông báo trong ứng dụng</div>
+                                    <div class="toggle-desc">Hiển thị popup khi có sự kiện mới hoặc cập nhật quan trọng</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="notif_inapp" @(Session["Notif_InApp"] as bool? == true ? "checked" : "")/>
+                                    <div class="sw-track"></div>
+                                </label>
+                            </div>
+                            <div style="display:flex;justify-content:flex-end;padding-top:1rem;margin-top:.5rem;border-top:1px solid var(--border)">
+                                <button type="submit" class="ce-btn ce-btn-primary">
+                                    <span class="material-symbols-outlined">save</span>Lưu cài đặt thông báo
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* ── APPEARANCE ────────────────────────────────────── *@
+            <div class="tab-panel @(activeTab=="appearance"?"active":"")" id="tab-appearance">
+                <div class="ca-card">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon" style="background:var(--purple-light,#ede9fe);color:var(--purple,#7c3aed)"><span class="material-symbols-outlined">palette</span></div>
+                        <div class="ca-card__title">Tuỳ chỉnh giao diện</div>
+                    </div>
+                    <div class="ca-card__body">
+                        <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem">Chủ đề màu sắc</div>
+
+                        <div class="theme-picker" style="margin-bottom:1.5rem">
+                            <div class="theme-swatch @(Session["Theme"]?.ToString()!="dark"?"selected":"")"
+                                 id="swLight" onclick="setTheme('light')">
+                                <div class="theme-swatch__preview" style="background:#f0f4f8">
+                                    <div style="width:28px;height:100%;background:#fff;border-radius:4px;flex-shrink:0"></div>
+                                    <div style="flex:1">
+                                        <div style="height:6px;background:#0f172a;border-radius:2px;margin-bottom:.35rem;width:75%"></div>
+                                        <div style="height:4px;background:#64748b;border-radius:2px;width:55%"></div>
+                                        <div style="height:4px;background:#137fec;border-radius:2px;margin-top:.35rem;width:40%"></div>
+                                    </div>
+                                </div>
+                                <div class="theme-swatch__label" style="background:#fff;border-top:1px solid #e2e8f0;color:#0f172a">☀️ Sáng (Light)</div>
+                            </div>
+
+                            <div class="theme-swatch @(Session["Theme"]?.ToString()=="dark"?"selected":"")"
+                                 id="swDark" onclick="setTheme('dark')">
+                                <div class="theme-swatch__preview" style="background:#0c1220">
+                                    <div style="width:28px;height:100%;background:#131d2e;border-radius:4px;flex-shrink:0"></div>
+                                    <div style="flex:1">
+                                        <div style="height:6px;background:#f1f5f9;border-radius:2px;margin-bottom:.35rem;width:75%"></div>
+                                        <div style="height:4px;background:#94a3b8;border-radius:2px;width:55%"></div>
+                                        <div style="height:4px;background:#137fec;border-radius:2px;margin-top:.35rem;width:40%"></div>
+                                    </div>
+                                </div>
+                                <div class="theme-swatch__label" style="background:#131d2e;border-top:1px solid #1e2d45;color:#f1f5f9">🌙 Tối (Dark)</div>
+                            </div>
+                        </div>
+
+                        <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem">Thông tin hiển thị</div>
+                        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem">
+                            <div style="width:52px;height:52px;border-radius:50%;background:var(--primary-light);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:var(--primary);flex-shrink:0">
+                                @(admin != null && !string.IsNullOrEmpty(admin.Ten) ? admin.Ten.Split(' ').Last().Substring(0,1).ToUpper() : "A")
+                            </div>
+                            <div>
+                                <div style="font-weight:700;font-size:.92rem">@(admin?.Ten ?? "Admin Campus")</div>
+                                <div style="font-size:.77rem;color:var(--text-muted)">@(admin?.Email ?? "admin@university.edu.vn")</div>
+                                <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem">Hiển thị ở góc phải header</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>@* end panels *@
+    </div>@* end settings-layout *@
+</div>
+
+@section scripts {
+<script>
+// ── Tab switching ─────────────────────────────
+function switchTab(e, name) {
+    e.preventDefault();
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sn-item').forEach(a => a.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    e.currentTarget.classList.add('active');
+}
+
+// ── Password strength ─────────────────────────
+function checkStrength(val) {
+    const segs = [1,2,3,4].map(i => document.getElementById('seg' + i));
+    const lbl  = document.getElementById('strengthLabel');
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const colors = ['var(--danger)','var(--warning)','#2563eb','var(--success)'];
+    const labels = ['Rất yếu','Yếu','Trung bình','Mạnh'];
+    segs.forEach((s, i) => s.style.background = i < score ? colors[score-1] : 'var(--border)');
+    lbl.textContent = score > 0 ? 'Độ mạnh: ' + labels[score-1] : 'Mật khẩu phải có ít nhất 6 ký tự';
+    lbl.style.color = score > 0 ? colors[score-1] : '';
+}
+
+function checkMatch() {
+    const a = document.getElementById('newPwdInput')?.value;
+    const b = document.getElementById('confirmPwdInput')?.value;
+    const h = document.getElementById('matchHint');
+    if (!b || !h) return;
+    h.style.display = 'block';
+    if (a === b) { h.textContent = '✓ Mật khẩu khớp'; h.style.color = 'var(--success)'; }
+    else         { h.textContent = '✕ Mật khẩu không khớp'; h.style.color = 'var(--danger)'; }
+}
+
+// ── Theme switcher ────────────────────────────
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('swLight')?.classList.toggle('selected', theme==='light');
+    document.getElementById('swDark')?.classList.toggle('selected', theme==='dark');
+
+    fetch('@Url.Action("SaveTheme","AdminSettings",new{area="Admin"})', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'theme=' + theme + '&__RequestVerificationToken=' + (document.querySelector('input[name=__RequestVerificationToken]')?.value || '')
+    });
+}
+</script>
+@Html.AntiForgeryToken()
+}
