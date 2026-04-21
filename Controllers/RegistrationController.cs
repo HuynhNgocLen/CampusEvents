@@ -17,16 +17,17 @@ namespace shcool_event_management.Controllers
             return JwtService.GetStudentId(Request);
         }
 
-        // Users/Registrations
         public ActionResult Registrations()
         {
             ViewBag.Title = "Đăng ký của tôi";
             ViewBag.ActivePage = "registrations";
 
-            string studentId = GetCurrentStudentId();
+            string studentId = GetCurrentStudentId();   
             int currentYear = DateTime.Now.Year;
 
-            ViewBag.SinhVien = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            var sinhVien = db.SinhViens.FirstOrDefault(s => s.ID == studentId);
+            ViewBag.SinhVien = sinhVien;
+
             int tongHoanThanh = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
                          && d.NgayDangKy.Year == currentYear
@@ -41,9 +42,9 @@ namespace shcool_event_management.Controllers
                          && d.NgayDangKy.Year == currentYear
                          && d.TrangThai.Trim() == "Đã đăng ký");
 
-            ViewData["TongHoanThanhNam"] = tongHoanThanh;
-            ViewData["TongHuyNam"] = tongHuy;
-            ViewData["TongDangKyNam"] = tongHoanThanh + tongDangKy;
+            ViewBag.TongHoanThanhNam = tongHoanThanh;
+            ViewBag.TongHuyNam = tongHuy;
+            ViewBag.TongDangKyNam = tongHoanThanh + tongDangKy;
 
             var today = DateTime.Today;
 

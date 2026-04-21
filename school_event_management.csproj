@@ -232,7 +232,7 @@
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
     <Compile Include="Controllers\ScheduleController.cs" />
-    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -289,6 +289,7 @@
     </Compile>
     <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\EmailService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
@@ -312,6 +313,7 @@
     <Content Include="Content\campus-base.css" />
     <Content Include="Content\campus-components.css" />
     <Content Include="Content\campus-filter.css" />
+    <Content Include="Content\campus-index.css" />
     <Content Include="Content\campus-navbar.css" />
     <Content Include="Content\campus-pages.css" />
     <Content Include="Content\campus-variables.css" />
@@ -419,7 +421,7 @@
     <Content Include="Areas\Admin\Views\AdminEvents\Create.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\RegistrationDetail.cshtml" />
     <Content Include="Areas\Admin\Views\AdminDashboard\Dashboard.cshtml" />
-    <Content Include="Areas\Admin\Views\AdminStats\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminStats\AdminStats.cshtml" />
     <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Index.cshtml" />
@@ -733,12 +735,11 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_LayoutUsers.cshtml" />
-    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Home\Home.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Events\EventDetail.cshtml" />
     <Content Include="Views\Registration\Registrations.cshtml" />
     <Content Include="Views\Events\Filter.cshtml" />
-    <Content Include="Views\Events\Events.cshtml" />
     <Content Include="Views\Registration\_Sidebar.cshtml" />
     <Content Include="Views\Registration\_Upcoming.cshtml" />
     <Content Include="Views\Registration\_Attended.cshtml" />
@@ -748,8 +749,16 @@
     <Content Include="Views\Account\_LoginForm.cshtml" />
     <Content Include="Views\Account\_RegisterForm.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
-    <Content Include="Views\Users\Profile.cshtml" />
+    <Content Include="Views\Home\Profile.cshtml" />
     <Content Include="Views\Schedule\Schedule.cshtml" />
+    <Content Include="Views\Account\VerifyOTP.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Home\HomePartials\_IndexHero.cshtml" />
+    <Content Include="Views\Home\HomePartials\_IndexCategories.cshtml" />
+    <Content Include="Views\Home\HomePartials\_IndexFeaturedEvents.cshtml" />
+    <Content Include="Views\Home\HomePartials\_IndexHowItWorks.cshtml" />
+    <Content Include="Views\Home\HomePartials\_IndexCtaFooter.cshtml" />
+    <Content Include="Views\Events\Events.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,49 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+<section class="ce-hero">
+    <div class="container position-relative">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="ce-hero__eyebrow">
+                    <span class="material-symbols-outlined" style="font-size:13px">celebration</span>
+                    Trường Đại học ABC · Năm học 2025–2026
+                </div>
+                <h1 class="ce-hero__title">
+                    Khám phá &amp;<br />
+                    <span style="color:#38bdf8">tham gia sự kiện</span><br />
+                    campus của bạn
+                </h1>
+                <p class="ce-hero__sub">
+                    Tìm kiếm hàng trăm sự kiện học thuật, thể thao, văn hóa và workshop đang chờ bạn tham gia.
+                </p>
+                <form action="@Url.Action("SmartSearch","Home")" method="GET" class="ce-hero__search">
+                    <span class="material-symbols-outlined si">search</span>
+                    <input type="search" name="keyword" id="hero-search"
+                           placeholder="Tìm mã CLB, mã sinh viên hoặc Sự kiện…" required />
+                    <button class="ce-hero__search-btn" type="submit">Tìm kiếm</button>
+                </form>
+                <div class="ce-hero__stats">
+                    <div class="ce-hero__stat">
+                        <div>
+                            <div class="ce-hero__stat-val" id="cnt-ev">@(Model?.Count() ?? 0)</div>
+                            <div style="font-size:.73rem;opacity:.8">Sự kiện</div>
+                        </div>
+                    </div>
+                    <div class="ce-hero__sep"></div>
+                    <div class="ce-hero__stat">
+                        <div>
+                            <div class="ce-hero__stat-val" id="cnt-sv">0</div>
+                            <div style="font-size:.73rem;opacity:.8">Sinh viên</div>
+                        </div>
+                    </div>
+                    <div class="ce-hero__sep"></div>
+                    <div class="ce-hero__stat">
+                        <div>
+                            <div class="ce-hero__stat-val" id="cnt-clb">0</div>
+                            <div style="font-size:.73rem;opacity:.8">CLB &amp; Nhóm</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

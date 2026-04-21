@@ -1,0 +1,111 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@* ── SỰ KIỆN NỔI BẬT ── *@
+<section class="ce-index-section">
+    <div class="container py-5">
+        <div class="d-flex align-items-end justify-content-between mb-4">
+            <div>
+                <h2 class="ce-section-title mb-1">Sự kiện nổi bật</h2>
+                <p class="mb-0" style="font-size:.875rem;color:var(--text-muted)">Đăng ký nhanh — nhận mã QR check-in.</p>
+            </div>
+            <a href="@Url.Action("Events","Events")" class="ce-link-more">Xem tất cả →</a>
+        </div>
+
+        @* Upcoming alert *@
+        <div class="ce-upcoming mb-4 ce-reveal">
+            <div class="ce-upcoming__icon">
+                <span class="material-symbols-outlined">notifications_active</span>
+            </div>
+            <div style="flex:1;min-width:0">
+                <div class="ce-upcoming__title">🎉 Khám phá sự kiện mới nhất của trường!</div>
+                <div class="ce-upcoming__sub">Đăng ký tham dự và nhận QR check-in tự động</div>
+            </div>
+            <a href="@Url.Action("Events","Events")" class="ce-btn ce-btn-primary ce-btn-sm d-none d-sm-flex">
+                Xem tất cả
+            </a>
+        </div>
+
+        @* Filter chips *@
+        <div class="ce-chips mb-4">
+            <span class="ce-chip active" data-value="all">
+                <span class="material-symbols-outlined">apps</span> Tất cả
+            </span>
+            @if (ViewBag.DanhMucs != null)
+            {
+                foreach (var dm in ViewBag.DanhMucs)
+                {
+                    <span class="ce-chip" data-value="@dm.MaDanhMuc">@dm.TenDanhMuc</span>
+                }
+            }
+        </div>
+
+        @* Event cards *@
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-3" id="events-grid">
+                @foreach (var item in Model.Take(6))
+                {
+                    var conLai = item.SoLuongToiDa - item.SoLuongDaDangKy;
+                    <div class="col-12 col-sm-6 col-xl-4 ce-reveal" data-category="@item.MaDanhMuc">
+                        <a href="@Url.Action("EventDetail","Events",new{id=item.MaEvent})" class="ce-event-card">
+                            <div class="ce-event-card__img">
+                                <div class="ce-event-card__img-placeholder">
+                                    <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "event")</span>
+                                </div>
+                                <div class="ce-event-card__badges">
+                                    <span class="ce-badge" style="background-color: @(item.DanhMuc?.MauSac ?? "#3b82f6");">
+                                        @item.DanhMuc.TenDanhMuc
+                                    </span>
+                                    @if (conLai <= 0)
+                                    {<span class="ce-badge ce-badge-danger">Hết chỗ</span> }
+                                    else if (conLai <= 10)
+                                    { <span class="ce-badge ce-badge-warning">Sắp đầy</span> }
+                                    else
+                                    { <span class="ce-badge ce-badge-success">Còn chỗ</span>}
+                                </div>
+                                <div class="ce-event-card__save" onclick="event.preventDefault()">
+                                    <span class="material-symbols-outlined">favorite_border</span>
+                                </div>
+                            </div>
+                            <div class="ce-event-card__body">
+                                <div class="ce-event-card__title">@item.TenEvent</div>
+                                <div class="ce-event-card__meta">
+                                    <div class="ce-event-card__meta-row">
+                                        <span class="material-symbols-outlined">calendar_today</span>
+                                        @item.NgayBatDau.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("vi-VN"))
+                                    </div>
+                                    <div class="ce-event-card__meta-row">
+                                        <span class="material-symbols-outlined">location_on</span>
+                                        @(item.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                                    </div>
+                                </div>
+                                <div class="ce-event-card__footer">
+                                    <div class="ce-event-card__slots">
+                                        <span class="material-symbols-outlined">group</span>
+                                        @(item.SoLuongDaDangKy) / @(item.SoLuongToiDa) chỗ
+                                    </div>
+                                    <span class="ce-badge @(item.GiaVe == null || item.GiaVe == 0 ? "ce-badge-success" : "ce-badge-primary")">
+                                        @(item.GiaVe == null || item.GiaVe == 0 ? "MIỄN PHÍ" : String.Format("{0:N0}đ", item.GiaVe))
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ce-empty">
+                <span class="material-symbols-outlined">event_busy</span>
+                <div class="ce-empty__title">Chưa có sự kiện nào</div>
+                <div class="ce-empty__sub">Hiện tại chưa có sự kiện nào được đăng. Vui lòng quay lại sau.</div>
+            </div>
+        }
+
+        <div class="text-center mt-4">
+            <a href="@Url.Action("Events","Events")" class="ce-btn ce-btn-outline">
+                <span class="material-symbols-outlined">expand_more</span> Xem thêm sự kiện
+            </a>
+        </div>
+    </div>
+</section>

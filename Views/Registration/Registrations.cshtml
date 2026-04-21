@@ -4,20 +4,20 @@
     ViewBag.ActivePage = "registrations";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
 
-    var sv = ViewBag.SinhVien as SinhVien;
+    var sv = ViewBag.SinhVien as shcool_event_management.Models.SinhVien;
     var DaDangKy = ViewBag.DaDangKy as List<DangKySuKien> ?? new List<DangKySuKien>();
     var daThamDu = ViewBag.DaThamDu as List<DangKySuKien> ?? new List<DangKySuKien>();
     var daHuy = ViewBag.DaHuy as List<DangKySuKien> ?? new List<DangKySuKien>();
     var daLuu = ViewBag.DaLuu as List<DangKySuKien> ?? new List<DangKySuKien>();
     var qrDict = ViewBag.QRDict as Dictionary<int, string> ?? new Dictionary<int, string>();
 
-    int tongDangKy = ViewBag.TongDangKy ?? 0;
-    int tongThamDu = ViewBag.TongThamDu ?? 0;
-    int tongSapToi = ViewBag.TongSapToi ?? 0;
+    int tongDangKy = ViewBag.TongDangKyNam ?? 0;
+    int tongThamDu = ViewBag.TongHoanThanhNam ?? 0;
+    int tongHuy = ViewBag.TongHuyNam ?? 0;
 
-    string tenHienThi = sv != null ? (sv.Ten ?? "Sinh Viên") : (ViewBag.UserName as string ?? "Sinh Viên");
-    string maSV = sv?.ID ?? "---";
-    string lop = sv?.MaNghanh ?? "";
+    string tenHienThi = sv.Ten;
+    string maSV = sv.ID;
+    string lop = sv.MaNghanh;
 
     string avatar = "SV";
     if (!string.IsNullOrWhiteSpace(tenHienThi))
@@ -45,16 +45,14 @@
 <div class="container py-4">
     <div class="row g-4">
         @* Sidebar *@
-        @Html.Partial("~/Views/Registration/_Sidebar.cshtml", new
-        {
-            SinhVien = sv,
-            TongDangKy = tongDangKy,
-            TongThamDu = tongThamDu,
-            TongSapToi = tongSapToi,
-            TenHienThi = tenHienThi,
-            MaSV = maSV,
-            Lop = lop,
-            Avatar = avatar
+        @Html.Partial("~/Views/Registration/_Sidebar.cshtml", new ViewDataDictionary {
+            { "Avatar", avatar },
+            { "TenHienThi", tenHienThi },
+            { "MaSV", maSV },
+            { "Lop", lop },
+            { "TongDangKyNam", tongDangKy },
+            { "TongHoanThanhNam", tongThamDu },
+            { "TongHuyNam", tongHuy }
         })
 
         <div class="col-lg-9">

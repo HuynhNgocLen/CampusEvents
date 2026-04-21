@@ -26,7 +26,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult Index(int year = 0, string semester = "")
+        public ActionResult AdminStats(int year = 0, string semester = "")
         {
             ViewBag.ActiveMenu = "stats";
 

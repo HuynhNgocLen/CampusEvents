@@ -1,5 +1,4 @@
-﻿@* Views/Shared/_LayoutUsers.cshtml *@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -20,6 +19,7 @@
     <link href="@Url.Content("~/Content/campus-pages.css")" rel="stylesheet" />
     <link href="@Url.Content("~/Content/campus-filter.css")" rel="stylesheet" />
     <link href="@Url.Content("~/Content/campus-profile.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/campus-index.css")" rel="stylesheet" />
     @RenderSection("styles", required: false)
 </head>
 <body>
@@ -27,7 +27,7 @@
     @Html.AntiForgeryToken()
 
     <nav class="ce-navbar">
-        <a href="@Url.Action("Index", "Users")" class="ce-navbar__brand">
+        <a href="@Url.Action("Home", "Home")" class="ce-navbar__brand">
             <div class="ce-navbar__logo">
                 <span class="material-symbols-outlined">school</span>
             </div>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="ce-navbar__nav">
-            <a href="@Url.Action("Index", "Users")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
+            <a href="@Url.Action("Home", "Home")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
                 <span class="material-symbols-outlined">home</span> Trang chủ
             </a>
             <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
@@ -77,7 +77,7 @@
                         @initials
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px; background: var(--surface);">
-                        <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Users")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">person</span> Hồ sơ cá nhân</a></li>
+                        <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Home")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">person</span> Hồ sơ cá nhân</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Registration")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-" style="font-size:20px; color: var(--text);">assignment_turned_in</span> Tổng quan đăng ký</a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -107,7 +107,7 @@
                 <span class="ce-navbar__name">Menu</span>
             </div>
             <div class="ce-mobile-menu__nav">
-                <a href="@Url.Action("Index", "Users")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
+                <a href="@Url.Action("Home", "Home")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
                     <span class="material-symbols-outlined">home</span> Trang chủ
                 </a>
                 <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">

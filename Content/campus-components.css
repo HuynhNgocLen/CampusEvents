@@ -134,15 +134,67 @@
     transform: scale(1.05);
 }
 
+/* ── Placeholder khi không có ảnh ───────────────────────────── */
 .ce-event-card__img-placeholder {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    gap: .5rem;
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--primary) 18%, transparent),
+        color-mix(in srgb, var(--primary) 6%, transparent));
+    position: relative;
+    overflow: hidden;
+    transition: background .3s ease;
+}
+
+/* Vòng trang trí phía sau icon */
+.ce-event-card__img-placeholder::before {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 28px solid color-mix(in srgb, var(--primary) 10%, transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform .35s ease;
+}
+
+.ce-event-card__img-placeholder::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 18px solid color-mix(in srgb, var(--primary) 6%, transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ce-event-card:hover .ce-event-card__img-placeholder::before {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+/* Icon */
+.ce-event-card__img-placeholder .material-symbols-outlined {
+    font-size: 2.4rem;
     color: var(--primary);
-    opacity: .45;
+    opacity: .75;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--primary) 30%, transparent));
+    transition: transform .3s ease, opacity .3s ease;
+}
+
+.ce-event-card:hover .ce-event-card__img-placeholder .material-symbols-outlined {
+    transform: scale(1.12) translateY(-2px);
+    opacity: .9;
 }
 
 .ce-event-card__badges {
@@ -161,7 +213,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: auto;
+    background: var(--surface);
     border: none;
     display: flex;
     align-items: center;
@@ -628,14 +680,13 @@ textarea.ce-form-control {
             transform: translateY(0);
         }
 
-        .ce-filter-sidebar.open::before {
+            .ce-filter-sidebar.open::before {
                 content: "";
                 position: fixed;
                 inset: 0;
                 background: rgba(0,0,0,0.5);
                 z-index: -1;
-         }
-
+            }
 }
 
 /*Page List*/
@@ -674,6 +725,76 @@ textarea.ce-form-control {
         background: var(--cef-primary-lt);
         color: var(--cef-primary);
     }
+
+
+/* ── Dark Mode overrides ─────────────────────────────────────── */
+[data-theme="dark"],
+.dark-mode {
+    /* Placeholder dark mode */
+    .ce-event-card__img-placeholder {
+        background: linear-gradient(135deg,
+            color-mix(in srgb, var(--primary) 22%, #1e293b),
+            color-mix(in srgb, var(--primary) 8%, #0f172a));
+    }
+
+    /* Ghost button */
+    .ce-btn-ghost {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+        border-color: var(--border);
+    }
+
+        .ce-btn-ghost:hover {
+            background: rgba(19, 127, 236, 0.15);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+    /* Outline button */
+    .ce-btn-outline {
+        background: transparent;
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+        .ce-btn-outline:hover {
+            background: rgba(19, 127, 236, 0.15);
+        }
+    /* Save / favorite button trên card */
+    .ce-event-card__save {
+        background: rgba(30, 30, 40, 0.75);
+        color: var(--text-muted);
+        backdrop-filter: blur(4px);
+    }
+
+        .ce-event-card__save:hover {
+            background: rgba(30, 30, 40, 0.9);
+            color: var(--danger);
+        }
+
+        .ce-event-card__save.saved {
+            background: rgba(30, 30, 40, 0.9);
+            color: var(--danger);
+        }
+    /* Form select arrow màu sáng hơn cho dark mode */
+    .ce-form-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-color: var(--surface);
+        color: var(--text);
+        border-color: var(--border);
+    }
+    /* Filter trigger button (nút Lọc trên mobile) */
+    .ce-filter-trigger {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--border);
+        color: var(--text-muted);
+    }
+
+        .ce-filter-trigger:hover {
+            background: rgba(19, 127, 236, 0.15);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+}
 
 .dropdown-menu .dropdown-item {
     color: #e5e7eb;

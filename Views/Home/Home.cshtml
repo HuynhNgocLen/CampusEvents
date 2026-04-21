@@ -1,0 +1,25 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@{
+    ViewBag.Title      = "Khám phá Sự kiện";
+    ViewBag.ActivePage = "home";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+}
+
+@section Hero {
+    @Html.Partial("HomePartials/_IndexHero", Model)
+}
+@Html.Partial("HomePartials/_IndexCategories")
+@Html.Partial("HomePartials/_IndexFeaturedEvents", Model)
+@Html.Partial("HomePartials/_IndexCtaFooter")
+@section scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () {
+        if (typeof ceCountUp === 'function') {
+            ceCountUp(document.getElementById('cnt-sv'),  8420);
+            ceCountUp(document.getElementById('cnt-clb'), 47);
+        }
+    }, 300);
+</script>
+<script src="~/Scripts/A-user-events.js"></script>
+}
