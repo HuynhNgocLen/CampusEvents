@@ -2,3 +2,4 @@
 [Bb]in/ 
 [Oo]bj/ 
 AppSettings.secret.config
+Web.config

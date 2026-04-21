@@ -1,10 +1,10 @@
-@* Views/Account/Login.cshtml — Đăng nhập / Đăng ký *@
 @{
     ViewBag.Title = "Đăng nhập";
-    Layout = null; @* Không dùng _LayoutUsers vì auth có layout riêng *@
+    Layout = null;
 }
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,7 +35,7 @@
 
     <div class="ce-auth-page">
 
-        @* ── Hero (desktop left) ── *@
+        @* Hero (desktop left) *@
         <div class="ce-auth-hero">
             <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:2.5rem;position:relative">
                 <div style="width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff">
@@ -78,7 +78,7 @@
             </button>
         </div>
 
-        @* ── Form column ── *@
+        @* Form column *@
         <div class="ce-auth-form-col">
             <div class="ce-auth-card">
 
@@ -112,15 +112,11 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script>
     function loadAuthForm(type, btn) {
-        // 1. Đổi trạng thái active cho Tab
         $('.ce-tab-btn').removeClass('active');
         $(btn).addClass('active');
 
-        // 2. Hiệu ứng làm mờ khi đang load
         $('#auth-form-content').css('opacity', '0.5');
 
-        // 3. Gọi Ajax lấy nội dung form từ Controller
-        // Lưu ý: Phải gọi đúng hàm GetFormAjax trong Controller
         $.get('@Url.Action("GetFormAjax", "Account")', { type: type }, function (data) {
             $('#auth-form-content').html(data).css('opacity', '1');
         }).fail(function() {
@@ -129,7 +125,6 @@
         });
     }
 
-    // Hàm ẩn/hiện mật khẩu (dùng chung cho ID bất kỳ)
     function cePwToggle(id, btn) {
         var inp = document.getElementById(id);
         var icon = btn.querySelector('.material-symbols-outlined');
@@ -140,5 +135,12 @@
             inp.type = 'password';
             icon.textContent = 'visibility';
         }
+    }
+
+    function ceSetLoading(btn, text) {
+        setTimeout(() => {
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> ${text}`;
+        }, 10);
     }
 </script>

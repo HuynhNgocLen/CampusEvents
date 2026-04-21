@@ -1,8 +1,5 @@
-/* Scripts/A-user-events.js */
 
-/* ══════════════════════════════════════════════════════════
-   1.  FILTER SIDEBAR  (open / close / toggle)
-   ══════════════════════════════════════════════════════════ */
+ //1.  FILTER SIDEBAR  (open / close / toggle)
 function openFilter() {
     var panel = document.getElementById('ce-filter-sidebar');
     var backdrop = document.getElementById('cef-backdrop');
@@ -27,9 +24,7 @@ function toggleFilterSidebar() {
     panel.classList.contains('open') ? closeFilter() : openFilter();
 }
 
-/* ══════════════════════════════════════════════════════════
-   2.  LƯU / BỎ LƯU SỰ KIỆN  (Yêu thích)
-   ══════════════════════════════════════════════════════════ */
+//2.  LƯU / BỎ LƯU SỰ KIỆN  (Yêu thích)
 function toggleFavorite(btn, maEvent) {
     if (btn.getAttribute('data-loading') === 'true') return;
     btn.setAttribute('data-loading', 'true');
@@ -51,7 +46,6 @@ function toggleFavorite(btn, maEvent) {
                     if (iconSpan) iconSpan.textContent = 'favorite';
                     if (textSpan) textSpan.textContent = 'Đã lưu sự kiện';
 
-                    // ĐỔI TỪ showToast THÀNH CeToast.show
                     if (typeof CeToast !== 'undefined') {
                         CeToast.show('Đã lưu sự kiện', 'success');
                     }
@@ -60,7 +54,6 @@ function toggleFavorite(btn, maEvent) {
                     if (iconSpan) iconSpan.textContent = 'favorite_border';
                     if (textSpan) textSpan.textContent = 'Lưu sự kiện';
 
-                    // ĐỔI TỪ showToast THÀNH CeToast.show
                     if (typeof CeToast !== 'undefined') {
                         CeToast.show('Đã bỏ lưu sự kiện', 'info');
                     }
@@ -73,9 +66,7 @@ function toggleFavorite(btn, maEvent) {
         });
 }
 
-/* ══════════════════════════════════════════════════════════
-   3. CÁC TƯƠNG TÁC GIAO DIỆN CHUNG & BỘ LỌC
-   ══════════════════════════════════════════════════════════ */
+//3. CÁC TƯƠNG TÁC GIAO DIỆN CHUNG & BỘ LỌC
 document.addEventListener('DOMContentLoaded', function () {
     // Xử lý Category Chips
     document.querySelectorAll('.ce-chip').forEach(function (chip) {

@@ -1,10 +1,6 @@
-/* ============================================================
-   Scripts/campus-app.js
-   Logic dùng chung: Theme · Toast · Navbar · Modal · Tabs · Chips
-   ============================================================ */
 'use strict';
 
-/* ── Theme (light / dark) ────────────────────────────────────── */
+/* Theme (light / dark) */
 var CeTheme = (function () {
     var KEY = 'ce-theme';
     function set(t) {
@@ -23,7 +19,7 @@ var CeTheme = (function () {
     return { init: init, toggle: toggle, get: get };
 })();
 
-/* ── Toast ───────────────────────────────────────────────────── */
+/* Toast */
 var CeToast = (function () {
     var ICONS = { success: 'check_circle', error: 'cancel', info: 'info' };
     function show(msg, type, ms) {
@@ -47,7 +43,7 @@ var CeToast = (function () {
     return { show: show };
 })();
 
-/* ── Modal ────────────────────────────────────────────────────── */
+/* Modal */
 function ceOpenModal(id) {
     var el = document.getElementById(id);
     if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
@@ -57,7 +53,7 @@ function ceCloseModal(id) {
     if (el) { el.classList.remove('open'); document.body.style.overflow = ''; }
 }
 
-/* ── Navbar mobile toggle ─────────────────────────────────────── */
+/* Navbar mobile toggle */
 function ceInitNavbar() {
     var btn = document.getElementById('ce-nav-toggler');
     var menu = document.getElementById('ce-mobile-menu');
@@ -83,7 +79,7 @@ function ceInitNavbar() {
     });
 }
 
-/* ── Tabs ─────────────────────────────────────────────────────── */
+/* Tabs */
 function ceInitTabs() {
     document.querySelectorAll('.ce-tab-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -98,7 +94,7 @@ function ceInitTabs() {
     });
 }
 
-/* ── Chips ────────────────────────────────────────────────────── */
+/* Chips */
 function ceInitChips() {
     document.querySelectorAll('.ce-chip').forEach(function (chip) {
         chip.addEventListener('click', function () {
@@ -111,7 +107,7 @@ function ceInitChips() {
     });
 }
 
-/* ── Scroll reveal ────────────────────────────────────────────── */
+/* Scroll reveal */
 function ceInitReveal() {
     if (!window.IntersectionObserver) {
         document.querySelectorAll('.ce-reveal').forEach(function (el) { el.classList.add('visible'); });
@@ -160,3 +156,74 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', CeTheme.toggle);
     });
 });
+/*======= Admin sidebar toggle (mobile + desktop) =======*/
+(function () {
+    var shell = document.getElementById('caShell');
+    var sidebar = document.getElementById('adminSidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var toggleBtn = document.getElementById('sidebarToggle');
+
+    var MOBILE_BP = 992;
+
+    if (window.innerWidth >= MOBILE_BP && localStorage.getItem('sidebarCollapsed') === '1') {
+        shell.classList.add('sidebar-collapsed');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    function isMobile() { return window.innerWidth < MOBILE_BP; }
+
+    function openMobile() {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobile() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+
+    function toggleDesktop() {
+        var collapsed = shell.classList.toggle('sidebar-collapsed');
+        toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+    }
+
+    toggleBtn.addEventListener('click', function () {
+        if (isMobile()) {
+            sidebar.classList.contains('open') ? closeMobile() : openMobile();
+        } else {
+            toggleDesktop();
+        }
+    });
+
+    overlay.addEventListener('click', closeMobile);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isMobile()) closeMobile();
+    });
+
+    window.addEventListener('resize', function () {
+        if (!isMobile()) {
+            closeMobile();
+        }
+    });
+
+    sidebar.querySelectorAll('.ca-nav-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            if (isMobile()) closeMobile();
+        });
+    });
+
+    document.querySelectorAll('.ce-toast').forEach(function (el) {
+        setTimeout(function () {
+            el.style.transition = 'opacity .4s';
+            el.style.opacity = '0';
+            setTimeout(function () { el.remove(); }, 400);
+        }, 4000);
+    });
+
+})();

@@ -9,7 +9,7 @@ using System.Web.Mvc;
 namespace school_event_management.Controllers
 {
     [JwtAuthorize]
-    public class UsersController : Controller
+    public class HomeController : Controller
     {
         private readonly school_event_managementEntities db = new school_event_managementEntities();
         private string GetCurrentStudentId()
@@ -45,7 +45,7 @@ namespace school_event_management.Controllers
         }
 
         // Users/Index
-        public ActionResult Index()
+        public ActionResult Home()
         {
             ViewBag.Title = "Khám phá Sự kiện";
             ViewBag.ActivePage = "home";
@@ -182,11 +182,11 @@ namespace school_event_management.Controllers
             if (userExists)
             {
                 // Chuyển hướng sang trang Profile của người đó
-                return RedirectToAction("Profile", "Users", new { id = searchKeyword });
+                return RedirectToAction("Profile", "Home", new { id = searchKeyword });
             }
 
             // Chuyển hướng sang trang Sự kiện để tìm tên sự kiện
-            return RedirectToAction("Events", "Users", new { keyword = searchKeyword });
+            return RedirectToAction("Events", "Events", new { keyword = searchKeyword });
         }
     }
 }

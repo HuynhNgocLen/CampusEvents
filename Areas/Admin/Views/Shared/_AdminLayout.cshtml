@@ -5,20 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@(ViewBag.Title != null ? ViewBag.Title + " — " : "")CampusEvents Admin</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
-          rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
 
-    <link rel="stylesheet" href="@Url.Content("~/Content/campus-variables.css")" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/campus-base.css")" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/campus-components.css")" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/campus-admin.css")" />
+    <!-- toastr -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <link href="@Url.Content("~/Content/campus-variables.css")"  rel="stylesheet" />
+    <link href="@Url.Content("~/Content/campus-base.css")"       rel="stylesheet" />
+    <link href="@Url.Content("~/Content/campus-navbar.css")"     rel="stylesheet" />
+    <link href="@Url.Content("~/Content/campus-components.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/campus-pages.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/campus-admin.css")"      rel="stylesheet" />
 
     @RenderSection("styles", required: false)
+
+    <!-- Khởi tạo theme ngay để tránh flash -->
+    <script>
+        (function () {
+            var saved = localStorage.getItem('ce-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
+    </script>
 </head>
 <body>
+
+    @Html.AntiForgeryToken()
 
     <div class="ca-sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -27,8 +42,7 @@
         <aside class="ca-sidebar" id="adminSidebar" aria-label="Admin navigation">
 
             <a href="@Url.Action("Index", "AdminDashboard", new { area = "Admin" })"
-               class="ca-sidebar__brand"
-               title="Trang chủ Admin">
+               class="ca-sidebar__brand" title="Trang chủ Admin">
                 <div class="ca-sidebar__logo-icon">
                     <span class="material-symbols-outlined">event</span>
                 </div>
@@ -42,14 +56,12 @@
 
                 <span class="ca-nav-section-label">Tổng quan</span>
 
-                <li>
-                    <a href="@Url.Action("Dashboard", "AdminDashboard", new { area = "Admin" })"
-                       class="ca-nav-item @(ViewBag.ActiveMenu == "dashboard" ? "active" : "")"
-                       data-label="Dashboard">
-                        <span class="material-symbols-outlined">dashboard</span>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                <a href="@Url.Action("Dashboard", "AdminDashboard", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "dashboard" ? "active" : "")"
+                   data-label="Dashboard">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
 
                 <a href="@Url.Action("Index", "AdminEvents", new { area = "Admin" })"
                    class="ca-nav-item @(ViewBag.ActiveMenu == "events" ? "active" : "")"
@@ -71,7 +83,7 @@
 
                 <span class="ca-nav-section-label">Báo cáo</span>
 
-                <a href="@Url.Action("Index", "AdminStats", new { area = "Admin" })"
+                <a href="@Url.Action("AdminStats", "AdminStats", new { area = "Admin" })"
                    class="ca-nav-item @(ViewBag.ActiveMenu == "stats" ? "active" : "")"
                    aria-current="@(ViewBag.ActiveMenu == "stats" ? "page" : null)"
                    data-label="Thống kê">
@@ -89,10 +101,9 @@
                     <span>Cài đặt</span>
                 </a>
 
-                <div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)">
+                <div style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border)">
                     <a href="@Url.Action("Logout", "AdminAuth", new { area = "Admin" })"
-                       class="ca-nav-item"
-                       style="color:var(--danger)"
+                       class="ca-nav-item" style="color:var(--danger)"
                        data-label="Đăng xuất">
                         <span class="material-symbols-outlined">logout</span>
                         <span>Đăng xuất</span>
@@ -107,8 +118,7 @@
             <header class="ca-header" role="banner">
 
                 <button class="ca-header__icon-btn ca-sidebar-toggle"
-                        type="button"
-                        id="sidebarToggle"
+                        type="button" id="sidebarToggle"
                         aria-controls="adminSidebar"
                         aria-expanded="true"
                         aria-label="Toggle menu">
@@ -125,19 +135,25 @@
 
                 <div class="ca-header__actions">
 
-                    <button class="ca-header__icon-btn" type="button"
-                            title="Thông báo" id="btnNotifications">
-                        <span class="material-symbols-outlined">notifications</span>
-                        <span class="ca-header__notif-dot" id="notifDot"></span>
+                    <button class="ca-header__icon-btn"
+                            id="themeToggleBtn"
+                            data-action="toggle-theme"
+                            title="Đổi giao diện sáng / tối">
+                        <span class="material-symbols-outlined ce-theme-icon">light_mode</span>
                     </button>
 
-                    <button class="ca-header__icon-btn" type="button" title="Trợ giúp & Tài liệu">
+                    <button class="ca-header__icon-btn d-none d-sm-flex" title="Thông báo"
+                            onclick="ceOpenModal('modal-notif')">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="ce-notif-dot"></span>
+                    </button>
+
+                    <button class="ca-header__icon-btn" type="button" title="Trợ giúp">
                         <span class="material-symbols-outlined">help</span>
                     </button>
 
                     <a href="@Url.Action("Profile", "AdminSettings", new { area = "Admin" })"
-                       class="ca-header__profile"
-                       title="Hồ sơ Admin">
+                       class="ca-header__profile" title="Hồ sơ Admin">
                         @if (!string.IsNullOrEmpty(ViewBag.AdminAvatar?.ToString()))
                         {
                             <div class="ca-header__avatar">
@@ -181,7 +197,7 @@
             </main>
 
             <footer class="ca-footer" role="contentinfo">
-                <span>© 2024 Campus Management Suite &nbsp;·&nbsp; System Version 2.1.0-STABLE</span>
+                <span>© 2024 Campus Management Suite &nbsp;·&nbsp; v2.1.0-STABLE</span>
                 <div class="ca-footer__links">
                     <a href="#">System Status</a>
                     <a href="#">API Documentation</a>
@@ -192,78 +208,12 @@
         </div>
     </div>
 
-    <script>
-        (function () {
-            var shell    = document.getElementById('caShell');
-            var sidebar  = document.getElementById('adminSidebar');
-            var overlay  = document.getElementById('sidebarOverlay');
-            var toggleBtn = document.getElementById('sidebarToggle');
 
-            var MOBILE_BP = 992;
-
-            if (window.innerWidth >= MOBILE_BP && localStorage.getItem('sidebarCollapsed') === '1') {
-                shell.classList.add('sidebar-collapsed');
-                toggleBtn.setAttribute('aria-expanded', 'false');
-            }
-
-            function isMobile() { return window.innerWidth < MOBILE_BP; }
-
-            function openMobile() {
-                sidebar.classList.add('open');
-                overlay.classList.add('visible');
-                toggleBtn.setAttribute('aria-expanded', 'true');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobile() {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('visible');
-                toggleBtn.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            }
-
-            function toggleDesktop() {
-                var collapsed = shell.classList.toggle('sidebar-collapsed');
-                toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-                localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
-            }
-
-            toggleBtn.addEventListener('click', function () {
-                if (isMobile()) {
-                    sidebar.classList.contains('open') ? closeMobile() : openMobile();
-                } else {
-                    toggleDesktop();
-                }
-            });
-
-            overlay.addEventListener('click', closeMobile);
-
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && isMobile()) closeMobile();
-            });
-
-            window.addEventListener('resize', function () {
-                if (!isMobile()) {
-                    closeMobile();
-                }
-            });
-
-            sidebar.querySelectorAll('.ca-nav-item').forEach(function (item) {
-                item.addEventListener('click', function () {
-                    if (isMobile()) closeMobile();
-                });
-            });
-
-            document.querySelectorAll('.ce-toast').forEach(function (el) {
-                setTimeout(function () {
-                    el.style.transition = 'opacity .4s';
-                    el.style.opacity = '0';
-                    setTimeout(function () { el.remove(); }, 400);
-                }, 4000);
-            });
-
-        })();
-    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="@Url.Content("~/Scripts/campus-app.js")"></script>
 
     @RenderSection("scripts", required: false)
 </body>

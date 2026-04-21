@@ -73,11 +73,18 @@ namespace shcool_event_management.Controllers
             if (!string.IsNullOrEmpty(time) && time != "all")
             {
                 if (time == "today")
-                    query = query.Where(e => System.Data.Entity.DbFunctions.TruncateTime(e.NgayBatDau) == today);
+                {
+                    query = query.Where(e => DbFunctions.TruncateTime(e.NgayBatDau) == today);
+                }
                 else if (time == "week")
-                    query = query.Where(e => e.NgayBatDau >= today && e.NgayBatDau <= today.AddDays(7));
+                {
+                    DateTime nextWeek = today.AddDays(7);
+                    query = query.Where(e => e.NgayBatDau >= today && e.NgayBatDau <= nextWeek);
+                }
                 else if (time == "month")
+                {
                     query = query.Where(e => e.NgayBatDau.Month == today.Month && e.NgayBatDau.Year == today.Year);
+                }
             }
 
             // 4. Lọc theo Trạng thái

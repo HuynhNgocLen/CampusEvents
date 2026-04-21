@@ -1,0 +1,39 @@
+@* ── KHÁM PHÁ THEO DANH MỤC ── *@
+<section class="ce-index-section" style="background:var(--surface-2)">
+    <div class="container py-5">
+        <div class="d-flex align-items-end justify-content-between mb-4">
+            <div>
+                <h2 class="ce-section-title mb-1">Khám phá theo danh mục</h2>
+                <p class="mb-0" style="font-size:.875rem;color:var(--text-muted)">Chọn lĩnh vực bạn yêu thích để bắt đầu.</p>
+            </div>
+            <a href="@Url.Action("Events","Events")" class="ce-link-more">Xem tất cả →</a>
+        </div>
+
+        <div class="row g-3">
+            @{
+                var categories = new[]
+                {
+                    new { Icon="menu_book",    Label="Học thuật",  Count=32, Bg="#1e3a5f", IconBg="#137fec", IconColor="#fff" },
+                    new { Icon="groups",       Label="Câu lạc bộ", Count=47, Bg="#1a3a2e", IconBg="#22c55e", IconColor="#fff" },
+                    new { Icon="sports_soccer",Label="Thể thao",   Count=18, Bg="#2a2a2a", IconBg="#475569", IconColor="#cbd5e1" },
+                    new { Icon="build",        Label="Workshop",   Count=24, Bg="#2a2a2a", IconBg="#475569", IconColor="#cbd5e1" },
+                    new { Icon="music_note",   Label="Văn nghệ",   Count=12, Bg="#3d1a1a", IconBg="#ef4444", IconColor="#fff" },
+                    new { Icon="palette",      Label="Sáng tạo",   Count=9,  Bg="#2a2a2a", IconBg="#475569", IconColor="#cbd5e1" },
+                };
+            }
+            @foreach (var cat in categories)
+            {
+                <div class="col-6 col-md-4">
+                    <a href="@Url.Action("Events","Events")" class="ce-cat-card"
+                       style="background:@cat.Bg">
+                        <div class="ce-cat-card__icon" style="background:@cat.IconBg;color:@cat.IconColor">
+                            <span class="material-symbols-outlined">@cat.Icon</span>
+                        </div>
+                        <div class="ce-cat-card__label">@cat.Label</div>
+                        <div class="ce-cat-card__count">@cat.Count sự kiện</div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

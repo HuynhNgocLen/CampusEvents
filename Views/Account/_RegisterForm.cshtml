@@ -28,7 +28,12 @@
         <label class="ce-form-label">Email trường</label>
         <div class="ce-input-icon">
             <span class="material-symbols-outlined icon">mail</span>
-            <input class="ce-form-control" name="email" type="email" placeholder="tensv@student.abc.edu.vn" />
+            <input class="ce-form-control" name="email" type="email" id="emailInput"
+                   placeholder="tensv@student.tdmu.edu.vn" />
+            <div id="emailError" style="color:#dc3545;font-size:.78rem;margin-top:4px;display:none;">
+                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">error</span>
+                Email phải có đuôi <b>@@student.tdmu.edu.vn</b>
+            </div>
         </div>
     </div>
 
@@ -86,7 +91,25 @@
         </label>
     </div>
 
-    <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg" type="submit">
+    <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg" type="submit" id="registerBtn"
+            onclick="return ceRegisterSubmit(this)">
         <span class="material-symbols-outlined">person_add</span> Tạo tài khoản
     </button>
 }
+
+<script>
+function ceRegisterSubmit(btn) {
+    var email = document.getElementById('emailInput').value.trim();
+    var errBox = document.getElementById('emailError');
+
+    if (!email.endsWith('@@student.tdmu.edu.vn')) {
+        errBox.style.display = 'block';
+        document.getElementById('emailInput').focus();
+        return false; // chặn submit
+    }
+
+    errBox.style.display = 'none';
+    ceSetLoading(btn, 'Đang xử lý...');
+    return true;
+}
+</script>

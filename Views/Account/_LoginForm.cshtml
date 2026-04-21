@@ -37,7 +37,8 @@
     <div class="d-flex justify-content-end mb-4">
         <a href="@Url.Action("ForgotPassword", "Account")" style="font-size:.78rem;color:var(--primary)">Quên mật khẩu?</a>
     </div>
-    <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg mb-3" type="submit">
+    <button class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg mb-3" type="submit" id="loginBtn"
+            onclick="ceSetLoading(this,'Đang đăng nhập...')">
         <span class="material-symbols-outlined">login</span> Đăng nhập
     </button>
 }

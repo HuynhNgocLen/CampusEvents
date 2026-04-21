@@ -94,7 +94,8 @@
                                         </div>
                                     </a>
                                     <div class="ce-event-card__badges">
-                                        <span class="ce-badge" style="background-color: @(item.DanhMuc?.MauSac ?? "#3b82f6");">
+                                        <span class="ce-badge ce-badge-category"
+                                              style="--cat-color: @(item.DanhMuc?.MauSac ?? "#3b82f6");">
                                             @item.DanhMuc.TenDanhMuc
                                         </span>
                                         @if (conLai <= 0)
