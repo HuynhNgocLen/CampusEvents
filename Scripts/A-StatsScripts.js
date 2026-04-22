@@ -1,4 +1,4 @@
-﻿const getGrid = () => getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e2e8f0';
+const getGrid = () => getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e2e8f0';
 const getTick = () => getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#64748b';
 
 const BASE_OPTS = () => ({
@@ -90,7 +90,7 @@ if (WEEK_LABELS.length > 0) {
 }
 
 function loadChartData(yr) {
-    const url = '@Url.Action("GetChartData", "AdminStats", new { area = "Admin" })' + '?year=' + yr;
+    const url = `${CHART_DATA_URL}?year=${encodeURIComponent(yr)}`;
 
     fetch(url)
         .then(response => {

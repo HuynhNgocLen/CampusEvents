@@ -123,6 +123,7 @@ function ceInitReveal() {
 
 /* ── Counter animation ────────────────────────────────────────── */
 function ceCountUp(el, target, dur) {
+    if (!el) return;
     dur = dur || 1200;
     var start = null;
     function step(ts) {
@@ -165,7 +166,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var MOBILE_BP = 992;
 
-    if (window.innerWidth >= MOBILE_BP && localStorage.getItem('sidebarCollapsed') === '1') {
+    var hasAdminSidebar = shell && sidebar && overlay && toggleBtn;
+
+    if (hasAdminSidebar && window.innerWidth >= MOBILE_BP && localStorage.getItem('sidebarCollapsed') === '1') {
         shell.classList.add('sidebar-collapsed');
         toggleBtn.setAttribute('aria-expanded', 'false');
     }
@@ -192,31 +195,32 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
     }
 
-    toggleBtn.addEventListener('click', function () {
-        if (isMobile()) {
-            sidebar.classList.contains('open') ? closeMobile() : openMobile();
-        } else {
-            toggleDesktop();
-        }
-    });
-
-    overlay.addEventListener('click', closeMobile);
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && isMobile()) closeMobile();
-    });
-
-    window.addEventListener('resize', function () {
-        if (!isMobile()) {
-            closeMobile();
-        }
-    });
-
-    sidebar.querySelectorAll('.ca-nav-item').forEach(function (item) {
-        item.addEventListener('click', function () {
-            if (isMobile()) closeMobile();
+    if (hasAdminSidebar) {
+        toggleBtn.addEventListener('click', function () {
+            if (isMobile()) {
+                sidebar.classList.contains('open') ? closeMobile() : openMobile();
+            } else {
+                toggleDesktop();
+            }
         });
-    });
+        overlay.addEventListener('click', closeMobile);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && isMobile()) closeMobile();
+        });
+
+        window.addEventListener('resize', function () {
+            if (!isMobile()) {
+                closeMobile();
+            }
+        });
+
+        sidebar.querySelectorAll('.ca-nav-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                if (isMobile()) closeMobile();
+            });
+        });
+    }
 
     document.querySelectorAll('.ce-toast').forEach(function (el) {
         setTimeout(function () {

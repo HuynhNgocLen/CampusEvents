@@ -1,0 +1,37 @@
+<div class="em-modal-overlay" id="emStudentModal">
+    <div class="em-modal">
+        <div class="em-modal__header">
+            <h3 id="emModalTitle">
+                <span class="material-symbols-outlined">group</span>
+                Danh sách sinh viên
+            </h3>
+            <div style="display:flex;gap:.5rem;align-items:center">
+                <a id="emModalExcel" href="#" class="ce-btn ce-btn-sm ce-btn-outline" title="Xuất Excel">
+                    <span class="material-symbols-outlined">download</span>Excel
+                </a>
+                <button class="em-modal__close" id="emModalClose" title="Đóng">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+        </div>
+        <div class="em-modal__toolbar">
+            <div class="em-modal__search">
+                <span class="material-symbols-outlined em-search-icon">search</span>
+                <input type="text" id="emModalSearch" placeholder="Tìm theo tên hoặc MSSV..." autocomplete="off" />
+            </div>
+            <select id="emModalStatusFilter" class="em-status-filter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Đã đăng ký">Đã đăng ký</option>
+                <option value="Đã hoàn thành">Đã hoàn thành</option>
+                <option value="Đã hủy">Đã hủy</option>
+            </select>
+            <span class="em-modal__count" id="emModalCount"></span>
+        </div>
+        <div class="em-modal__body" id="emModalBody">
+            <div class="em-modal__empty">
+                <span class="material-symbols-outlined">group</span>
+                <span>Chọn sự kiện để xem danh sách sinh viên</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -23,8 +23,11 @@
     @RenderSection("styles", required: false)
 </head>
 <body>
-
-    @Html.AntiForgeryToken()
+    @{
+        var _jwt = Request.Cookies["jwt"];
+        var _jwtOk = _jwt != null && school_event_management.Models.JwtService.ValidateToken(_jwt.Value) != null;
+        var isGuestUser = _jwtOk && school_event_management.Models.JwtService.IsGuest(Request);
+    }
 
     <nav class="ce-navbar">
         <a href="@Url.Action("Home", "Home")" class="ce-navbar__brand">
@@ -34,40 +37,49 @@
             <span class="ce-navbar__name">CampusEvents</span>
         </a>
 
-        <div class="ce-navbar__search d-none d-md-block">
-            <form action="@Url.Action("Events", "// Xác nhận đăng ký sự kiện\r\n[HttpPost]\r\n[ValidateAntiForgeryToken]\r\npublic ActionResult ConfirmRegister(int eventId)\r\n{\r\n    string studentId = GetCurrentStudentId();\r\n\r\n    var ev = db.EVENTs.FirstOrDefault(e => e.MaEvent == eventId);\r\n    if (ev == null)\r\n    {\r\n        TempData[\"Error\"] = \"Sự kiện không tồn tại.\";\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n\r\n    DateTime now = DateTime.Now;\r\n\r\n    //KIỂM TRA CHƯA TỚI NGÀY ĐĂNG KÝ\r\n    if (ev.NgayBatDauDangKy.HasValue && now < ev.NgayBatDauDangKy.Value)\r\n    {\r\n        TempData[\"Error\"] = $\"Sự kiện này sẽ mở đăng ký vào lúc {ev.NgayBatDauDangKy.Value.ToString(\"HH:mm dd/MM/yyyy\")}.\";\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n\r\n    // KIỂM TRA ĐÃ QUÁ HẠN ĐĂNG KÝ\r\n    if (ev.NgayHetHanDangKy.HasValue && now.Date > ev.NgayHetHanDangKy.Value.Date)\r\n    {\r\n        TempData[\"Error\"] = \"Sự kiện này đã hết hạn đăng ký.\";\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n\r\n    // KIỂM TRA ĐÃ ĐĂNG KÝ RỒI\r\n    bool daDangKy = db.DangKySuKiens.Any(d =>\r\n        d.MaEvent == eventId && d.IDSinhVien == studentId && !d.TrangThai.ToLower().Contains(\"Hủy\"));\r\n\r\n    if (daDangKy)\r\n    {\r\n        TempData[\"Error\"] = \"Bạn đã đăng ký sự kiện này rồi.\";\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n\r\n    // KIỂM TRA ĐÃ ĐẦY CHỖ\r\n    var tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == eventId);\r\n    if (tinhTrang == null || tinhTrang.SoChoConLai <= 0)\r\n    {\r\n        TempData[\"Error\"] = \"Sự kiện này đã đầy (hết chỗ).\";\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n\r\n    try\r\n    {\r\n        var existingReg = db.DangKySuKiens\r\n            .FirstOrDefault(d => d.MaEvent == eventId && d.IDSinhVien == studentId);\r\n\r\n        if (existingReg != null)\r\n        {\r\n            existingReg.TrangThai = \"Đã đăng ký\";\r\n            existingReg.NgayDangKy = DateTime.Now;\r\n        }\r\n        else\r\n        {\r\n            db.DangKySuKiens.Add(new DangKySuKien\r\n            {\r\n                MaEvent = eventId,\r\n                IDSinhVien = studentId,\r\n                NgayDangKy = DateTime.Now,\r\n                TrangThai = \"Đã đăng ký\"\r\n            });\r\n        }\r\n\r\n        db.SaveChanges();\r\n        TempData[\"ShowSuccessModal\"] = true;\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n    catch (Exception ex)\r\n    {\r\n        var innerMsg = ex.InnerException?.InnerException?.Message ?? ex.Message;\r\n        TempData[\"Error\"] = \"Có lỗi xảy ra: \" + innerMsg;\r\n        return RedirectToAction(\"EventDetail\", new { id = eventId });\r\n    }\r\n}")" method="GET" class="ce-navbar__search d-none d-md-block">
-                <span class="material-symbols-outlined si">search</span>
-                <input type="search" name="keyword" placeholder="Tìm kiếm sự kiện…" id="navbar-search" value="@Request.QueryString["keyword"]" />
-            </form>
-        </div>
+        @if (!isGuestUser)
+        {
+            <div class="ce-navbar__search d-none d-md-block">
+                <form action="@Url.Action("Events", "Events")" method="GET" class="ce-navbar__search d-none d-md-block">
+                    <span class="material-symbols-outlined si">search</span>
+                    <input type="search" name="keyword" placeholder="Tìm kiếm sự kiện…" id="navbar-search" value="@Request.QueryString["keyword"]" />
+                </form>
+            </div>
+        }
 
         <div class="ce-navbar__nav">
             <a href="@Url.Action("Home", "Home")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
                 <span class="material-symbols-outlined">home</span> Trang chủ
             </a>
-            <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
-                <span class="material-symbols-outlined">event</span> Sự kiện
-            </a>
-            <a href="@Url.Action("Registrations", "Registration")" class="@(ViewBag.ActivePage == "registrations" ? "active" : "")">
-                <span class="material-symbols-outlined">assignment_turned_in</span> Đăng ký của tôi
-            </a>
-            <a href="@Url.Action("Schedule", "Schedule")" class="@(ViewBag.ActivePage == "schedule" ? "active" : "")">
-                <span class="material-symbols-outlined">calendar_month</span> Lịch của tôi
-            </a>
+            @if (!isGuestUser)
+            {
+                <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
+                    <span class="material-symbols-outlined">event</span> Sự kiện
+                </a>
+                <a href="@Url.Action("Registrations", "Registration")" class="@(ViewBag.ActivePage == "registrations" ? "active" : "")">
+                    <span class="material-symbols-outlined">assignment_turned_in</span> Đăng ký của tôi
+                </a>
+                <a href="@Url.Action("Schedule", "Schedule")" class="@(ViewBag.ActivePage == "schedule" ? "active" : "")">
+                    <span class="material-symbols-outlined">calendar_month</span> Lịch của tôi
+                </a>
+            }
         </div>
 
         <div class="ce-navbar__actions">
             <button class="ce-navbar__icon-btn" data-action="toggle-theme" title="Đổi giao diện">
                 <span class="material-symbols-outlined ce-theme-icon">light_mode</span>
             </button>
-            <button class="ce-navbar__icon-btn d-none d-sm-flex" title="Thông báo"
-                    onclick="ceOpenModal('modal-notif')">
-                <span class="material-symbols-outlined">notifications</span>
-                <span class="ce-notif-dot"></span>
-            </button>
-            @if (Request.Cookies["jwt"] != null && school_event_management.Models.JwtService.ValidateToken(Request.Cookies["jwt"].Value) != null)
+            @if (!isGuestUser)
             {
-                @* TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP *@
+                <button class="ce-navbar__icon-btn d-none d-sm-flex" title="Thông báo"
+                        onclick="ceOpenModal('modal-notif')">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="ce-notif-dot"></span>
+                </button>
+            }
+            @if (_jwtOk)
+            {
+                @* Đã có JWT (sinh viên hoặc khách) *@
                 <div class="dropdown">
                     <a href="#" class="ce-navbar__avatar" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
                         @{
@@ -77,10 +89,18 @@
                         @initials
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px; background: var(--surface);">
-                        <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Home")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">person</span> Hồ sơ cá nhân</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Registration")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-" style="font-size:20px; color: var(--text);">assignment_turned_in</span> Tổng quan đăng ký</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        @if (!isGuestUser)
+                        {
+                            <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Home")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">person</span> Hồ sơ cá nhân</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Registration")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">assignment_turned_in</span> Tổng quan đăng ký</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                        }
+                        else
+                        {
+                            <li><span class="dropdown-item py-2 text-muted" style="font-size:.8rem;cursor:default">Chế độ khách — chỉ trang chủ</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                        }
                         <li><a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px;">logout</span> Đăng xuất</a></li>
                     </ul>
                 </div>
@@ -110,15 +130,18 @@
                 <a href="@Url.Action("Home", "Home")" class="@(ViewBag.ActivePage == "home" ? "active" : "")">
                     <span class="material-symbols-outlined">home</span> Trang chủ
                 </a>
-                <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
-                    <span class="material-symbols-outlined">event</span> Sự kiện
-                </a>
-                <a href="@Url.Action("Registrations", "Registration")" class="@(ViewBag.ActivePage == "registrations" ? "active" : "")">
-                    <span class="material-symbols-outlined">assignment_turned_in</span> Đăng ký của tôi
-                </a>
-                <a href="@Url.Action("Schedule", "Schedule")" class="@(ViewBag.ActivePage == "schedule" ? "active" : "")">
-                    <span class="material-symbols-outlined">calendar_month</span> Lịch của tôi
-                </a>
+                @if (!isGuestUser)
+                {
+                    <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
+                        <span class="material-symbols-outlined">event</span> Sự kiện
+                    </a>
+                    <a href="@Url.Action("Registrations", "Registration")" class="@(ViewBag.ActivePage == "registrations" ? "active" : "")">
+                        <span class="material-symbols-outlined">assignment_turned_in</span> Đăng ký của tôi
+                    </a>
+                    <a href="@Url.Action("Schedule", "Schedule")" class="@(ViewBag.ActivePage == "schedule" ? "active" : "")">
+                        <span class="material-symbols-outlined">calendar_month</span> Lịch của tôi
+                    </a>
+                }
             </div>
         </div>
     </div>
@@ -126,6 +149,13 @@
     <!-- Mobile Menu và Notification Modal giữ nguyên như cũ của bạn -->
     @* ── PAGE WRAPPER ── *@
     <div class="ce-page-wrapper">
+        @if (isGuestUser)
+        {
+            <div class="ce-guest-banner">
+                <span class="material-symbols-outlined" style="font-size:18px;flex-shrink:0">info</span>
+                <span>Bạn đang xem với tư cách <strong>khách</strong> — chỉ trang chủ. Đăng xuất rồi đăng nhập sinh viên để dùng đầy đủ chức năng.</span>
+            </div>
+        }
         <main class="ce-main">
             @RenderSection("Hero", required: false)
             @RenderBody()
@@ -159,6 +189,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script src="@Url.Content("~/Scripts/campus-app.js")"></script>
+
+    @if (TempData["Info"] != null)
+    {
+        var flashInfo = TempData["Info"].ToString();
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof CeToast !== 'undefined')
+                    CeToast.show(@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(flashInfo, true)), 'info', 5200);
+            });
+        </script>
+    }
 
     @RenderSection("scripts", required: false)
 

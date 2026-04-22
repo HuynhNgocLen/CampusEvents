@@ -1,4 +1,5 @@
-﻿using school_event_management.Models;
+using school_event_management.Filters;
+using school_event_management.Models;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,18 @@ namespace school_event_management.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
+
+            ViewBag.IsGuest = JwtService.IsGuest(Request);
+
+            if (JwtService.IsGuest(Request))
+            {
+                ViewBag.UserName = "Khách tham quan";
+                ViewData["TenHienThi"] = "Khách tham quan";
+                ViewData["MaSV"] = "";
+                ViewData["Lop"] = "";
+                ViewData["Avatar"] = "KH";
+                return;
+            }
 
             string studentId = GetCurrentStudentId();
             if (string.IsNullOrEmpty(studentId)) return;
@@ -47,15 +60,28 @@ namespace school_event_management.Controllers
         // Users/Index
         public ActionResult Home()
         {
-            ViewBag.Title = "Khám phá Sự kiện";
+            ViewBag.Title = "Trang chủ";
             ViewBag.ActivePage = "home";
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
             ViewBag.DanhMucs = db.DanhMucs.ToList();
+            ViewBag.StudentCount = db.SinhViens.Count();
+            ViewBag.ClubCount = db.Viens.Count();
+
+            var threeDaysAgo = DateTime.Now.AddDays(-3);
 
             var events = db.EVENTs
                 .Include(e => e.DanhMuc)
                 .Include(e => e.DiaDiem)
                 .Include(e => e.Vien)
+                .Where(e => e.IsHidden == false)
+                .Where(e =>
+                    e.TrangThai == "Sắp diễn ra"
+                    || e.TrangThai == "Đang diễn ra"
+                    || (e.TrangThai == "Đã kết thúc"
+                        && (e.NgayKetThuc.HasValue
+                            ? e.NgayKetThuc.Value >= threeDaysAgo
+                            : e.NgayBatDau >= threeDaysAgo))
+                )
                 .OrderByDescending(e => e.NgayBatDau)
                 .ToList();
 
@@ -69,6 +95,7 @@ namespace school_event_management.Controllers
         }
 
         //Thong tin ca nhan nguoi dung
+        [RestrictGuest]
         [HttpGet]
         public ActionResult Profile(string id = "")
         {
@@ -81,9 +108,9 @@ namespace school_event_management.Controllers
                 if (!string.IsNullOrEmpty(id))
                 {
                     TempData["Error"] = "Không tìm thấy hồ sơ này!";
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Home", "Home");
                 }
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction("Login", "Account");
             }
 
             ViewBag.IsCurrentUser = (currentUserId == targetId);
@@ -139,6 +166,7 @@ namespace school_event_management.Controllers
         }
 
         // --- XỬ LÝ CẬP NHẬT THÔNG TIN ---
+        [RestrictGuest]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateProfile(SinhVien model)
@@ -166,12 +194,13 @@ namespace school_event_management.Controllers
         }
 
         //tim kiem thong minh tren navbar
+        [RestrictGuest]
         [HttpGet]
         public ActionResult SmartSearch(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Home");
             }
 
             string searchKeyword = keyword.Trim();

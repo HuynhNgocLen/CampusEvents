@@ -33,15 +33,13 @@
 </head>
 <body>
 
-    @Html.AntiForgeryToken()
-
     <div class="ca-sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="ca-shell" id="caShell">
 
         <aside class="ca-sidebar" id="adminSidebar" aria-label="Admin navigation">
 
-            <a href="@Url.Action("Index", "AdminDashboard", new { area = "Admin" })"
+            <a href="@Url.Action("Dashboard", "AdminDashboard", new { area = "Admin" })"
                class="ca-sidebar__brand" title="Trang chủ Admin">
                 <div class="ca-sidebar__logo-icon">
                     <span class="material-symbols-outlined">event</span>
@@ -73,12 +71,12 @@
 
                 <span class="ca-nav-section-label">Nội dung</span>
 
-                <a href="@Url.Action("Create", "AdminEvents", new { area = "Admin" })"
-                   class="ca-nav-item @(ViewBag.ActiveMenu == "create" ? "active" : "")"
-                   aria-current="@(ViewBag.ActiveMenu == "create" ? "page" : null)"
-                   data-label="Tạo bài đăng">
-                    <span class="material-symbols-outlined">add_circle</span>
-                    <span>Tạo bài đăng</span>
+                <a href="@Url.Action("Manage", "AdminEvents", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "manage" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "manage" ? "page" : null)"
+                   data-label="Quản lí sự kiện">
+                    <span class="material-symbols-outlined">event_note</span>
+                    <span>Quản lí sự kiện</span>
                 </a>
 
                 <span class="ca-nav-section-label">Báo cáo</span>

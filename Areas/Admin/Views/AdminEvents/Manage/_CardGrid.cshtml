@@ -1,0 +1,109 @@
+@model List<shcool_event_management.Models.EVENT>
+
+<div class="em-card-grid active" id="emCardGrid">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="em-empty-state">
+            <span class="material-symbols-outlined">event_busy</span>
+            <h3>Không tìm thấy sự kiện nào</h3>
+            <p>Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var ev in Model)
+        {
+            double pct = ev.SoLuongToiDa > 0 ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa, 0) : 0;
+            string badgeCls = ev.TrangThai == "Sắp diễn ra" ? "em-badge em-badge-info"
+                : ev.TrangThai == "Đang diễn ra" ? "em-badge em-badge-success"
+                : ev.TrangThai == "Đã hủy" ? "em-badge em-badge-danger"
+                : ev.TrangThai == "Đã kết thúc" ? "em-badge em-badge-default"
+                : "em-badge em-badge-warning";
+            string safeTitle = ev.TenEvent?.Replace("'", "\\'") ?? "";
+
+            <div class="em-card">
+                <div class="em-card__thumb">
+                    @if (!string.IsNullOrEmpty(ev.AnhBia))
+                    {
+                        <img src="@Url.Content(ev.AnhBia)" alt="@ev.TenEvent" />
+                    }
+                    else
+                    {
+                        <div class="em-card__thumb-placeholder">
+                            <span class="material-symbols-outlined">event</span>
+                        </div>
+                    }
+                    @if (ev.DanhMuc != null)
+                    {
+                        <span class="em-card__cat">@ev.DanhMuc.TenDanhMuc</span>
+                    }
+                    <div class="em-card__status">
+                        <span class="@badgeCls">@ev.TrangThai</span>
+                    </div>
+                </div>
+
+                <div class="em-card__body">
+                    <div class="em-card__title">@ev.TenEvent</div>
+                    <div class="em-card__meta">
+                        <div class="em-card__meta-row">
+                            <span class="material-symbols-outlined">calendar_today</span>
+                            @ev.NgayBatDau.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                        @if (ev.DiaDiem != null)
+                        {
+                            <div class="em-card__meta-row">
+                                <span class="material-symbols-outlined">location_on</span>
+                                @ev.DiaDiem.TenDiaDiem
+                            </div>
+                        }
+                        <div class="em-card__meta-row">
+                            <span class="material-symbols-outlined">corporate_fare</span>
+                            @ev.MaVien
+                        </div>
+                    </div>
+
+                    <div class="em-card__progress">
+                        <div class="em-prog-wrap">
+                            <div class="em-prog-bg">
+                                <div class="em-prog-fill" style="width:@pct%"></div>
+                            </div>
+                            <span class="em-prog-label">@ev.SoLuongDaDangKy/@ev.SoLuongToiDa</span>
+                        </div>
+                    </div>
+
+                    <div class="em-card__actions">
+                        <a href="@Url.Action("Edit","AdminEvents",new{area="Admin",id=ev.MaEvent})"
+                           class="ce-btn ce-btn-sm ce-btn-outline" title="Cập nhật sự kiện">
+                            <span class="material-symbols-outlined">edit</span>Cập nhật
+                        </a>
+                        @if (ev.TrangThai != "Đã kết thúc" && ev.TrangThai != "Đã hủy")
+                        {
+                            <button type="button" class="ce-btn ce-btn-sm ce-btn-outline em-btn-icon-warning" title="Đóng sự kiện"
+                                    onclick="emOpenCloseModal(@ev.MaEvent, '@safeTitle', this)">
+                                <span class="material-symbols-outlined">event_busy</span>Đóng
+                            </button>
+                        }
+                        else if (ev.TrangThai == "Đã hủy")
+                        {
+                            <button type="button" class="ce-btn ce-btn-sm ce-btn-reopen" title="Mở lại sự kiện"
+                                    onclick="emOpenReopenModal(@ev.MaEvent, '@safeTitle', this)">
+                                <span class="material-symbols-outlined">event_available</span>Mở lại
+                            </button>
+                        }
+                        @using (Html.BeginForm("Delete", "AdminEvents", new { area = "Admin", id = ev.MaEvent }, FormMethod.Post, new { @class = "em-inline-form em-delete-form", data_event_name = ev.TenEvent }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="ce-btn ce-btn-sm ce-btn-outline em-btn-icon-danger" title="Xóa sự kiện">
+                                <span class="material-symbols-outlined">delete</span>Xóa
+                            </button>
+                        }
+                        <button type="button" class="ce-btn ce-btn-sm ce-btn-outline" title="Xem danh sách sinh viên"
+                                onclick="emOpenStudentModal(@ev.MaEvent, '@safeTitle')">
+                            <span class="material-symbols-outlined">group</span>Xem SV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

@@ -1,4 +1,5 @@
-﻿using school_event_management.Models;
+using school_event_management.Filters;
+using school_event_management.Models;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Data.Entity;
 
 namespace shcool_event_management.Controllers
 {
+    [RestrictGuest]
     public class RegistrationController : Controller
     {
         private readonly school_event_managementEntities db = new school_event_managementEntities();
@@ -92,6 +94,12 @@ namespace shcool_event_management.Controllers
             }
 
             dangKy.TrangThai = "Hủy";
+
+            // Cập nhật lại số lượng đăng ký của sự kiện
+            var ev = db.EVENTs.Find(maEvent);
+            if (ev != null && ev.SoLuongDaDangKy > 0)
+                ev.SoLuongDaDangKy--;
+
             db.SaveChanges();
 
             TempData["Success"] = "Đã hủy đăng ký thành công.";

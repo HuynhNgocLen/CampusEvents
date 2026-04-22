@@ -4,7 +4,8 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var ev       = ViewBag.Event as shcool_event_management.Models.EVENT;
     int totalReg = (int)(ViewBag.TotalReg   ?? 0);
-    int confirmed= (int)(ViewBag.Confirmed  ?? 0);
+    int registered = (int)(ViewBag.Registered ?? 0);
+    int completed = (int)(ViewBag.Completed ?? 0);
     int cancelled= (int)(ViewBag.Cancelled  ?? 0);
     int page     = (int)(ViewBag.Page       ?? 1);
     int totalPage= (int)(ViewBag.TotalPage  ?? 1);
@@ -17,26 +18,11 @@
         ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa,1) : 0;
 }
 
-@section styles {
-<style>
-.reg-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
-.reg-kpi { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; box-shadow:var(--shadow-sm); }
-.reg-kpi__label { font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--text-muted); margin-bottom:.3rem; }
-.reg-kpi__val { font-size:1.8rem; font-weight:800; line-height:1; }
-.page-btn { width:32px; height:32px; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); font-family:var(--font-main); font-size:.78rem; font-weight:600; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:all .18s; }
-.page-btn:hover, .page-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
-.page-btn.disabled { opacity:.4; pointer-events:none; }
-.prog-wrap { display:flex; align-items:center; gap:.5rem; }
-.prog-bg { flex:1; height:6px; background:var(--border); border-radius:999px; overflow:hidden; }
-.prog-fill { height:100%; border-radius:999px; }
-</style>
-}
-
 <div class="ca-content">
     <div class="ca-breadcrumb">
         <a href="@Url.Action("Dashboard","AdminDashboard",new{area="Admin"})">Dashboard</a>
         <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
-        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})">Quản lý bài đăng</a>
+        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})">Quản lí sự kiện</a>
         <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
         <span>Chi tiết đăng ký</span>
     </div>
@@ -78,7 +64,7 @@
                         </div>
                     </div>
                     <div style="display:flex;gap:.5rem;flex-shrink:0">
-                        <a href="@Url.Action("ExportExcel","AdminEvents",new{area="Admin",id=ev.MaEvent})"
+                        <a href="@Url.Action("ExportExcel","AdminEvents",new{area="Admin",id=ev.MaEvent,search,status})"
                            class="ce-btn ce-btn-outline">
                             <span class="material-symbols-outlined">download</span>Xuất Excel
                         </a>
@@ -98,16 +84,16 @@
                 <div class="reg-kpi__val" style="color:var(--primary)">@totalReg</div>
             </div>
             <div class="reg-kpi">
-                <div class="reg-kpi__label">Đã xác nhận</div>
-                <div class="reg-kpi__val" style="color:var(--success)">@confirmed</div>
+                <div class="reg-kpi__label">Đã đăng ký</div>
+                <div class="reg-kpi__val" style="color:var(--primary)">@registered</div>
+            </div>
+            <div class="reg-kpi">
+                <div class="reg-kpi__label">Đã hoàn thành</div>
+                <div class="reg-kpi__val" style="color:#0f766e">@completed</div>
             </div>
             <div class="reg-kpi">
                 <div class="reg-kpi__label">Đã hủy</div>
                 <div class="reg-kpi__val" style="color:var(--danger)">@cancelled</div>
-            </div>
-            <div class="reg-kpi">
-                <div class="reg-kpi__label">Chờ xác nhận</div>
-                <div class="reg-kpi__val" style="color:var(--warning)">@(totalReg - confirmed - cancelled)</div>
             </div>
         </div>
     }
@@ -124,8 +110,8 @@
         <select name="status"
                 style="height:36px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.82rem;outline:none">
             <option value="">Tất cả trạng thái</option>
-            <option value="Đã xác nhận"  @(status=="Đã xác nhận"?"selected":"")>Đã xác nhận</option>
-            <option value="Chờ xác nhận" @(status=="Chờ xác nhận"?"selected":"")>Chờ xác nhận</option>
+            <option value="Đã đăng ký"   @(status=="Đã đăng ký"?"selected":"")>Đã đăng ký</option>
+            <option value="Đã hoàn thành"@(status=="Đã hoàn thành"?"selected":"")>Đã hoàn thành</option>
             <option value="Đã hủy"       @(status=="Đã hủy"?"selected":"")>Đã hủy</option>
         </select>
         <button type="submit" class="ce-btn ce-btn-primary ce-btn-sm">
@@ -180,9 +166,12 @@
                             string initials = sv != null && !string.IsNullOrEmpty(sv.Ten)
                                 ? sv.Ten.Split(' ').LastOrDefault()?.Substring(0,1).ToUpper() ?? "?" : "?";
 
-                            string regBadge = reg.TrangThai == "Đã xác nhận" ? "ce-badge ce-badge-success"
-                                : reg.TrangThai == "Đã hủy" ? "ce-badge ce-badge-danger"
-                                : "ce-badge ce-badge-warning";
+                            var normalizedStatus = reg.TrangThai == "Đã xác nhận" || reg.TrangThai == "Chờ xác nhận"
+                                ? "Đã đăng ký"
+                                : reg.TrangThai;
+                            string regBadge = normalizedStatus == "Đã hoàn thành" ? "ce-badge ce-badge-success"
+                                : normalizedStatus == "Đã hủy" ? "ce-badge ce-badge-danger"
+                                : "ce-badge ce-badge-info";
 
                             <tr>
                                 <td style="color:var(--text-muted);font-size:.78rem">@idx</td>
@@ -204,7 +193,7 @@
                                 <td style="font-size:.82rem">@sv?.Email</td>
                                 <td style="font-size:.82rem">@sv?.SoDienThoai</td>
                                 <td style="font-size:.82rem;white-space:nowrap">@reg.NgayDangKy.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td><span class="@regBadge">@reg.TrangThai</span></td>
+                                <td><span class="@regBadge">@normalizedStatus</span></td>
                                 <td style="text-align:center">
                                     @if (reg.TrangThai != "Đã hủy")
                                     {
@@ -235,15 +224,15 @@
 
         <div class="ca-table-footer">
             <div class="ca-table-info">Trang @page / @totalPage · @totalReg đăng ký</div>
-            <div style="display:flex;gap:.35rem;align-items:center">
-                <a class="page-btn @(page<=1?"disabled":"")" href="@pageUrl(page-1)">
+            <div class="em-pagination em-pagination--footer">
+                <a class="em-page-btn @(page<=1?"disabled":"")" href="@pageUrl(page-1)">
                     <span class="material-symbols-outlined" style="font-size:16px">chevron_left</span>
                 </a>
                 @for (int p = Math.Max(1,page-2); p <= Math.Min(totalPage,page+2); p++)
                 {
-                    <a class="page-btn @(p==page?"active":"")" href="@pageUrl(p)">@p</a>
+                    <a class="em-page-btn @(p==page?"active":"")" href="@pageUrl(p)">@p</a>
                 }
-                <a class="page-btn @(page>=totalPage?"disabled":"")" href="@pageUrl(page+1)">
+                <a class="em-page-btn @(page>=totalPage?"disabled":"")" href="@pageUrl(page+1)">
                     <span class="material-symbols-outlined" style="font-size:16px">chevron_right</span>
                 </a>
             </div>

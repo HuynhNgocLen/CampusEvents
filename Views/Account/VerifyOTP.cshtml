@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Xác thực tài khoản";
     Layout = null;
 }
@@ -80,6 +80,7 @@
 
             @using (Html.BeginForm("VerifyOTP", "Account", FormMethod.Post))
             {
+                @Html.AntiForgeryToken()
                 <input type="text" name="otpInput" class="form-control otp-input"
                        placeholder="********" maxlength="8" required autocomplete="off" />
                 <button type="submit" class="ce-btn ce-btn-primary ce-btn-block ce-btn-lg">
@@ -124,10 +125,14 @@
 
         function resendOTP() {
             document.getElementById('resendBtn').disabled = true;
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenInput ? tokenInput.value : '';
 
             fetch('@Url.Action("ResendOTP", "Account")', {
                 method: 'POST',
-                headers: { 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: '__RequestVerificationToken=' + encodeURIComponent(token),
+                credentials: 'same-origin'
             })
             .then(r => r.json())
             .then(data => {

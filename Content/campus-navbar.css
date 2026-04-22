@@ -135,3 +135,19 @@
 .ce-mobile-menu a .material-symbols-outlined { font-size: 18px; }
 .ce-mobile-menu a:hover,
 .ce-mobile-menu a.active { color: var(--primary); background: var(--primary-light); }
+
+/* Thanh thông báo chế độ khách (trong .ce-page-wrapper) */
+.ce-guest-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .55rem 1.25rem;
+  font-size: .78rem;
+  line-height: 1.45;
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(45, 63, 226, .12), rgba(56, 189, 248, .1));
+  border-bottom: 1px solid var(--border);
+}
+[data-theme="dark"] .ce-guest-banner {
+  background: linear-gradient(90deg, rgba(56, 189, 248, .15), rgba(45, 63, 226, .12));
+}

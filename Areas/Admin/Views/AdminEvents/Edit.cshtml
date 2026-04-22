@@ -3,42 +3,16 @@
     ViewBag.Title = "Chỉnh sửa sự kiện — CampusEvents Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var danhMucList = ViewBag.DanhMucList as List<SelectListItem>;
-    var diaDiemList = ViewBag.DiaDiemList as List<SelectListItem>;
     var vienList    = ViewBag.VienList    as List<SelectListItem>;
+    var diaDiemText = ViewBag.DiaDiemText as string;
     double pct = Model != null && Model.SoLuongToiDa > 0
         ? Math.Round(Model.SoLuongDaDangKy * 100.0 / Model.SoLuongToiDa, 1) : 0;
 }
 
 @section styles {
+<link href="@Url.Content("~/Content/campus-event-form.css?v=2")" rel="stylesheet" />
 <link href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/contents.css" rel="stylesheet"/>
-<style>
-.create-layout { display:grid; grid-template-columns:1fr 340px; gap:1.5rem; align-items:start; }
-.sticky-sidebar { position:sticky; top:calc(var(--header-h,62px) + 1.25rem); }
-.form-row  { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-.upload-zone {
-    border:2px dashed var(--border); border-radius:var(--radius-lg);
-    padding:2rem; text-align:center; cursor:pointer; transition:all .2s; background:var(--surface-2);
-}
-.upload-zone:hover { border-color:var(--primary); background:var(--primary-light); }
-.upload-zone .material-symbols-outlined { font-size:36px; color:var(--text-light); display:block; margin-bottom:.5rem; }
-.preview-wrap { position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:16/9; }
-.preview-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
-.preview-remove {
-    position:absolute; top:.5rem; right:.5rem; width:28px; height:28px;
-    border-radius:50%; background:rgba(0,0,0,.55); border:none; color:#fff;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-}
-.preview-remove:hover { background:var(--danger); }
-.preview-remove .material-symbols-outlined { font-size:15px; }
-.publish-btn { width:100%; padding:.7rem; border-radius:var(--radius); font-family:var(--font-main); font-size:.88rem; font-weight:700; cursor:pointer; border:none; display:flex; align-items:center; justify-content:center; gap:.4rem; transition:all .18s; }
-.publish-btn-primary { background:var(--primary); color:#fff; }
-.publish-btn-primary:hover { background:#0e62c4; }
-.publish-btn-outline { background:transparent; border:1.5px solid var(--border); color:var(--text-muted); margin-top:.5rem; }
-.publish-btn-outline:hover { border-color:var(--danger); color:var(--danger); }
-.stat-preview { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:.75rem 1rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:.65rem; }
-.stat-preview__label { font-size:.72rem; color:var(--text-muted); font-weight:600; }
-.stat-preview__val { font-size:1.2rem; font-weight:800; color:var(--text); }
-</style>
+
 }
 
 <div class="ca-content">
@@ -73,6 +47,7 @@
         @Html.HiddenFor(m => m.SoLuongDaDangKy)
         @Html.HiddenFor(m => m.LuotXem)
         @Html.HiddenFor(m => m.AnhBia)
+        @Html.HiddenFor(m => m.TrangThai)
 
         <div class="create-layout">
             @* LEFT *@
@@ -102,13 +77,18 @@
                         </div>
                         <div class="ca-form-group">
                             <label class="ca-form-label">Địa điểm <span class="ca-required">*</span></label>
-                            @Html.DropDownListFor(m => m.MaDiaDiem, diaDiemList ?? new List<SelectListItem>(), "— Chọn —", new { @class = "ca-form-select" })
-                            @Html.ValidationMessageFor(m => m.MaDiaDiem, "", new { @class = "ca-form-error" })
+                            <input type="text"
+                                   name="diaDiemText"
+                                   value="@diaDiemText"
+                                   class="ca-form-input"
+                                   maxlength="200"
+                                   placeholder="VD: Hội trường A1 - Cơ sở 1" />
+                            @Html.ValidationMessage("MaDiaDiem", "", new { @class = "ca-form-error" })
                         </div>
                         <div class="form-row">
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Ngày &amp; giờ bắt đầu <span class="ca-required">*</span></label>
-                                @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-ddTHH:mm}", new { @class = "ca-form-input", type = "datetime-local" })
+                                <label class="ca-form-label">Ngày bắt đầu <span class="ca-required">*</span></label>
+                                @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-dd}", new { @class = "ca-form-input", type = "date" })
                                 @Html.ValidationMessageFor(m => m.NgayBatDau, "", new { @class = "ca-form-error" })
                             </div>
                             <div class="ca-form-group">
@@ -126,12 +106,8 @@
                     </div>
                     <div class="ca-card__body">
                         <div class="ca-form-group">
-                            <label class="ca-form-label">Mô tả ngắn</label>
-                            @Html.TextAreaFor(m => m.MoTaNgan, new { @class = "ca-form-textarea", rows = 3, maxlength = 300 })
-                        </div>
-                        <div class="ca-form-group">
-                            <label class="ca-form-label">Nội dung chi tiết</label>
-                            @Html.TextAreaFor(m => m.NoiDung, new { id = "richContent", name = "NoiDung" })
+                            <label class="ca-form-label">Mô tả sự kiện</label>
+                            @Html.TextAreaFor(m => m.MoTa, new { id = "richContent" })
                         </div>
                     </div>
                 </div>
@@ -144,8 +120,11 @@
                     <div class="ca-card__body">
                         @if (!string.IsNullOrEmpty(Model?.AnhBia))
                         {
+                            var coverSrc = Model.AnhBia.StartsWith("~")
+                                ? Model.AnhBia
+                                : (Model.AnhBia.StartsWith("/") ? "~" + Model.AnhBia : "~/Uploads/Events/" + Model.AnhBia);
                             <div class="preview-wrap" id="previewWrap" style="display:block">
-                                <img id="previewImg" src="@Url.Content("~/Uploads/Events/" + Model.AnhBia)" alt="Ảnh bìa"/>
+                                <img id="previewImg" src="@Url.Content(coverSrc)" alt="Ảnh bìa"/>
                                 <button type="button" class="preview-remove" id="previewRemove">
                                     <span class="material-symbols-outlined">close</span>
                                 </button>
@@ -185,7 +164,7 @@
                         <button type="submit" name="btnAction" value="publish" class="publish-btn publish-btn-primary">
                             <span class="material-symbols-outlined">save</span>Lưu thay đổi
                         </button>
-                        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})" class="publish-btn publish-btn-outline" style="text-align:center;display:flex">
+                        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})" class="publish-btn publish-btn-outline js-cancel-event" style="text-align:center;display:flex">
                             <span class="material-symbols-outlined">arrow_back</span>Hủy
                         </a>
                     </div>
@@ -229,7 +208,7 @@
                     <div class="ca-card__body" style="padding-top:.75rem">
                         <div class="stat-preview">
                             <div class="stat-preview__label">Đã đăng ký</div>
-                            <div class="stat-preview__val" style="color:var(--primary)">@Model?.SoLuongDaDangKy</div>
+                            <div class="stat-preview__val" style="color:var(--primary)">@(Model != null ? Model.SoLuongDaDangKy : 0)</div>
                         </div>
                         <div class="stat-preview">
                             <div class="stat-preview__label">Tỷ lệ lấp đầy</div>
@@ -237,12 +216,12 @@
                         </div>
                         <div class="stat-preview">
                             <div class="stat-preview__label">Lượt xem</div>
-                            <div class="stat-preview__val">@Model?.LuotXem</div>
+                            <div class="stat-preview__val">@(Model != null ? Model.LuotXem : 0)</div>
                         </div>
-                        @if (Model?.NgayTao != null)
+                        @if (Model != null && Model.NgayTao != default(DateTime))
                         {
                             <div style="font-size:.72rem;color:var(--text-muted);margin-top:.25rem">
-                                Tạo lúc: @Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")
+                                Tạo lúc: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")
                             </div>
                         }
                     </div>
@@ -254,33 +233,5 @@
 
 @section scripts {
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
-<script>
-ClassicEditor.create(document.querySelector('#richContent')).catch(e => console.warn(e));
-
-const input = document.getElementById('coverImageInput');
-const zone  = document.getElementById('uploadZone');
-const wrap  = document.getElementById('previewWrap');
-const img   = document.getElementById('previewImg');
-const rem   = document.getElementById('previewRemove');
-input?.addEventListener('change', e => {
-    const f = e.target.files[0]; if (!f) return;
-    const r = new FileReader();
-    r.onload = ev => { img.src = ev.target.result; wrap.style.display='block'; zone.style.display='none'; };
-    r.readAsDataURL(f);
-});
-rem?.addEventListener('click', () => {
-    input.value=''; img.src=''; wrap.style.display='none'; zone.style.display='block';
-});
-
-const chk=document.getElementById('chkHidden');
-const track=document.getElementById('switchTrack');
-const thumb=document.getElementById('switchThumb');
-function toggleSwitch(){
-    chk.checked=!chk.checked;
-    track.style.background=chk.checked?'var(--primary)':'var(--border)';
-    thumb.style.transform=chk.checked?'translateX(18px)':'translateX(0)';
-}
-track.style.background=chk.checked?'var(--primary)':'var(--border)';
-thumb.style.transform=chk.checked?'translateX(18px)':'translateX(0)';
-</script>
+<script src="@Url.Content("~/Scripts/A-event-edit.js")"></script>
 }

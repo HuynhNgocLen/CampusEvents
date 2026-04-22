@@ -1,0 +1,109 @@
+@model List<shcool_event_management.Models.EVENT>
+@{
+    string search = ViewBag.Search as string;
+    string status = ViewBag.Status as string;
+    string cat = ViewBag.Cat as string;
+    int? semester = ViewBag.Semester as int?;
+    int? year = ViewBag.Year as int?;
+    var danhMucs = ViewBag.DanhMucs as List<shcool_event_management.Models.DanhMuc>;
+    int displayYear = year ?? DateTime.Now.Year;
+    int prevYear = displayYear - 1;
+    int nextYear = displayYear + 1;
+}
+
+<div class="em-header">
+    <div>
+        <h1 class="ca-page-title">Quản lí sự kiện</h1>
+        <p class="ca-page-sub">Xem, cập nhật và quản lý tất cả sự kiện theo từng học kỳ.</p>
+    </div>
+    <a href="@Url.Action("Create","AdminEvents",new{area="Admin"})" class="ce-btn ce-btn-primary">
+        <span class="material-symbols-outlined">add</span>Tạo sự kiện mới
+    </a>
+</div>
+
+<form method="get" action="@Url.Action("Manage","AdminEvents",new{area="Admin"})">
+    <div class="em-toolbar">
+        <div class="em-view-toggle">
+            <button type="button" class="em-view-btn" id="emBtnCardView" title="Dạng card">
+                <span class="material-symbols-outlined">grid_view</span>
+            </button>
+            <button type="button" class="em-view-btn" id="emBtnListView" title="Dạng danh sách">
+                <span class="material-symbols-outlined">view_list</span>
+            </button>
+        </div>
+
+        <div class="em-sep"></div>
+
+        <div class="em-semester-tabs">
+            <a class="em-semester-tab @(!semester.HasValue ? "active" : "")"
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",search,status,cat,year})">Tất cả</a>
+            <a class="em-semester-tab @(semester == 1 ? "active" : "")"
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=1,search,status,cat,year})">Kỳ 1</a>
+            <a class="em-semester-tab @(semester == 2 ? "active" : "")"
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=2,search,status,cat,year})">Kỳ 2</a>
+            <a class="em-semester-tab @(semester == 3 ? "active" : "")"
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=3,search,status,cat,year})">Kỳ 3</a>
+        </div>
+
+        <div class="em-sep"></div>
+
+        <div class="em-search">
+            <span class="material-symbols-outlined em-search-icon">search</span>
+            <input type="search" name="search" value="@search" placeholder="Tìm theo tên sự kiện..." />
+        </div>
+
+        <label>Trạng thái</label>
+        <select name="status">
+            <option value="">Tất cả</option>
+            <option value="Sắp diễn ra" @(status == "Sắp diễn ra" ? "selected" : "")>Sắp diễn ra</option>
+            <option value="Đang diễn ra" @(status == "Đang diễn ra" ? "selected" : "")>Đang diễn ra</option>
+            <option value="Đã kết thúc" @(status == "Đã kết thúc" ? "selected" : "")>Đã kết thúc</option>
+            <option value="Đã hủy" @(status == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+            <option value="Bản nháp" @(status == "Bản nháp" ? "selected" : "")>Bản nháp</option>
+        </select>
+
+        <label>Năm</label>
+        <div class="em-year-nav">
+            <a class="em-year-btn"
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",search,status,cat,semester,year=prevYear,page=1})"
+               title="Năm trước">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <span class="em-year-current">@displayYear</span>
+            <a class="em-year-btn"
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",search,status,cat,semester,year=nextYear,page=1})"
+               title="Năm sau">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+        </div>
+        <input type="hidden" name="year" value="@displayYear" />
+
+        <label>Danh mục</label>
+        <select name="cat">
+            <option value="">Tất cả</option>
+            @if (danhMucs != null)
+            {
+                foreach (var dm in danhMucs)
+                {
+                    <option value="@dm.MaDanhMuc" @(cat == dm.MaDanhMuc ? "selected" : "")>@dm.TenDanhMuc</option>
+                }
+            }
+        </select>
+
+        @if (semester.HasValue)
+        {
+            <input type="hidden" name="semester" value="@semester" />
+        }
+
+        <button type="submit" class="ce-btn ce-btn-primary ce-btn-sm">
+            <span class="material-symbols-outlined">search</span>Lọc
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(search) || !string.IsNullOrWhiteSpace(status) || !string.IsNullOrWhiteSpace(cat) || semester.HasValue)
+        {
+            <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})" class="ce-btn ce-btn-outline ce-btn-sm">
+                <span class="material-symbols-outlined">close</span>Xóa lọc
+            </a>
+        }
+    </div>
+</form>

@@ -1,4 +1,5 @@
-﻿using school_event_management.Models;
+using school_event_management.Filters;
+using school_event_management.Models;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Data.Entity;
 
 namespace shcool_event_management.Controllers
 {
+    [RestrictGuest]
     public class ScheduleController : Controller
     {
         private readonly school_event_managementEntities db = new school_event_managementEntities();
@@ -26,7 +28,7 @@ namespace shcool_event_management.Controllers
             string studentId = GetCurrentStudentId();
             if (string.IsNullOrEmpty(studentId))
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction("Login", "Account");
             }
 
             // 1. Tính toán ngày dựa trên offset
