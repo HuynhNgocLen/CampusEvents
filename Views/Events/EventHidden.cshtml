@@ -1,0 +1,42 @@
+@{
+    ViewBag.Title = "Sự kiện không khả dụng";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+}
+
+<div class="ce-modal-overlay active" id="modal-hidden-event" style="display: flex;">
+    <div class="ce-modal-box" style="max-width: 420px; text-align: center; padding: 2rem 1.5rem;">
+        <div class="ce-modal-header" style="justify-content: center; border-bottom: none; padding: 0 0 1rem 0;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <span class="material-symbols-outlined" style="font-size: 42px; color: var(--danger);">event_busy</span>
+            </div>
+        </div>
+        <div class="ce-modal-body" style="padding: 0;">
+            <h5 style="font-weight: 700; font-size: 1.25rem; color: var(--text); margin-bottom: .75rem;">Sự kiện đã bị ẩn hoặc hủy</h5>
+            <p style="font-size: .95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0;">
+                Người quản lý đã ẩn sự kiện này hoặc sự kiện đã kết thúc/bị hủy. Bạn không thể xem chi tiết hay đăng ký nữa.
+            </p>
+        </div>
+        <div class="ce-modal-footer" style="justify-content: center; border-top: none; padding: 1.5rem 0 0 0;">
+            <button class="ce-btn ce-btn-primary" type="button" onclick="closeAndReload()" style="min-width: 140px; justify-content: center;">
+                Đóng & Quay lại
+            </button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function closeAndReload() {
+            // Thay vì dùng history.back() (có thể load lại cache cũ chứa sự kiện), 
+            // ta redirect thẳng về trang chủ/danh sách sự kiện.
+            window.location.href = '@Url.Action("Events", "Events")';
+        }
+        
+        // Disable click outside to close (force user to click the button)
+        document.getElementById('modal-hidden-event').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAndReload();
+            }
+        });
+    </script>
+}

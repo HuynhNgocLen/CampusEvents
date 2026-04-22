@@ -1,0 +1,125 @@
+@model List<shcool_event_management.Models.EVENT>
+@{
+    int page = (int)(ViewBag.Page ?? 1);
+    int total = (int)(ViewBag.Total ?? 0);
+}
+
+<div class="em-list-view" id="emListView">
+    <div class="ca-table-wrap">
+        <div class="ca-table-toolbar">
+            <div class="ca-table-toolbar__title">
+                <span class="material-symbols-outlined" style="font-size:18px;color:var(--primary)">list_alt</span>
+                Danh sách sự kiện
+                <span class="ca-table-count">@total bản ghi</span>
+            </div>
+        </div>
+
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px">#</th>
+                        <th>Tên sự kiện</th>
+                        <th>Danh mục</th>
+                        <th>Ngày tổ chức</th>
+                        <th>Đăng ký</th>
+                        <th>Trạng thái</th>
+                        <th>Hiển thị</th>
+                        <th style="width:220px;text-align:center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+                                <span class="material-symbols-outlined" style="font-size:36px;display:block;margin-bottom:.5rem;color:var(--text-light)">inbox</span>
+                                Không có dữ liệu phù hợp
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int idx = (page - 1) * (int)(ViewBag.PageSize ?? 12) + 1;
+                        foreach (var ev in Model)
+                        {
+                            double pct = ev.SoLuongToiDa > 0 ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa, 0) : 0;
+                            string badgeCls = ev.TrangThai == "Sắp diễn ra" ? "em-badge em-badge-info"
+                                : ev.TrangThai == "Đang diễn ra" ? "em-badge em-badge-success"
+                                : ev.TrangThai == "Đã hủy" ? "em-badge em-badge-danger"
+                                : ev.TrangThai == "Đã kết thúc" ? "em-badge em-badge-default"
+                                : "em-badge em-badge-warning";
+                            string safeTitle = ev.TenEvent?.Replace("'", "\\'") ?? "";
+
+                            <tr>
+                                <td style="color:var(--text-muted);font-size:.78rem">@idx</td>
+                                <td>
+                                    <div style="font-weight:600;font-size:.85rem;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@ev.TenEvent</div>
+                                    <div style="font-size:.72rem;color:var(--text-muted);margin-top:1px;">@ev.MaVien · DRL: @(ev.DRL.HasValue ? ev.DRL.Value.ToString() : "0")</div>
+                                </td>
+                                <td>
+                                    @if (ev.DanhMuc != null)
+                                    {
+                                        <span class="em-badge em-badge-default">@ev.DanhMuc.TenDanhMuc</span>
+                                    }
+                                </td>
+                                <td style="font-size:.82rem;white-space:nowrap">@ev.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:.4rem;min-width:110px">
+                                        <div style="flex:1;height:5px;background:var(--border);border-radius:999px;overflow:hidden;">
+                                            <div style="width:@pct%;height:100%;background:var(--primary);border-radius:999px;"></div>
+                                        </div>
+                                        <span style="font-size:.72rem;color:var(--text-muted);white-space:nowrap">@ev.SoLuongDaDangKy/@ev.SoLuongToiDa</span>
+                                    </div>
+                                </td>
+                                <td><span class="@badgeCls">@ev.TrangThai</span></td>
+                                <td style="text-align:center">
+                                    <button class="toggle-hidden-btn" id="hideBtn-@ev.MaEvent"
+                                            data-id="@ev.MaEvent" data-hidden="@ev.IsHidden.ToString().ToLower()"
+                                            title="@(ev.IsHidden == true ? "Đang ẩn — Nhấn để hiện" : "Đang hiện — Nhấn để ẩn")"
+                                            onclick="emToggleHidden(@ev.MaEvent, this)">
+                                        <span class="material-symbols-outlined">@(ev.IsHidden == true ? "visibility_off" : "visibility")</span>
+                                    </button>
+                                </td>
+                                <td style="text-align:center">
+                                    <div class="em-table-actions">
+                                        <a href="@Url.Action("Edit","AdminEvents",new{area="Admin",id=ev.MaEvent})"
+                                           class="ce-btn ce-btn-sm ce-btn-outline" title="Cập nhật">
+                                            <span class="material-symbols-outlined">edit</span>
+                                        </a>
+                                        @if (ev.TrangThai != "Đã kết thúc" && ev.TrangThai != "Đã hủy")
+                                        {
+                                            <button type="button" class="ce-btn ce-btn-sm ce-btn-outline em-btn-icon-warning" title="Đóng sự kiện"
+                                                    onclick="emOpenCloseModal(@ev.MaEvent, '@safeTitle', this)">
+                                                <span class="material-symbols-outlined">event_busy</span>
+                                            </button>
+                                        }
+                                        else if (ev.TrangThai == "Đã hủy")
+                                        {
+                                            <button type="button" class="ce-btn ce-btn-sm ce-btn-reopen" title="Mở lại sự kiện"
+                                                    onclick="emOpenReopenModal(@ev.MaEvent, '@safeTitle', this)">
+                                                <span class="material-symbols-outlined">event_available</span>
+                                            </button>
+                                        }
+                                        @using (Html.BeginForm("Delete", "AdminEvents", new { area = "Admin", id = ev.MaEvent }, FormMethod.Post, new { @class = "em-inline-form em-delete-form", data_event_name = ev.TenEvent }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="ce-btn ce-btn-sm ce-btn-outline em-btn-icon-danger" title="Xóa sự kiện">
+                                                <span class="material-symbols-outlined">delete</span>
+                                            </button>
+                                        }
+                                        <button type="button" class="ce-btn ce-btn-sm ce-btn-outline" title="Xem SV"
+                                                onclick="emOpenStudentModal(@ev.MaEvent, '@safeTitle')">
+                                            <span class="material-symbols-outlined">group</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            idx++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -2,88 +2,28 @@
 @{
     ViewBag.Title = "Tạo sự kiện mới — CampusEvents Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    var danhMucList   = ViewBag.DanhMucList as List<SelectListItem>;
-    var diaDiemList   = ViewBag.DiaDiemList as List<SelectListItem>;
-    var vienList      = ViewBag.VienList    as List<SelectListItem>;
+    var danhMucList = ViewBag.DanhMucList as List<SelectListItem>;
+    var vienList = ViewBag.VienList as List<SelectListItem>;
+    var diaDiemText = ViewBag.DiaDiemText as string;
 }
 
 @section styles {
-<link href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/contents.css" rel="stylesheet"/>
-<style>
-.create-layout {
-    display:grid;
-    grid-template-columns:1fr 340px;
-    gap:1.5rem;
-    align-items:start;
-}
-.sticky-sidebar { position:sticky; top:calc(var(--header-h,62px) + 1.25rem); }
+<link href="@Url.Content("~/Content/campus-event-form.css?v=2")" rel="stylesheet" />
+<link href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/contents.css" rel="stylesheet" />
 
-.form-section-label {
-    font-size:.72rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:.08em; color:var(--text-muted);
-    margin-bottom:.75rem; padding-bottom:.45rem;
-    border-bottom:1px solid var(--border);
-}
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-.form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
-
-.upload-zone {
-    border:2px dashed var(--border); border-radius:var(--radius-lg);
-    padding:2.25rem; text-align:center; cursor:pointer;
-    transition:all .2s; background:var(--surface-2);
-}
-.upload-zone:hover, .upload-zone.drag-over {
-    border-color:var(--primary); background:var(--primary-light);
-}
-.upload-zone .material-symbols-outlined { font-size:38px; color:var(--text-light); display:block; margin-bottom:.5rem; }
-.upload-zone__title { font-size:.9rem; font-weight:700; margin-bottom:.25rem; }
-.upload-zone__sub { font-size:.75rem; color:var(--text-muted); }
-
-.preview-wrap { position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:16/9; display:none; }
-.preview-wrap img { width:100%; height:100%; object-fit:cover; }
-.preview-remove {
-    position:absolute; top:.5rem; right:.5rem; width:28px; height:28px;
-    border-radius:50%; background:rgba(0,0,0,.55); border:none; color:#fff;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    transition:background .18s;
-}
-.preview-remove:hover { background:var(--danger); }
-.preview-remove .material-symbols-outlined { font-size:15px; }
-
-.stat-preview {
-    background:var(--surface-2); border:1px solid var(--border);
-    border-radius:var(--radius); padding:.75rem 1rem;
-    display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:.75rem;
-}
-.stat-preview__label { font-size:.72rem; color:var(--text-muted); font-weight:600; }
-.stat-preview__val { font-size:1.2rem; font-weight:800; color:var(--text); }
-
-.publish-btn {
-    width:100%; padding:.7rem; border-radius:var(--radius);
-    font-family:var(--font-main); font-size:.88rem; font-weight:700;
-    cursor:pointer; border:none; display:flex; align-items:center;
-    justify-content:center; gap:.4rem; transition:all .18s;
-}
-.publish-btn-primary { background:var(--primary); color:#fff; }
-.publish-btn-primary:hover { background:var(--primary-dark, #0e62c4); }
-.publish-btn-outline { background:transparent; border:1.5px solid var(--border); color:var(--text-muted); margin-top:.5rem; }
-.publish-btn-outline:hover { border-color:var(--primary); color:var(--primary); }
-
-.char-counter { float:right; font-size:.7rem; color:var(--text-light); margin-bottom:.3rem; }
-</style>
 }
 
 <div class="ca-content">
-    @* Breadcrumb *@
     <div class="ca-breadcrumb">
         <a href="@Url.Action("Dashboard","AdminDashboard",new{area="Admin"})">Dashboard</a>
         <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
-        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})">Quản lý bài đăng</a>
+        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})">Quản lí sự kiện</a>
         <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
         <span>Tạo sự kiện mới</span>
     </div>
 
+    <br>
+    
     <h1 class="ca-page-title">Tạo sự kiện mới</h1>
     <p class="ca-page-sub">Điền đầy đủ thông tin bên dưới để xuất bản sự kiện lên hệ thống.</p>
 
@@ -92,11 +32,8 @@
     @using (Html.BeginForm("Create","AdminEvents", new{area="Admin"}, FormMethod.Post, new { enctype="multipart/form-data", id="createForm" }))
     {
         @Html.AntiForgeryToken()
-        <div class="create-layout">
-
-            @* ── LEFT COLUMN ─────────────────────────────────────── *@
+        <div class="ca-create-layout">
             <div>
-                @* Card: Thông tin cơ bản *@
                 <div class="ca-card" style="margin-bottom:1.25rem">
                     <div class="ca-card__header">
                         <div class="ca-card__header-icon"><span class="material-symbols-outlined">info</span></div>
@@ -104,51 +41,57 @@
                     </div>
                     <div class="ca-card__body">
                         <div class="ca-form-group">
-                            <label class="ca-form-label">Tên sự kiện <span class="ca-required">*</span></label>
-                            @Html.TextBoxFor(m => m.TenEvent, new { @class = "ca-form-input", placeholder = "VD: Hội thảo Chuyển đổi số 2025", maxlength = "200", id = "txtTenEvent" })
-                            @Html.ValidationMessageFor(m => m.TenEvent, "", new { @class = "ca-form-error" })
+                            <label class="ce-form-label">Tên sự kiện <span class="ca-required">*</span></label>
+                            @Html.TextBoxFor(m => m.TenEvent, new { @class = "ce-form-control", placeholder = "VD: Hội thảo Chuyển đổi số 2025", maxlength = "200", id = "txtTenEvent" })
+                            @Html.ValidationMessageFor(m => m.TenEvent, "", new { @class = "text-danger", style = "font-size:.76rem" })
                         </div>
-
                         <div class="form-row">
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Danh mục <span class="ca-required">*</span></label>
+                                <label class="ce-form-label">Danh mục <span class="ca-required">*</span></label>
                                 @Html.DropDownListFor(m => m.MaDanhMuc, danhMucList ?? new List<SelectListItem>(),
-                                    "— Chọn danh mục —", new { @class = "ca-form-select" })
-                                @Html.ValidationMessageFor(m => m.MaDanhMuc, "", new { @class = "ca-form-error" })
+                                    "— Chọn danh mục —", new { @class = "ce-form-select" })
+                                @Html.ValidationMessageFor(m => m.MaDanhMuc, "", new { @class = "text-danger", style = "font-size:.76rem" })
                             </div>
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Viện tổ chức <span class="ca-required">*</span></label>
+                                <label class="ce-form-label">Viện tổ chức <span class="ca-required">*</span></label>
                                 @Html.DropDownListFor(m => m.MaVien, vienList ?? new List<SelectListItem>(),
-                                    "— Chọn viện —", new { @class = "ca-form-select" })
-                                @Html.ValidationMessageFor(m => m.MaVien, "", new { @class = "ca-form-error" })
+                                    "— Chọn viện —", new { @class = "ce-form-select" })
+                                @Html.ValidationMessageFor(m => m.MaVien, "", new { @class = "text-danger", style = "font-size:.76rem" })
                             </div>
                         </div>
 
                         <div class="ca-form-group">
-                            <label class="ca-form-label">Địa điểm tổ chức <span class="ca-required">*</span></label>
-                            @Html.DropDownListFor(m => m.MaDiaDiem, diaDiemList ?? new List<SelectListItem>(),
-                                "— Chọn địa điểm —", new { @class = "ca-form-select" })
-                            @Html.ValidationMessageFor(m => m.MaDiaDiem, "", new { @class = "ca-form-error" })
+                            <label class="ce-form-label">Địa điểm tổ chức <span class="ca-required">*</span></label>
+                            <input type="text"
+                                   name="diaDiemText"
+                                   value="@diaDiemText"
+                                   class="ce-form-control"
+                                   maxlength="200"
+                                   placeholder="VD: Hội trường A1 - Cơ sở 1" />
+                            @Html.ValidationMessage("MaDiaDiem", "", new { @class = "text-danger", style = "font-size:.76rem" })
                         </div>
-
-                        <div class="form-row">
+                        <div class="form-row-3">
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Ngày &amp; giờ bắt đầu <span class="ca-required">*</span></label>
-                                @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-ddTHH:mm}",
-                                    new { @class = "ca-form-input", type = "datetime-local" })
-                                @Html.ValidationMessageFor(m => m.NgayBatDau, "", new { @class = "ca-form-error" })
+                                <label class="ce-form-label">Ngày bắt đầu <span class="ca-required">*</span></label>
+                                @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-dd}",
+                                    new { @class = "ce-form-control", type = "date" })
+                                @Html.ValidationMessageFor(m => m.NgayBatDau, "", new { @class = "text-danger", style = "font-size:.76rem" })
                             </div>
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Hạn đăng ký</label>
+                                <label class="ce-form-label">Ngày kết thúc</label>
+                                @Html.TextBoxFor(m => m.NgayKetThuc, "{0:yyyy-MM-dd}",
+                                    new { @class = "ce-form-control", type = "date" })
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ce-form-label">Hạn đăng ký</label>
                                 @Html.TextBoxFor(m => m.NgayHetHanDangKy, "{0:yyyy-MM-dd}",
-                                    new { @class = "ca-form-input", type = "date" })
-                                <div class="ca-form-hint">Để trống nếu không giới hạn</div>
+                                    new { @class = "ce-form-control", type = "date" })
+                                <div class="text-muted" style="font-size:.76rem">Để trống nếu không giới hạn</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                @* Card: Nội dung *@
                 <div class="ca-card" style="margin-bottom:1.25rem">
                     <div class="ca-card__header">
                         <div class="ca-card__header-icon"><span class="material-symbols-outlined">description</span></div>
@@ -156,22 +99,32 @@
                     </div>
                     <div class="ca-card__body">
                         <div class="ca-form-group">
-                            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem">
-                                <label class="ca-form-label" style="margin-bottom:0">Mô tả ngắn</label>
-                                <span class="char-counter" id="descCounter">0/300</span>
-                            </div>
-                            @Html.TextAreaFor(m => m.MoTaNgan, new { @class = "ca-form-textarea", rows = 3,
-                                placeholder = "Tóm tắt ngắn gọn về sự kiện (hiển thị trên card preview)...",
-                                maxlength = 300, id = "txtMoTaNgan" })
-                        </div>
-                        <div class="ca-form-group">
-                            <label class="ca-form-label">Nội dung chi tiết</label>
-                            @Html.TextAreaFor(m => m.NoiDung, new { id = "richContent", name = "NoiDung" })
+                            <label class="ce-form-label">Mô tả sự kiện</label>
+                            @Html.TextAreaFor(m => m.MoTa, new { id = "richContent", rows = 10 })
+                            @Html.ValidationMessageFor(m => m.MoTa, "", new { @class = "text-danger", style = "font-size:.76rem" })
                         </div>
                     </div>
                 </div>
 
-                @* Card: Ảnh bìa *@
+                <div class="ca-card" style="margin-bottom:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">link</span></div>
+                        <div class="ca-card__title">Liên kết & chi phí</div>
+                    </div>
+                    <div class="ca-card__body">
+                        <div class="form-row">
+                            <div class="ca-form-group">
+                                <label class="ce-form-label">Link Zalo</label>
+                                @Html.TextBoxFor(m => m.LinkZalo, new { @class = "ce-form-control", placeholder = "https://zalo.me/g/..." })
+                            </div>
+                            <div class="ca-form-group">
+                                <label class="ce-form-label">Giá vé (VNĐ)</label>
+                                @Html.TextBoxFor(m => m.GiaVe, new { @class = "ce-form-control", type = "number", min = 0, step = "1000", placeholder = "0" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="ca-card">
                     <div class="ca-card__header">
                         <div class="ca-card__header-icon"><span class="material-symbols-outlined">image</span></div>
@@ -181,10 +134,10 @@
                         <input type="file" id="coverImageInput" name="coverImage"
                                accept="image/jpeg,image/png" style="display:none"/>
 
-                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('coverImageInput').click()">
+                        <div class="ca-upload-zone" id="uploadZone" onclick="document.getElementById('coverImageInput').click()">
                             <span class="material-symbols-outlined">cloud_upload</span>
-                            <div class="upload-zone__title">Kéo &amp; thả ảnh vào đây</div>
-                            <div class="upload-zone__sub">hoặc click để chọn từ máy tính · JPG / PNG · Tối đa 5 MB · Khuyến nghị 1280×720px</div>
+                            <div class="ca-upload-title">Kéo &amp; thả ảnh vào đây</div>
+                            <div class="ca-upload-sub">hoặc click để chọn từ máy tính · JPG / PNG · Tối đa 5 MB · Khuyến nghị 1280×720px</div>
                         </div>
 
                         <div class="preview-wrap" id="previewWrap">
@@ -201,10 +154,7 @@
                 </div>
             </div>
 
-            @* ── RIGHT COLUMN (sidebar) ───────────────────────────── *@
-            <div class="sticky-sidebar">
-
-                @* Publish card *@
+            <div class="ca-create-side">
                 <div class="ca-card" style="margin-bottom:1.25rem">
                     <div class="ca-card__header">
                         <div class="ca-card__header-icon" style="background:var(--success-light,#dcfce7);color:var(--success)">
@@ -213,16 +163,20 @@
                         <div class="ca-card__title">Xuất bản</div>
                     </div>
                     <div class="ca-card__body">
-                        <button type="submit" name="btnAction" value="publish" class="publish-btn publish-btn-primary">
+                        <button type="submit" name="btnAction" value="publish" class="ce-btn ce-btn-primary ce-btn-block">
                             <span class="material-symbols-outlined">publish</span>Đăng sự kiện
                         </button>
-                        <button type="submit" name="btnAction" value="draft" class="publish-btn publish-btn-outline">
+                        <button type="submit" name="btnAction" value="draft" class="ce-btn ce-btn-outline ce-btn-block" style="margin-top:.5rem">
                             <span class="material-symbols-outlined">save</span>Lưu nháp
                         </button>
+                        <a href="@Url.Action("Manage","AdminEvents",new{area="Admin"})"
+                           class="ce-btn ce-btn-outline ce-btn-block js-cancel-event"
+                           style="margin-top:.5rem;text-align:center;display:flex">
+                            <span class="material-symbols-outlined">arrow_back</span>Hủy
+                        </a>
                     </div>
                 </div>
 
-                @* Cài đặt đăng ký *@
                 <div class="ca-card" style="margin-bottom:1.25rem">
                     <div class="ca-card__header">
                         <div class="ca-card__header-icon"><span class="material-symbols-outlined">tune</span></div>
@@ -230,16 +184,25 @@
                     </div>
                     <div class="ca-card__body">
                         <div class="ca-form-group">
-                            <label class="ca-form-label">Số lượng tối đa <span class="ca-required">*</span></label>
-                            @Html.TextBoxFor(m => m.SoLuongToiDa, new { @class = "ca-form-input",
+                            <label class="ce-form-label">Số lượng tối đa <span class="ca-required">*</span></label>
+                            @Html.TextBoxFor(m => m.SoLuongToiDa, new { @class = "ce-form-control",
                                 type = "number", min = 10, placeholder = "VD: 200" })
-                            <div class="ca-form-hint">Tối thiểu 10 người</div>
-                            @Html.ValidationMessageFor(m => m.SoLuongToiDa, "", new { @class = "ca-form-error" })
+                            <div class="text-muted" style="font-size:.76rem">Tối thiểu 10 người</div>
+                            @Html.ValidationMessageFor(m => m.SoLuongToiDa, "", new { @class = "text-danger", style = "font-size:.76rem" })
                         </div>
                         <div class="ca-form-group">
-                            <label class="ca-form-label">Điểm rèn luyện (DRL)</label>
-                            @Html.TextBoxFor(m => m.DRL, new { @class = "ca-form-input",
+                            <label class="ce-form-label">Điểm rèn luyện (DRL)</label>
+                            @Html.TextBoxFor(m => m.DRL, new { @class = "ce-form-control",
                                 type = "number", min = 0, max = 20, placeholder = "0–20" })
+                        </div>
+                        <div class="ca-form-group">
+                            <label class="ce-form-label">Trạng thái khởi tạo</label>
+                            @Html.DropDownListFor(m => m.TrangThai, new List<SelectListItem>
+                            {
+                                new SelectListItem { Text = "Sắp diễn ra", Value = "Sắp diễn ra", Selected = true },
+                                new SelectListItem { Text = "Bản nháp", Value = "Bản nháp" }
+                            }, new { @class = "ce-form-select", id = "eventStatus" })
+                            <div class="text-muted" style="font-size:.76rem">Nếu bấm “Lưu nháp” hệ thống vẫn tự chuyển về bản nháp.</div>
                         </div>
                         <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-top:1px solid var(--border);margin-top:.25rem">
                             <div>
@@ -256,7 +219,6 @@
                     </div>
                 </div>
 
-                @* Preview stats *@
                 <div class="ca-card">
                     <div class="ca-card__header">
                         <div class="ca-card__header-icon"><span class="material-symbols-outlined">preview</span></div>
@@ -277,80 +239,12 @@
                     </div>
                 </div>
 
-            </div>@* end sticky sidebar *@
+            </div>
         </div>
     }
 </div>
 
 @section scripts {
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
-<script>
-// ── CKEditor init ─────────────────────────────
-ClassicEditor.create(document.querySelector('#richContent'), {
-    toolbar: ['heading','|','bold','italic','underline','|',
-              'bulletedList','numberedList','|','link','blockQuote','|','undo','redo']
-}).catch(err => console.warn('CKEditor:', err));
-
-// ── Char counter ──────────────────────────────
-const txtDesc = document.getElementById('txtMoTaNgan');
-const counter = document.getElementById('descCounter');
-if (txtDesc && counter) {
-    const update = () => counter.textContent = txtDesc.value.length + '/300';
-    txtDesc.addEventListener('input', update);
-    update();
-}
-
-// ── Image upload preview ──────────────────────
-const input       = document.getElementById('coverImageInput');
-const zone        = document.getElementById('uploadZone');
-const previewWrap = document.getElementById('previewWrap');
-const previewImg  = document.getElementById('previewImg');
-const removeBtn   = document.getElementById('previewRemove');
-const qualityInfo = document.getElementById('uploadQuality');
-
-function showPreview(file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-        previewImg.src = e.target.result;
-        zone.style.display = 'none';
-        previewWrap.style.display = 'block';
-        qualityInfo.style.display = 'flex';
-    };
-    reader.readAsDataURL(file);
-}
-
-input.addEventListener('change', e => { if (e.target.files[0]) showPreview(e.target.files[0]); });
-removeBtn.addEventListener('click', () => {
-    input.value = '';
-    previewWrap.style.display = 'none';
-    qualityInfo.style.display = 'none';
-    zone.style.display = 'block';
-    previewImg.src = '';
-});
-
-// Drag & drop
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (f && (f.type === 'image/jpeg' || f.type === 'image/png')) {
-        const dt = new DataTransfer(); dt.items.add(f);
-        input.files = dt.files; showPreview(f);
-    }
-});
-
-// ── Toggle switch ─────────────────────────────
-const chk   = document.getElementById('chkHidden');
-const track = document.getElementById('switchTrack');
-const thumb = document.getElementById('switchThumb');
-function toggleSwitch() {
-    chk.checked = !chk.checked;
-    track.style.background = chk.checked ? 'var(--primary)' : 'var(--border)';
-    thumb.style.transform   = chk.checked ? 'translateX(18px)' : 'translateX(0)';
-}
-// Init state
-track.style.background = chk.checked ? 'var(--primary)' : 'var(--border)';
-thumb.style.transform   = chk.checked ? 'translateX(18px)' : 'translateX(0)';
-</script>
+<script src="@Url.Content("~/Scripts/A-event-create.js")"></script>
 }

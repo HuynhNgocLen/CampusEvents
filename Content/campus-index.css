@@ -151,6 +151,170 @@
     font-size: .78rem; color: var(--text-muted); flex-wrap: wrap; gap: .5rem;
 }
 
+/* ── Landing (trang chủ) ─────────────────────────────────────── */
+.ce-landing-hero {
+    position: relative;
+    padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem);
+    overflow: hidden;
+}
+.ce-landing-hero__bg {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(56, 189, 248, .35), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 50%, rgba(45, 63, 226, .12), transparent),
+        linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+    pointer-events: none;
+}
+.ce-landing-hero__eyebrow {
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+.ce-landing-hero__title {
+    font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1rem;
+}
+.ce-landing-hero__accent {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.ce-landing-hero__lead {
+    font-size: clamp(.95rem, 2vw, 1.05rem);
+    color: var(--text-muted);
+    max-width: 36rem;
+    margin: 0 auto;
+    line-height: 1.65;
+}
+.ce-landing-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1rem;
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+.ce-landing-posters__sub {
+    max-width: 32rem;
+    color: var(--text-muted);
+    font-size: .9rem;
+    line-height: 1.55;
+}
+.ce-landing-poster {
+    display: block;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    height: 100%;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.ce-landing-poster--link {
+    text-decoration: none;
+    color: inherit;
+}
+.ce-landing-poster--link:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+.ce-landing-poster__img {
+    aspect-ratio: 3 / 4;
+    background: var(--bg);
+    position: relative;
+}
+.ce-landing-poster__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.ce-landing-poster__ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 2.5rem;
+}
+.ce-landing-poster__cap {
+    padding: .75rem .85rem 1rem;
+}
+.ce-landing-poster__title {
+    font-size: .88rem;
+    font-weight: 700;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.ce-landing-poster__meta {
+    font-size: .72rem;
+    color: var(--text-muted);
+    margin-top: .25rem;
+}
+.ce-landing-about__card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.25rem;
+    transition: box-shadow var(--transition);
+}
+.ce-landing-about__card:hover { box-shadow: var(--shadow-sm); }
+.ce-landing-about__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius);
+    background: var(--primary-light);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.ce-landing-about__icon .material-symbols-outlined { font-size: 26px; }
+.ce-landing-about__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+    color: var(--text);
+}
+.ce-landing-about__text {
+    font-size: .85rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.55;
+}
+.ce-landing-stats {
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+.ce-landing-stats__val {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+}
+.ce-landing-stats__lbl {
+    font-size: .75rem;
+    color: var(--text-muted);
+}
+
 /* Dark mode tweaks */
 [data-theme="dark"] .ce-cat-card { border-color: rgba(255,255,255,.04); }
 [data-theme="dark"] .ce-step-card { background: var(--surface); }

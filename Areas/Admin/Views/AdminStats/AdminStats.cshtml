@@ -124,6 +124,7 @@
         const CURRENT_SEMESTER = '@semester';
         const WEEK_LABELS  = @Html.Raw(weekLabelsJson);
         const WEEK_DATA    = @Html.Raw(weekCountsJson);
+        const CHART_DATA_URL = '@Url.Action("GetChartData", "AdminStats", new { area = "Admin" })';
 
         @{
             var byStatusList = (System.Collections.IEnumerable)ViewBag.ByStatus;

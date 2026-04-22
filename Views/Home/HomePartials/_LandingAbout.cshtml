@@ -1,0 +1,52 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+<section class="ce-landing-about ce-index-section">
+    <div class="container py-5">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-md-4 ce-reveal">
+                <div class="ce-landing-about__card h-100">
+                    <div class="ce-landing-about__icon">
+                        <span class="material-symbols-outlined">hub</span>
+                    </div>
+                    <h3 class="ce-landing-about__title">Một cổng thông tin</h3>
+                    <p class="ce-landing-about__text">Tập hợp poster, mô tả và trạng thái sự kiện từ các đơn vị, CLB trong trường.</p>
+                </div>
+            </div>
+            <div class="col-md-4 ce-reveal">
+                <div class="ce-landing-about__card h-100">
+                    <div class="ce-landing-about__icon">
+                        <span class="material-symbols-outlined">how_to_reg</span>
+                    </div>
+                    <h3 class="ce-landing-about__title">Dành cho sinh viên</h3>
+                    <p class="ce-landing-about__text">Đăng nhập bằng MSSV hoặc Google trường để tìm kiếm, đăng ký và nhận nhắc lịch.</p>
+                </div>
+            </div>
+            <div class="col-md-4 ce-reveal">
+                <div class="ce-landing-about__card h-100">
+                    <div class="ce-landing-about__icon">
+                        <span class="material-symbols-outlined">travel_explore</span>
+                    </div>
+                    <h3 class="ce-landing-about__title">Xem nhanh (khách)</h3>
+                    <p class="ce-landing-about__text">Chế độ khách giúp làm quen giao diện và xem giới thiệu — không truy cập được trang sự kiện chi tiết hay đăng ký.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12 text-center ce-reveal">
+                <div class="ce-landing-stats d-inline-flex flex-wrap justify-content-center gap-4 gap-md-5">
+                    <div>
+                        <div class="ce-landing-stats__val">@(Model?.Count() ?? 0)</div>
+                        <div class="ce-landing-stats__lbl">Sự kiện đang hiển thị</div>
+                    </div>
+                    <div>
+                        <div class="ce-landing-stats__val">@((int)(ViewBag.StudentCount ?? 0))</div>
+                        <div class="ce-landing-stats__lbl">Sinh viên</div>
+                    </div>
+                    <div>
+                        <div class="ce-landing-stats__val">@((int)(ViewBag.ClubCount ?? 0))</div>
+                        <div class="ce-landing-stats__lbl">Đơn vị / CLB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -526,3 +526,106 @@
         box-shadow: var(--shadow-md);
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   Shared admin: pagination (Quản lí sự kiện, Chi tiết đăng ký, …)
+   ══════════════════════════════════════════════════════════════ */
+.em-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    margin-bottom: 1.5rem;
+}
+
+.em-pagination--footer {
+    margin-bottom: 0;
+    justify-content: flex-end;
+}
+
+.em-page-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: var(--font-main);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all .18s;
+}
+
+.em-page-btn:hover,
+.em-page-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    text-decoration: none;
+}
+
+.em-page-btn.disabled {
+    opacity: .4;
+    pointer-events: none;
+}
+
+/* Chi tiết đăng ký — KPI + thanh tiến độ */
+.reg-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.reg-kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.reg-kpi__label {
+    font-size: .67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-muted);
+    margin-bottom: .3rem;
+}
+
+.reg-kpi__val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.prog-wrap {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.prog-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.prog-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+
+@media (max-width: 767px) {
+    .reg-kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

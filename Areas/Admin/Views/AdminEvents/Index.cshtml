@@ -9,84 +9,7 @@
 }
 
 @section styles {
-<style>
-.filter-chips { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
-.chip {
-    padding:.35rem 1rem; border-radius:999px; font-size:.78rem; font-weight:600;
-    border:1.5px solid var(--border); background:var(--surface); color:var(--text-muted);
-    text-decoration:none; transition:all .18s;
-}
-.chip:hover, .chip.active {
-    background:var(--primary-light); color:var(--primary);
-    border-color:rgba(19,127,236,.35);
-}
-.event-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
-    gap:1.25rem;
-    margin-bottom:2rem;
-}
-.ev-card {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:var(--radius-lg); overflow:hidden;
-    transition:transform .2s, box-shadow .2s;
-    display:flex; flex-direction:column;
-}
-.ev-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
-.ev-card__thumb {
-    height:168px; position:relative; overflow:hidden;
-    background:linear-gradient(135deg,#1e40af,#0ea5e9);
-}
-.ev-card__thumb img { width:100%; height:100%; object-fit:cover; }
-.ev-card__thumb-placeholder {
-    display:flex; align-items:center; justify-content:center; height:100%;
-    color:rgba(255,255,255,.3);
-}
-.ev-card__thumb-placeholder .material-symbols-outlined { font-size:52px; }
-.ev-card__cat {
-    position:absolute; top:.75rem; left:.75rem;
-    background:rgba(0,0,0,.35); backdrop-filter:blur(6px);
-    color:#fff; font-size:.67rem; font-weight:700;
-    padding:.2rem .65rem; border-radius:999px; letter-spacing:.04em;
-}
-.ev-card__status-badge { position:absolute; top:.75rem; right:.75rem; }
-.ev-card__hidden-badge {
-    position:absolute; bottom:.6rem; left:.75rem;
-    background:rgba(0,0,0,.55); color:#fff; font-size:.67rem; font-weight:700;
-    padding:.15rem .55rem; border-radius:999px;
-    display:flex; align-items:center; gap:.25rem;
-}
-.ev-card__hidden-badge .material-symbols-outlined { font-size:12px; }
-.ev-card__body { padding:1rem 1.1rem; flex:1; }
-.ev-card__title {
-    font-size:.92rem; font-weight:700; margin-bottom:.5rem; line-height:1.35;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
-}
-.ev-card__meta { display:flex; flex-direction:column; gap:.22rem; }
-.ev-card__meta-row {
-    display:flex; align-items:center; gap:.35rem;
-    font-size:.75rem; color:var(--text-muted);
-}
-.ev-card__meta-row .material-symbols-outlined { font-size:14px; color:var(--text-light); flex-shrink:0; }
-.ev-card__footer {
-    padding:.75rem 1.1rem; border-top:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between; gap:.75rem;
-}
-.ev-card__progress { flex:1; }
-.prog-wrap { display:flex; align-items:center; gap:.5rem; }
-.prog-bg { flex:1; height:5px; background:var(--border); border-radius:999px; overflow:hidden; }
-.prog-fill { height:100%; background:var(--primary); border-radius:999px; transition:width .4s; }
-.prog-label { font-size:.69rem; color:var(--text-muted); white-space:nowrap; }
-.ev-card__actions { display:flex; gap:.35rem; flex-shrink:0; }
-
-.empty-state {
-    grid-column:1/-1; text-align:center; padding:4rem 2rem;
-    color:var(--text-muted);
-}
-.empty-state .material-symbols-outlined { font-size:56px; color:var(--text-light); margin-bottom:1rem; }
-.empty-state h3 { font-size:1.1rem; font-weight:700; color:var(--text); margin-bottom:.4rem; }
-.empty-state p { font-size:.85rem; }
-</style>
+<link href="@Url.Content("~/Content/campus-event-index.css")" rel="stylesheet" />
 }
 
 <div class="ca-content">
@@ -167,7 +90,7 @@
                     <div class="ev-card__thumb">
                         @if (!string.IsNullOrEmpty(ev.AnhBia))
                         {
-                            <img src="@Url.Content("~/Uploads/Events/" + ev.AnhBia)" alt="@ev.TenEvent"/>
+                            <img src="@Url.Content(ev.AnhBia)" alt="@ev.TenEvent"/>
                         }
                         else
                         {

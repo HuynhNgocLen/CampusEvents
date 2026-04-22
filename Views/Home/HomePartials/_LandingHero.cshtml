@@ -1,0 +1,47 @@
+@{
+    var isGuest = ViewBag.IsGuest as bool? == true;
+}
+<section class="ce-landing-hero ce-reveal">
+    <div class="ce-landing-hero__bg"></div>
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11 text-center">
+                <p class="ce-landing-hero__eyebrow">
+                    <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle">celebration</span>
+                    CampusEvents · Cổng sự kiện sinh viên
+                </p>
+                <h1 class="ce-landing-hero__title">
+                    Một nơi cho mọi hoạt động<br />
+                    <span class="ce-landing-hero__accent">trên campus</span>
+                </h1>
+                <p class="ce-landing-hero__lead">
+                    Giới thiệu chương trình, poster sự kiện và thông tin tổng quan. Đăng nhập sinh viên để tìm kiếm, đăng ký tham gia và quản lý lịch cá nhân.
+                </p>
+                <div class="ce-landing-hero__cta d-flex flex-wrap justify-content-center gap-2 gap-md-3 mt-4">
+                    @if (isGuest)
+                    {
+                        <span class="ce-landing-hero__badge">
+                            <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+                            Bạn đang xem ở chế độ khách
+                        </span>
+                        <a href="@Url.Action("Logout", "Account")" class="ce-btn ce-btn-primary ce-btn-lg">
+                            <span class="material-symbols-outlined">login</span>
+                            Đăng nhập tài khoản sinh viên
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Events", "Events")" class="ce-btn ce-btn-primary ce-btn-lg">
+                            <span class="material-symbols-outlined">event</span>
+                            Khám phá sự kiện
+                        </a>
+                        <a href="@Url.Action("Profile", "Home")" class="ce-btn ce-btn-outline ce-btn-lg">
+                            <span class="material-symbols-outlined">person</span>
+                            Hồ sơ của tôi
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

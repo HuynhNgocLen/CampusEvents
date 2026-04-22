@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using school_event_management.Models;
 using shcool_event_management.Models;
 using System;
@@ -36,6 +36,7 @@ namespace school_event_management.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ResendOTP()
         {
             var studentData = Session["TempStudent"] as SinhVien;
@@ -87,10 +88,12 @@ namespace school_event_management.Controllers
         }
 
         [HttpGet]
-        public ActionResult Login()
+        public ActionResult Login(bool tokenExpired = false)
         {
             if (JwtService.GetStudentId(Request) != null)
-                return RedirectToAction("Index", "Users");
+                return RedirectToAction("Home", "Home");
+            if (tokenExpired)
+                TempData["Error"] = "Phiên làm việc đã thay đổi hoặc hết hạn. Vui lòng thử lại.";
             return View();
         }
 
@@ -102,6 +105,15 @@ namespace school_event_management.Controllers
         {
             if (type == "Register") return PartialView("_RegisterForm");
             return PartialView("_LoginForm");
+        }
+
+        /// <summary>Đăng nhập khách: chỉ được xem trang chủ (JWT có claim userType=guest).</summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GuestLogin()
+        {
+            SetJwtCookie(JwtService.GuestUserId, "Khách tham quan", isGuest: true);
+            return RedirectToAction("Home", "Home");
         }
 
         [HttpPost]
@@ -117,7 +129,7 @@ namespace school_event_management.Controllers
                 (s.Email == username || s.ID == username) && s.MatKhau == password);
             if (sv == null) { TempData["Error"] = "Sai tên đăng nhập hoặc mật khẩu."; return View(); }
             SetJwtCookie(sv.ID, sv.Ten);
-            return RedirectToAction("Index", "Users");
+            return RedirectToAction("Home", "Home");
         }
 
         public ActionResult GoogleLogin()
@@ -173,7 +185,7 @@ namespace school_event_management.Controllers
                 catch (Exception ex) { TempData["Error"] = "Lỗi tạo tài khoản: " + ex.Message; return RedirectToAction("Login"); }
             }
             SetJwtCookie(sv.ID, sv.Ten);
-            return RedirectToAction("Index", "Users");
+            return RedirectToAction("Home", "Home");
         }
 
         [HttpPost]
@@ -221,6 +233,7 @@ namespace school_event_management.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult VerifyOTP(string otpInput)
         {
             var sessionOtp = Session["RegisterOTP"] as string;
@@ -339,10 +352,14 @@ namespace school_event_management.Controllers
             return masked + "@" + parts[1];
         }
 
-        private void SetJwtCookie(string studentId, string fullName)
+        private void SetJwtCookie(string studentId, string fullName, bool isGuest = false)
         {
-            string token = JwtService.GenerateToken(studentId, fullName);
-            Response.Cookies.Add(new HttpCookie("jwt", token) { HttpOnly = true, Expires = DateTime.Now.AddMinutes(30) });
+            string token = JwtService.GenerateToken(studentId, fullName, isGuest);
+            Response.Cookies.Add(new HttpCookie("jwt", token)
+            {
+                HttpOnly = true,
+                Expires = DateTime.Now.AddMinutes(JwtService.TokenLifetimeMinutes)
+            });
         }
 
         protected override void Dispose(bool disposing) { if (disposing) db.Dispose(); base.Dispose(disposing); }
@@ -357,6 +374,6 @@ namespace school_event_management.Controllers
             return JwtService.ValidateToken(cookie.Value) != null;
         }
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
-            => filterContext.Result = new RedirectResult("/Account/Login");
+            => filterContext.Result = new RedirectResult("/Account/Login?tokenExpired=true");
     }
 }

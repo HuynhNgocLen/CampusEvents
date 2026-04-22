@@ -1,4 +1,5 @@
-﻿using school_event_management.Models;
+using school_event_management.Filters;
+using school_event_management.Models;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Web.Mvc;
 
 namespace shcool_event_management.Controllers
 {
+    [RestrictGuest]
     public class EventsController : Controller
     {
         private readonly school_event_managementEntities db = new school_event_managementEntities();
@@ -43,11 +45,21 @@ namespace shcool_event_management.Controllers
             int pageSize = 6;
             var today = DateTime.Today;
 
+            var threeDaysAgo = DateTime.Now.AddDays(-3);
+
             var query = db.EVENTs
                 .Include(e => e.DanhMuc)
                 .Include(e => e.DiaDiem)
                 .Include(e => e.Vien)
                 .Where(e => e.IsHidden == false)
+                .Where(e =>
+                    e.TrangThai == "Sắp diễn ra"
+                    || e.TrangThai == "Đang diễn ra"
+                    || (e.TrangThai == "Đã kết thúc"
+                        && (e.NgayKetThuc.HasValue
+                            ? e.NgayKetThuc.Value >= threeDaysAgo
+                            : e.NgayBatDau >= threeDaysAgo))
+                )
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(keyword))
@@ -154,6 +166,11 @@ namespace shcool_event_management.Controllers
                        .FirstOrDefault(e => e.MaEvent == id);
 
             if (ev == null) return HttpNotFound();
+
+            if (ev.IsHidden)
+            {
+                return View("EventHidden");
+            }
 
             bool daDangKy = db.DangKySuKiens.Any(d =>
                 d.MaEvent == id && d.IDSinhVien == currentStudentId && !d.TrangThai.Contains("Hủy"));

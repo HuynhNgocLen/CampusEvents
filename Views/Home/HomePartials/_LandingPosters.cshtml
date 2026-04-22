@@ -1,0 +1,88 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@{
+    var isGuest = ViewBag.IsGuest as bool? == true;
+    var list = Model != null ? Model.Take(12).ToList() : new List<shcool_event_management.Models.EVENT>();
+}
+<section class="ce-landing-posters ce-index-section">
+    <div class="container py-5">
+        <div class="text-center mb-5 ce-reveal">
+            <h2 class="ce-section-title mb-2">Poster &amp; sự kiện gần đây</h2>
+            <p class="mb-0 mx-auto ce-landing-posters__sub">
+                Hình ảnh minh họa từ các hoạt động đang và sắp diễn ra trên hệ thống.
+                @if (isGuest)
+                {
+                    <span class="d-block mt-2" style="font-size:.85rem;color:var(--text-muted)">Đăng nhập sinh viên để xem chi tiết và đăng ký.</span>
+                }
+            </p>
+        </div>
+
+        @if (list.Any())
+        {
+            <div class="row g-3 g-md-4">
+                @foreach (var item in list)
+                {
+                    string src = null;
+                    var u = item.AnhBia;
+                    if (!string.IsNullOrEmpty(u))
+                    {
+                        if (u.StartsWith("~/")) { src = Url.Content(u); }
+                        else if (u.StartsWith("/")) { src = Url.Content("~" + u); }
+                        else { src = Url.Content("~/Uploads/Events/" + u.TrimStart('/')); }
+                    }
+                    <div class="col-6 col-md-4 col-lg-3 ce-reveal">
+                        @if (isGuest)
+                        {
+                            <div class="ce-landing-poster">
+                                <div class="ce-landing-poster__img">
+                                    @if (src != null)
+                                    {
+                                        <img src="@src" alt="@item.TenEvent" loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <div class="ce-landing-poster__ph">
+                                            <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "event")</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="ce-landing-poster__cap">
+                                    <div class="ce-landing-poster__title">@item.TenEvent</div>
+                                    <div class="ce-landing-poster__meta">@item.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("EventDetail", "Events", new { id = item.MaEvent })" class="ce-landing-poster ce-landing-poster--link">
+                                <div class="ce-landing-poster__img">
+                                    @if (src != null)
+                                    {
+                                        <img src="@src" alt="@item.TenEvent" loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <div class="ce-landing-poster__ph">
+                                            <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "event")</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="ce-landing-poster__cap">
+                                    <div class="ce-landing-poster__title">@item.TenEvent</div>
+                                    <div class="ce-landing-poster__meta">@item.NgayBatDau.ToString("dd/MM/yyyy") · @(item.DiaDiem?.TenDiaDiem ?? "Campus")</div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ce-empty ce-reveal">
+                <span class="material-symbols-outlined">image_not_supported</span>
+                <div class="ce-empty__title">Chưa có poster sự kiện</div>
+                <div class="ce-empty__sub">Khi có sự kiện được đăng kèm ảnh bìa, nội dung sẽ hiển thị tại đây.</div>
+            </div>
+        }
+    </div>
+</section>
