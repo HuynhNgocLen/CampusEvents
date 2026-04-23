@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using ClosedXML.Excel;
@@ -39,7 +39,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             ViewBag.TotalStudents = _db.SinhViens.Count();
             ViewBag.TotalViews = _db.EVENTs.Sum(e => (int?)e.LuotXem) ?? 0;
 
-            int confirmed = _db.DangKySuKiens.Count(d => d.TrangThai == "Đã xác nhận");
+            int confirmed = _db.DangKySuKiens.Count(d => d.TrangThai == "Đã xác nhận" || d.TrangThai == "Đã hoàn thành");
             int totalReg = _db.DangKySuKiens.Count();
             ViewBag.ParticipationRate = totalReg > 0 ? Math.Round(confirmed * 100.0 / totalReg, 1) : 0;
 

@@ -121,24 +121,32 @@ namespace school_event_management.Controllers
             int currentSemester = (currentMonth >= 1 && currentMonth <= 5) ? 1 : 2;
             int namHocBatDau = (currentMonth >= 1 && currentMonth <= 5) ? currentYear - 1 : currentYear;
 
-            var lichSuThamGia = db.DangKySuKiens
+            var daHoanThanh = db.DangKySuKiens.Where(d => d.IDSinhVien == targetId && d.TrangThai == "Đã hoàn thành");
+
+            // HK1 năm học (nam–nam+1): tháng 9–12 năm nam + tháng 1–5 năm nam+1 (không chỉ tháng 1–5 của năm hiện tại).
+            IQueryable<DangKySuKien> trongHocKyHienTai(IQueryable<DangKySuKien> q)
+            {
+                if (currentSemester == 1)
+                {
+                    int cy = currentYear;
+                    return q.Where(d =>
+                        (d.EVENT.NgayBatDau.Year == cy && d.EVENT.NgayBatDau.Month >= 1 && d.EVENT.NgayBatDau.Month <= 5)
+                        || (d.EVENT.NgayBatDau.Year == cy - 1 && d.EVENT.NgayBatDau.Month >= 9 && d.EVENT.NgayBatDau.Month <= 12));
+                }
+
+                return q.Where(d => d.EVENT.NgayBatDau.Year == currentYear
+                    && d.EVENT.NgayBatDau.Month >= 6 && d.EVENT.NgayBatDau.Month <= 12);
+            }
+
+            var lichSuThamGia = trongHocKyHienTai(daHoanThanh)
                 .Include(d => d.EVENT)
-                .Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành")
                 .OrderByDescending(d => d.EVENT.NgayBatDau)
                 .ToList();
 
             ViewBag.DaThamDu = lichSuThamGia;
             ViewBag.TongHoanThanh = lichSuThamGia.Count;
 
-            var queryDRL = db.DangKySuKiens.Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành");
-            if (currentSemester == 1)
-            {
-                queryDRL = queryDRL.Where(d => d.EVENT.NgayBatDau.Year == currentYear && d.EVENT.NgayBatDau.Month >= 1 && d.EVENT.NgayBatDau.Month <= 5);
-            }
-            else
-            {
-                queryDRL = queryDRL.Where(d => d.EVENT.NgayBatDau.Year == currentYear && d.EVENT.NgayBatDau.Month >= 6 && d.EVENT.NgayBatDau.Month <= 12);
-            }
+            var queryDRL = trongHocKyHienTai(daHoanThanh);
 
             ViewBag.DRL = queryDRL.Select(d => (int?)d.EVENT.DRL).Sum() ?? 0;
             ViewBag.HocKy = currentSemester;
