@@ -245,12 +245,19 @@
     border-color: rgba(19, 127, 236, .25);
 }
 
-/* Thumbnail */
+/* Thumbnail — nền mặc định giống banner chi tiết sự kiện (ce-event-banner__bg) */
 .em-card__thumb {
+    --cat-color: var(--primary);
     height: 168px;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #1e3a5f, #0ea5e9);
+    background:
+        radial-gradient(circle at 16% 14%, color-mix(in srgb, var(--cat-color) 34%, #ffffff), transparent 42%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--cat-color) 28%, #ffffff), transparent 45%),
+        linear-gradient(125deg,
+            color-mix(in srgb, var(--cat-color) 78%, #0f172a) 0%,
+            color-mix(in srgb, var(--cat-color) 88%, #1d4ed8) 56%,
+            color-mix(in srgb, var(--cat-color) 74%, #38bdf8) 100%);
 }
 
 .em-card__thumb img {
@@ -914,7 +921,13 @@
 }
 
 [data-theme="dark"] .em-card__thumb {
-    background: linear-gradient(135deg, #0f2d46, #0e4c73);
+    background:
+        radial-gradient(circle at 16% 14%, color-mix(in srgb, var(--cat-color) 26%, #0b1220), transparent 42%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--cat-color) 20%, #0b1220), transparent 45%),
+        linear-gradient(125deg,
+            color-mix(in srgb, var(--cat-color) 62%, #020617) 0%,
+            color-mix(in srgb, var(--cat-color) 70%, #0c4a6e) 56%,
+            color-mix(in srgb, var(--cat-color) 54%, #0369a1) 100%);
 }
 
 [data-theme="dark"] .em-modal {

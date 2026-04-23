@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity.Validation;
 using ClosedXML.Excel;                        // Install-Package ClosedXML
+using school_event_management.Helpers;
 using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
@@ -61,42 +62,6 @@ namespace shcool_event_management.Areas.Admin.Controllers
         {
             "Đã đăng ký", "Đã hoàn thành", "Đã hủy"
         };
-
-        private static string NormalizeRegistrationStatus(string rawStatus)
-        {
-            var status = (rawStatus ?? string.Empty).Trim();
-            if (status == "Đã hoàn thành" || status == "Đã hủy" || status == "Đã đăng ký")
-                return status;
-
-            // Mapping trạng thái cũ về nghiệp vụ mới.
-            if (status == "Đã xác nhận")
-                return "Đã hoàn thành";
-            if (status == "Chờ xác nhận")
-                return "Đã đăng ký";
-
-            return "Đã đăng ký";
-        }
-
-        private static bool MatchStatusWithLegacy(string rawStatus, string selectedStatus)
-        {
-            if (string.IsNullOrWhiteSpace(selectedStatus))
-                return true;
-
-            var normalized = NormalizeRegistrationStatus(rawStatus);
-            return string.Equals(normalized, selectedStatus, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static string ToLegacyRegistrationStatus(string normalizedStatus)
-        {
-            var status = (normalizedStatus ?? string.Empty).Trim();
-            if (status == "Đã hoàn thành")
-                return "Đã xác nhận";
-            if (status == "Đã đăng ký")
-                return "Chờ xác nhận";
-            if (status == "Đã hủy")
-                return "Đã hủy";
-            return "Chờ xác nhận";
-        }
 
         //  HELPERS
 
@@ -514,15 +479,15 @@ namespace shcool_event_management.Areas.Admin.Controllers
             ViewBag.Registered = _db.DangKySuKiens
                 .Where(d => d.MaEvent == id)
                 .ToList()
-                .Count(d => NormalizeRegistrationStatus(d.TrangThai) == "Đã đăng ký");
+                .Count(d => RegistrationStatusHelper.Normalize(d.TrangThai) == "Đã đăng ký");
             ViewBag.Completed = _db.DangKySuKiens
                 .Where(d => d.MaEvent == id)
                 .ToList()
-                .Count(d => NormalizeRegistrationStatus(d.TrangThai) == "Đã hoàn thành");
+                .Count(d => RegistrationStatusHelper.Normalize(d.TrangThai) == "Đã hoàn thành");
             ViewBag.Cancelled = _db.DangKySuKiens
                 .Where(d => d.MaEvent == id)
                 .ToList()
-                .Count(d => NormalizeRegistrationStatus(d.TrangThai) == "Đã hủy");
+                .Count(d => RegistrationStatusHelper.Normalize(d.TrangThai) == "Đã hủy");
             ViewBag.Page = page;
             ViewBag.PageSize = pageSize;
             ViewBag.TotalPage = (int)Math.Ceiling(total / (double)pageSize);
@@ -594,7 +559,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             var exportList = registrations
                 .ToList()
-                .Where(d => MatchStatusWithLegacy(d.TrangThai, status))
+                .Where(d => RegistrationStatusHelper.MatchStatusWithLegacy(d.TrangThai, status))
                 .OrderBy(d => d.SinhVien.Ten)
                 .ToList();
 
@@ -643,7 +608,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
                     var reg = exportList[i];
                     var sv = reg.SinhVien;
                     int row = headerRow + 1 + i;
-                    var normalizedStatus = NormalizeRegistrationStatus(reg.TrangThai);
+                    var normalizedStatus = RegistrationStatusHelper.Normalize(reg.TrangThai);
 
                     ws.Cell(row, 1).Value = i + 1;
                     ws.Cell(row, 2).Value = sv?.ID ?? "";
@@ -738,7 +703,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
                     d.hoTen,
                     d.lop,
                     d.vien,
-                    trangThai = NormalizeRegistrationStatus(d.trangThai)
+                    trangThai = RegistrationStatusHelper.Normalize(d.trangThai)
                 })
                 .ToList();
 
@@ -770,7 +735,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             }
 
             var oldStatus = reg.TrangThai ?? string.Empty;
-            var dbStatus = ToLegacyRegistrationStatus(trangThai);
+            var dbStatus = RegistrationStatusHelper.ToStoredRegistrationStatus(trangThai);
             reg.TrangThai = dbStatus;
 
             var ev = _db.EVENTs.Find(maEvent);
@@ -789,7 +754,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             _db.SaveChanges();
 
-            return Json(new { success = true, status = NormalizeRegistrationStatus(reg.TrangThai) });
+            return Json(new { success = true, status = RegistrationStatusHelper.Normalize(reg.TrangThai) });
         }
 
         //  ĐÓNG SỰ KIỆN (AJAX)

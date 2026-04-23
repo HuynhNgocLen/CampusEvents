@@ -22,7 +22,7 @@
             string safeTitle = ev.TenEvent?.Replace("'", "\\'") ?? "";
 
             <div class="em-card">
-                <div class="em-card__thumb">
+                <div class="em-card__thumb" style="--cat-color:@(ev.DanhMuc != null && !string.IsNullOrWhiteSpace(ev.DanhMuc.MauSac) ? ev.DanhMuc.MauSac : "#3b82f6")">
                     @if (!string.IsNullOrEmpty(ev.AnhBia))
                     {
                         <img src="@Url.Content(ev.AnhBia)" alt="@ev.TenEvent" />

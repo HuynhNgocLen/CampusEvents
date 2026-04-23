@@ -74,7 +74,12 @@ body {
 .ce-sticky-reg,
 .ce-filter-sidebar,
 .ce-reg-item,
-.ce-stat-card {
+.ce-stat-card,
+.ca-card,
+.kpi-card,
+.em-card,
+.em-toolbar,
+.ca-table-wrap {
     border-color: color-mix(in srgb, var(--primary), transparent 80%);
     box-shadow: var(--shadow-sm);
     backdrop-filter: blur(5px);
@@ -82,7 +87,8 @@ body {
 }
 
 .ce-event-card:hover,
-.ce-reg-item:hover {
+.ce-reg-item:hover,
+.em-card:hover {
     border-color: color-mix(in srgb, var(--primary), transparent 58%);
 }
 

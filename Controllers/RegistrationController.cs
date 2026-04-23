@@ -33,16 +33,16 @@ namespace shcool_event_management.Controllers
             int tongHoanThanh = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
                          && d.NgayDangKy.Year == currentYear
-                         && d.TrangThai.Trim() == "Đã hoàn thành");
+                         && (d.TrangThai == "Đã hoàn thành" || d.TrangThai == "Đã xác nhận"));
 
             int tongHuy = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
                          && d.NgayDangKy.Year == currentYear
-                         && d.TrangThai.ToLower() == "Hủy");
+                         && (d.TrangThai == "Hủy" || d.TrangThai == "Đã hủy" || d.TrangThai == "Quá hạn"));
             int tongDangKy = db.DangKySuKiens
                 .Count(d => d.IDSinhVien == studentId
                          && d.NgayDangKy.Year == currentYear
-                         && d.TrangThai.Trim() == "Đã đăng ký");
+                         && (d.TrangThai == "Đã đăng ký" || d.TrangThai == "Chờ xác nhận"));
 
             ViewBag.TongHoanThanhNam = tongHoanThanh;
             ViewBag.TongHuyNam = tongHuy;
@@ -52,17 +52,21 @@ namespace shcool_event_management.Controllers
 
             ViewBag.DaDangKy = db.DangKySuKiens
                 .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
-                .Where(d => d.IDSinhVien == studentId && d.TrangThai == "Đã đăng ký" && d.EVENT.NgayBatDau >= today)
+                .Where(d => d.IDSinhVien == studentId
+                    && (d.TrangThai == "Đã đăng ký" || d.TrangThai == "Chờ xác nhận")
+                    && d.EVENT.NgayBatDau >= today)
                 .OrderBy(d => d.EVENT.NgayBatDau).ToList();
 
             ViewBag.DaThamDu = db.DangKySuKiens
                 .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
-                .Where(d => d.IDSinhVien == studentId && d.TrangThai.Trim() == "Đã hoàn thành")
+                .Where(d => d.IDSinhVien == studentId
+                    && (d.TrangThai == "Đã hoàn thành" || d.TrangThai == "Đã xác nhận"))
                 .OrderByDescending(d => d.EVENT.NgayBatDau).ToList();
 
             ViewBag.DaHuy = db.DangKySuKiens
                 .Include(d => d.EVENT).Include(d => d.EVENT.DanhMuc).Include(d => d.EVENT.DiaDiem)
-                .Where(d => d.IDSinhVien == studentId && (d.TrangThai == "Hủy" || d.TrangThai == "Quá hạn"))
+                .Where(d => d.IDSinhVien == studentId
+                    && (d.TrangThai == "Hủy" || d.TrangThai == "Đã hủy" || d.TrangThai == "Quá hạn"))
                 .OrderByDescending(d => d.NgayDangKy).ToList();
 
             ViewBag.DaLuu = db.SuKienYeuThiches

@@ -239,6 +239,7 @@
     <Compile Include="Helpers\JwtService.cs" />
     <Compile Include="Filters\RestrictGuestAttribute.cs" />
     <Compile Include="Helpers\QRCodeHelper.cs" />
+    <Compile Include="Helpers\RegistrationStatusHelper.cs" />
     <Compile Include="Models\DangKySuKien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -429,7 +430,6 @@
     <Content Include="Areas\Admin\Views\AdminStats\AdminStats.cshtml" />
     <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage.cshtml" />
-    <Content Include="Areas\Admin\Views\AdminEvents\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Edit.cshtml" />
     <Content Include="Content\campus-event-index.css" />
     <Content Include="Scripts\A-event-create.js" />
@@ -761,11 +761,9 @@
     <Content Include="Views\Schedule\Schedule.cshtml" />
     <Content Include="Views\Account\VerifyOTP.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexHero.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexCategories.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexFeaturedEvents.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexHowItWorks.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexCtaFooter.cshtml" />
+    <Content Include="Views\Home\HomePartials\_LandingHero.cshtml" />
+    <Content Include="Views\Home\HomePartials\_LandingPosters.cshtml" />
+    <Content Include="Views\Home\HomePartials\_LandingAbout.cshtml" />
     <Content Include="Views\Events\Events.cshtml" />
   </ItemGroup>
   <ItemGroup>
