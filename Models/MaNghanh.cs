@@ -22,8 +22,10 @@ namespace shcool_event_management.Models
     
         public string MaNghanh1 { get; set; }
         public string TenNghanh { get; set; }
+        public string THUOCVIEN { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SinhVien> SinhViens { get; set; }
+        public virtual Vien Vien { get; set; }
     }
 }

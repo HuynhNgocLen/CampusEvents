@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Web.Mvc;
 using System.Web.Security;
+using school_event_management.Helpers;
 using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
 {
-    // [Authorize(Roles = "Admin")]
+    [Authorize]
     public class AdminSettingsController : Controller
     {
         private readonly school_event_managementEntities _db
@@ -17,9 +18,8 @@ namespace shcool_event_management.Areas.Admin.Controllers
             ViewBag.ActiveMenu = "settings";
             ViewBag.ActiveTab = tab;
 
-            // Lấy thông tin admin hiện tại
-            var userId = Session["UserId"]?.ToString() ?? "SV001";
-            var admin = _db.SinhViens.Find(userId);
+            var tenDn = User.Identity?.Name;
+            var admin = string.IsNullOrEmpty(tenDn) ? null : _db.QuanTriViens.Find(tenDn);
             ViewBag.Admin = admin;
 
             return View();
@@ -51,8 +51,8 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 return RedirectToAction("Index", new { tab = "security" });
             }
 
-            var userId = Session["UserId"]?.ToString() ?? "SV001";
-            var admin = _db.SinhViens.Find(userId);
+            var tenDn = User.Identity?.Name;
+            var admin = string.IsNullOrEmpty(tenDn) ? null : _db.QuanTriViens.Find(tenDn);
 
             if (admin == null)
             {
@@ -60,14 +60,13 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 return RedirectToAction("Index", new { tab = "security" });
             }
 
-            var hashedCurrent = HashPassword(currentPassword);
-            if (admin.MatKhau != hashedCurrent)
+            if (!PasswordHasher.Verify(currentPassword, admin.MatKhau))
             {
                 TempData["Error"] = "Mật khẩu hiện tại không đúng.";
                 return RedirectToAction("Index", new { tab = "security" });
             }
 
-            admin.MatKhau = HashPassword(newPassword);
+            admin.MatKhau = PasswordHasher.HashPassword(newPassword);
 
             try
             {
@@ -110,21 +109,11 @@ namespace shcool_event_management.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Logout()
         {
+            Session.Remove("AdminQuyen");
             Session.Clear();
             Session.Abandon();
             FormsAuthentication.SignOut();
             return RedirectToAction("Login", "Account", new { area = "" });
-        }
-
-        // ── Helper: Hash mật khẩu SHA-256 ────────────────────────
-        private static string HashPassword(string password)
-        {
-            using (var sha = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = System.Text.Encoding.UTF8.GetBytes(password);
-                var hash = sha.ComputeHash(bytes);
-                return BitConverter.ToString(hash).Replace("-", "").ToLower();
-            }
         }
 
         protected override void Dispose(bool disposing)

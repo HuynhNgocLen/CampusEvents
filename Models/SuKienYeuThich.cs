@@ -16,7 +16,7 @@ namespace shcool_event_management.Models
     {
         public string IDSinhVien { get; set; }
         public int MaEvent { get; set; }
-        public Nullable<System.DateTime> NgayLuu { get; set; }
+        public System.DateTime NgayLuu { get; set; }
         public string TrangThai { get; set; }
     
         public virtual EVENT EVENT { get; set; }

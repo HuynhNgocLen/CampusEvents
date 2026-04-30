@@ -2,7 +2,17 @@
     ViewBag.Title = "Cài đặt — CampusEvents Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     string activeTab = ViewBag.ActiveTab as string ?? "general";
-    var admin = ViewBag.Admin as shcool_event_management.Models.SinhVien;
+    var admin = ViewBag.Admin as shcool_event_management.Models.QuanTriVien;
+    string QuyenLabel(int q)
+    {
+        switch (q)
+        {
+            case 0: return "Xem / hỗ trợ";
+            case 1: return "Quản lý nội dung";
+            case 2: return "Toàn quyền";
+            default: return "—";
+        }
+    }
 }
 
 @section styles {
@@ -64,7 +74,7 @@
             <span class="sn-section">Hệ thống</span>
             <a href="#" class="sn-item @(activeTab=="notifications"?"active":"")" onclick="switchTab(event,'notifications')">
                 <span class="material-symbols-outlined">notifications</span>Thông báo
-            </a>D
+            </a>
             <a href="#" class="sn-item @(activeTab=="appearance"?"active":"")" onclick="switchTab(event,'appearance')">
                 <span class="material-symbols-outlined">palette</span>Giao diện
             </a>
@@ -84,45 +94,25 @@
                         @* Avatar preview *@
                         <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
                             <div style="width:64px;height:64px;border-radius:50%;background:var(--primary-light);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--primary);flex-shrink:0">
-                                @(admin != null && !string.IsNullOrEmpty(admin.Ten) ? admin.Ten.Split(' ').Last().Substring(0,1).ToUpper() : "A")
+                                @(admin != null && !string.IsNullOrEmpty(admin.TenDN) ? char.ToUpper(admin.TenDN[0]) : 'A')
                             </div>
                             <div>
-                                <div style="font-size:1rem;font-weight:700">@(admin?.Ten ?? "Admin Campus")</div>
-                                <div style="font-size:.8rem;color:var(--text-muted)">@(admin?.Email ?? "admin@university.edu.vn")</div>
-                                <div style="font-size:.75rem;color:var(--text-light);margin-top:.1rem">Mã SV: @(admin?.ID ?? "—")</div>
+                                <div style="font-size:1rem;font-weight:700">@(admin?.TenDN ?? "—")</div>
+                                <div style="font-size:.8rem;color:var(--text-muted)">Quyền: @QuyenLabel(admin?.Quyen ?? -1)</div>
+                                <div style="font-size:.75rem;color:var(--text-light);margin-top:.1rem">Tài khoản quản trị (QuanTriVien)</div>
                             </div>
                         </div>
 
                         @using (Html.BeginForm("SaveGeneral","AdminSettings",new{area="Admin"},FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Họ và tên</label>
-                                    <input class="ca-form-input" name="fullName" value="@admin?.Ten" placeholder="Nhập họ tên"/>
-                                </div>
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Mã số</label>
-                                    <input class="ca-form-input" value="@admin?.ID" readonly style="background:var(--surface-2);cursor:not-allowed"/>
-                                </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Tên đăng nhập</label>
+                                <input class="ca-form-input" value="@(admin != null ? admin.TenDN : "")" readonly style="background:var(--surface-2);cursor:not-allowed"/>
                             </div>
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Email</label>
-                                <input class="ca-form-input" type="email" name="email" value="@admin?.Email"/>
-                            </div>
-                            <div class="ca-form-group">
-                                <label class="ca-form-label">Số điện thoại</label>
-                                <input class="ca-form-input" type="tel" name="phone" value="@admin?.SoDienThoai"/>
-                            </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Lớp</label>
-                                    <input class="ca-form-input" value="@admin?.Lop" readonly style="background:var(--surface-2);cursor:not-allowed"/>
-                                </div>
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Ngành</label>
-                                    <input class="ca-form-input" value="@admin?.MaNghanh" readonly style="background:var(--surface-2);cursor:not-allowed"/>
-                                </div>
+                                <label class="ca-form-label">Mức quyền (0–2)</label>
+                                <input class="ca-form-input" value="@(admin != null ? admin.Quyen + " — " + QuyenLabel(admin.Quyen) : "—")" readonly style="background:var(--surface-2);cursor:not-allowed"/>
                             </div>
                             <div style="display:flex;gap:.5rem;justify-content:flex-end;padding-top:.875rem;border-top:1px solid var(--border);margin-top:.5rem">
                                 <button type="submit" class="ce-btn ce-btn-primary">
@@ -298,11 +288,11 @@
                         <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem">Thông tin hiển thị</div>
                         <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem">
                             <div style="width:52px;height:52px;border-radius:50%;background:var(--primary-light);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:var(--primary);flex-shrink:0">
-                                @(admin != null && !string.IsNullOrEmpty(admin.Ten) ? admin.Ten.Split(' ').Last().Substring(0,1).ToUpper() : "A")
+                                @(admin != null && !string.IsNullOrEmpty(admin.TenDN) ? admin.TenDN.Substring(0,1).ToUpper() : "A")
                             </div>
                             <div>
-                                <div style="font-weight:700;font-size:.92rem">@(admin?.Ten ?? "Admin Campus")</div>
-                                <div style="font-size:.77rem;color:var(--text-muted)">@(admin?.Email ?? "admin@university.edu.vn")</div>
+                                <div style="font-weight:700;font-size:.92rem">@(admin?.TenDN ?? "Admin Campus")</div>
+                                <div style="font-size:.77rem;color:var(--text-muted)">@(admin?.MaQTV ?? "QTV-DEFAULT")</div>
                                 <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem">Hiển thị ở góc phải header</div>
                             </div>
                         </div>

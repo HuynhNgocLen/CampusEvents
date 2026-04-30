@@ -1,0 +1,139 @@
+@using shcool_event_management.Models
+@{
+    ViewBag.Title = "Quản lí quản trị viên";
+    ViewBag.ActiveMenu = "admin-managers";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var admins = ViewBag.Admins as List<QuanTriVien> ?? new List<QuanTriVien>();
+    var viens = ViewBag.Viens as List<Vien> ?? new List<Vien>();
+    var roleOptions = ViewBag.RoleOptions as List<int> ?? new List<int> { 0, 1, 2 };
+    var lockedMap = ViewBag.LockedMap as Dictionary<string, bool> ?? new Dictionary<string, bool>();
+}
+
+<section class="ca-page">
+    <div class="ca-page-header">
+        <div>
+            <h1 class="ca-page-title">Quản lí quản trị viên</h1>
+            <p class="ca-page-sub">Thêm mới, khóa/mở khóa, xóa và cập nhật quyền cho tài khoản quản trị.</p>
+        </div>
+    </div>
+
+    <div class="ca-card mb-4">
+        <div class="ca-card__header">
+            <div class="ca-card__title">Thêm quản trị viên</div>
+        </div>
+        <div class="ca-card__body">
+            <form method="post" action="@Url.Action("Create", "AdminAdministrators", new { area = "Admin" })" class="row g-3">
+                @Html.AntiForgeryToken()
+                <div class="col-md-3">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <input type="text" name="tenDN" class="form-control" required />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" name="matKhau" class="form-control" required />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Quyền</label>
+                    <select name="quyen" class="form-select" required>
+                        @foreach (var role in roleOptions)
+                        {
+                            <option value="@role" @(role == 2 ? "selected" : "")>@role</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Thuộc viện</label>
+                    <select name="maQtv" class="form-select" required>
+                        <option value="">-- Chọn viện --</option>
+                        @foreach (var vien in viens)
+                        {
+                            <option value="@vien.MaVien">@vien.TenVien (@vien.MaVien)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button class="ce-btn ce-btn-primary w-100" type="submit">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ca-card">
+        <div class="ca-card__header">
+            <div class="ca-card__title">Danh sách quản trị viên</div>
+        </div>
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th>Tên đăng nhập</th>
+                        <th>Thuộc viện</th>
+                        <th>Quyền</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!admins.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Chưa có quản trị viên nào.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var admin in admins)
+                        {
+                            var isLocked = lockedMap.ContainsKey(admin.TenDN) && lockedMap[admin.TenDN];
+                            <tr>
+                                <td><strong>@admin.TenDN</strong></td>
+                                <td>@(admin.Vien != null ? admin.Vien.TenVien + " (" + admin.MaQTV + ")" : admin.MaQTV)</td>
+                                <td style="min-width: 220px;">
+                                    <form method="post" action="@Url.Action("UpdateRole", "AdminAdministrators", new { area = "Admin" })" class="d-flex gap-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="tenDN" value="@admin.TenDN" />
+                                        <select name="quyen" class="form-select form-select-sm">
+                                            @foreach (var role in roleOptions)
+                                            {
+                                                <option value="@role" @(admin.Quyen == role ? "selected" : "")>@role</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="ce-btn ce-btn-sm ce-btn-outline">Lưu</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    @if (isLocked)
+                                    {
+                                        <span class="badge text-bg-danger">Đang khóa</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-success">Đang hoạt động</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <form method="post" action="@Url.Action("ToggleLock", "AdminAdministrators", new { area = "Admin" })">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="tenDN" value="@admin.TenDN" />
+                                            <button type="submit" class="ce-btn ce-btn-sm @(isLocked ? "ce-btn-primary" : "ce-btn-warning")">
+                                                @(isLocked ? "Mở khóa" : "Khóa")
+                                            </button>
+                                        </form>
+                                        <form method="post" action="@Url.Action("Delete", "AdminAdministrators", new { area = "Admin" })"
+                                              onsubmit="return confirm('Xác nhận xóa quản trị viên @admin.TenDN?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="tenDN" value="@admin.TenDN" />
+                                            <button type="submit" class="ce-btn ce-btn-sm ce-btn-danger">Xóa</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

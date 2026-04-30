@@ -252,12 +252,11 @@
     position: relative;
     overflow: hidden;
     background:
-        radial-gradient(circle at 16% 14%, color-mix(in srgb, var(--cat-color) 34%, #ffffff), transparent 42%),
-        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--cat-color) 28%, #ffffff), transparent 45%),
-        linear-gradient(125deg,
-            color-mix(in srgb, var(--cat-color) 78%, #0f172a) 0%,
-            color-mix(in srgb, var(--cat-color) 88%, #1d4ed8) 56%,
-            color-mix(in srgb, var(--cat-color) 74%, #38bdf8) 100%);
+        radial-gradient(circle at 24% 18%, color-mix(in srgb, var(--cat-color) 22%, #ffffff), transparent 52%),
+        radial-gradient(circle at 78% 86%, color-mix(in srgb, var(--cat-color) 16%, #ffffff), transparent 50%),
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--cat-color) 18%, #f8fbff),
+            color-mix(in srgb, var(--cat-color) 8%, #eef6ff));
 }
 
 .em-card__thumb img {
@@ -276,11 +275,48 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: rgba(255, 255, 255, .25);
+    color: color-mix(in srgb, var(--cat-color) 64%, #ffffff);
+    position: relative;
+    overflow: hidden;
+}
+
+.em-card__thumb-placeholder::before {
+    content: "";
+    position: absolute;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border: 24px solid color-mix(in srgb, var(--cat-color) 18%, transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.em-card__thumb-placeholder::after {
+    content: "";
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    border: 16px solid color-mix(in srgb, var(--cat-color) 10%, transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .em-card__thumb-placeholder .material-symbols-outlined {
     font-size: 52px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--cat-color) 78%, #ffffff);
+    background: color-mix(in srgb, var(--cat-color) 12%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--cat-color) 30%, transparent);
+    position: relative;
+    z-index: 1;
 }
 
 .em-card__cat {
@@ -301,6 +337,18 @@
     position: absolute;
     top: .75rem;
     right: .75rem;
+}
+
+/* Trạng thái ở góc card: đồng bộ kiểu "Nháp" */
+.em-card__status .em-badge {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: .82rem;
+    font-weight: 700;
+    padding: .18rem .7rem;
+    color: #d97706;
+    background: rgba(245, 158, 11, .18);
+    border: 1px solid rgba(245, 158, 11, .24);
 }
 
 /* Body */
@@ -779,6 +827,17 @@
 .em-badge-warning {
     background: rgba(245, 158, 11, .12);
     color: #d97706;
+}
+
+.em-badge-draft {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: .82rem;
+    font-weight: 700;
+    padding: .18rem .7rem;
+    color: #d97706;
+    background: rgba(245, 158, 11, .18);
+    border: 1px solid rgba(245, 158, 11, .24);
 }
 
 .em-badge-default {
