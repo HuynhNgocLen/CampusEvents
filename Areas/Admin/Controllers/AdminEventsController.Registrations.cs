@@ -18,6 +18,8 @@ namespace shcool_event_management.Areas.Admin.Controllers
                                                int pageSize = 10)
         {
             ViewBag.ActiveMenu = "manage";
+            var currentAdmin = GetCurrentAdmin();
+            if (currentAdmin == null) return new HttpUnauthorizedResult();
 
             var ev = _db.EVENTs
                         .Include("DanhMuc")
@@ -25,7 +27,9 @@ namespace shcool_event_management.Areas.Admin.Controllers
                         .FirstOrDefault(e => e.MaEvent == id);
 
             if (ev == null) return HttpNotFound();
-            if (ev.NguoiDang != GetCurrentAdminMaQTV()) return new HttpUnauthorizedResult();
+            var canAccessEvent = currentAdmin.Quyen == 0
+                || string.Equals(ev.NguoiDang, currentAdmin.MaQTV, StringComparison.OrdinalIgnoreCase);
+            if (!canAccessEvent) return new HttpUnauthorizedResult();
 
             var query = _db.DangKySuKiens
                            .Include("SinhVien")
@@ -82,9 +86,14 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
         public ActionResult ExportExcel(int id, string search = null, string status = null)
         {
+            var currentAdmin = GetCurrentAdmin();
+            if (currentAdmin == null) return new HttpUnauthorizedResult();
+
             var ev = _db.EVENTs.Include("DanhMuc").FirstOrDefault(e => e.MaEvent == id);
             if (ev == null) return HttpNotFound();
-            if (ev.NguoiDang != GetCurrentAdminMaQTV()) return new HttpUnauthorizedResult();
+            var canAccessEvent = currentAdmin.Quyen == 0
+                || string.Equals(ev.NguoiDang, currentAdmin.MaQTV, StringComparison.OrdinalIgnoreCase);
+            if (!canAccessEvent) return new HttpUnauthorizedResult();
 
             var registrations = _db.DangKySuKiens
                 .Include("SinhVien")
@@ -172,6 +181,26 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 wb.SaveAs(stream);
                 stream.Position = 0;
                 var fileName = $"DangKy_{ev.TenEvent.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd}.xlsx";
+
+                if (currentAdmin != null)
+                {
+                    try
+                    {
+                        QtvHanhDongLogHelper.Insert(
+                            currentAdmin.TenDN,
+                            currentAdmin.MaQTV,
+                            "GET",
+                            "AdminEvents",
+                            "ExportExcel",
+                            Request?.RawUrl,
+                            BuildAuditPrefix(currentAdmin) + " Xuất Excel danh sách sinh viên sự kiện: " + ev.TenEvent);
+                    }
+                    catch
+                    {
+                        // Không chặn export nếu ghi log lỗi.
+                    }
+                }
+
                 return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
         }

@@ -44,7 +44,7 @@ namespace shcool_event_management.Areas.Admin.Helpers
                 })
                 .ToList();
 
-            if (applyVienPermission && currentAdmin != null && currentAdmin.Quyen == 2)
+            if (applyVienPermission && currentAdmin != null && (currentAdmin.Quyen == 1 || currentAdmin.Quyen == 2))
             {
                 var forcedMaVien = ResolveAdminVienCode(db, currentAdmin);
                 var forcedVien = vienFromDb.FirstOrDefault(v => v.Value == forcedMaVien);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Web.Mvc;
 using System.Web.Security;
 using school_event_management.Helpers;
+using shcool_event_management.Areas.Admin.Helpers;
 using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
@@ -82,6 +83,13 @@ namespace shcool_event_management.Areas.Admin.Controllers
             Session["AdminQuyen"] = admin.Quyen;
             Session["AdminMaQTV"] = admin.MaQTV;
             FormsAuthentication.SetAuthCookie(admin.TenDN, false);
+
+            AdminLoginAuditHelper.Log(
+                admin.TenDN,
+                admin.MaQTV,
+                admin.Quyen,
+                Request.UserHostAddress,
+                Request.UserAgent);
 
             return RedirectToLocal(returnUrl);
         }

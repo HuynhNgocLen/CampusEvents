@@ -94,12 +94,18 @@
                 double pct = ev.SoLuongToiDa > 0
                     ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa, 0) : 0;
 
+                bool isDraftStatus =
+                    string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(ev.TrangThai, "Nháp", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(ev.TrangThai, "Bản nháp", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(ev.TrangThai, "Bản Nháp", StringComparison.OrdinalIgnoreCase);
+
                 string statusClass = ev.TrangThai == "Sắp diễn ra" ? "ce-badge ce-badge-info"
                     : ev.TrangThai == "Đang diễn ra" ? "ce-badge ce-badge-success"
                     : ev.TrangThai == "Đã hủy" ? "ce-badge ce-badge-danger"
-                    : string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase) ? "ce-badge ce-badge-warning ev-badge-draft"
+                    : isDraftStatus ? "ce-badge ce-badge-warning ev-badge-draft"
                     : "ce-badge ce-badge-default";
-                string statusText = string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase) ? "Nháp" : ev.TrangThai;
+                string statusText = isDraftStatus ? "Bản nháp" : ev.TrangThai;
 
                 <div class="ev-card">
                     <div class="ev-card__thumb">

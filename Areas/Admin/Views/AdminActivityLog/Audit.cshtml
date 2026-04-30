@@ -1,0 +1,118 @@
+@using shcool_event_management.Areas.Admin.Models
+@{
+    ViewBag.Title = "Đăng nhập & thêm QTV";
+    ViewBag.ActiveMenu = "activity-audit";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var loginRows = ViewBag.LoginRows as List<AdminDangNhapLogRow> ?? new List<AdminDangNhapLogRow>();
+    var qtvRows = ViewBag.QtvCreateRows as List<QtvHanhDongLogRow> ?? new List<QtvHanhDongLogRow>();
+    var tableMissing = ViewBag.TableMissing as bool? ?? false;
+    var page = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    var loginCount = ViewBag.LoginCount as int? ?? 0;
+    var qtvCount = ViewBag.QtvCreateCount as int? ?? 0;
+}
+
+<section class="ca-page">
+    <div class="ca-page-header">
+        <div>
+            <h1 class="ca-page-title">Đăng nhập &amp; thêm QTV</h1>
+            <p class="ca-page-sub">Dành cho quyền 0: ai đăng nhập lúc nào, và tài khoản nào thêm QTV mới (theo nhật ký hệ thống).</p>
+        </div>
+    </div>
+
+    @if (tableMissing)
+    {
+        <div class="alert alert-warning border-0 rounded-3 mb-4" role="alert">
+            Chưa tạo bảng trên SQL. Chạy <code>Scripts/QTVHanhDongLog.sql</code> và <code>Scripts/QTVAdminDangNhapLog.sql</code>.
+        </div>
+    }
+
+    <div class="ca-card mb-4">
+        <div class="ca-card__header d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="ca-card__title">Đăng nhập admin (@loginCount)</div>
+            @if (totalPages > 1)
+            {
+                <div class="d-flex align-items-center gap-2 small">
+                    @if (page > 1)
+                    {
+                        <a class="ce-btn ce-btn-ghost ce-btn-sm" href="@Url.Action("Audit", new { area = "Admin", page = page - 1 })">Trước</a>
+                    }
+                    <span>Trang @page / @totalPages</span>
+                    @if (page < totalPages)
+                    {
+                        <a class="ce-btn ce-btn-ghost ce-btn-sm" href="@Url.Action("Audit", new { area = "Admin", page = page + 1 })">Sau</a>
+                    }
+                </div>
+            }
+        </div>
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Tài khoản</th>
+                        <th>Mã QTV</th>
+                        <th>Quyền</th>
+                        <th>IP</th>
+                        <th>Thiết bị</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!loginRows.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-muted text-center py-4">Chưa có dữ liệu.</td>
+                        </tr>
+                    }
+                    @foreach (var r in loginRows)
+                    {
+                        <tr>
+                            <td>@r.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@r.TenDN</td>
+                            <td>@r.MaQTV</td>
+                            <td>@(r.Quyen?.ToString() ?? "-")</td>
+                            <td>@r.DiaChiIP</td>
+                            <td style="max-width:320px;word-break:break-word;font-size:.85rem">@r.ThietBi</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="ca-card">
+        <div class="ca-card__header">
+            <div class="ca-card__title">Thêm QTV mới (@qtvCount)</div>
+        </div>
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Tài khoản thực hiện</th>
+                        <th>Mã QTV</th>
+                        <th>Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!qtvRows.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-muted text-center py-4">Chưa ghi nhận thêm QTV (sau khi thêm sẽ xuất hiện ở đây).</td>
+                        </tr>
+                    }
+                    @foreach (var r in qtvRows)
+                    {
+                        <tr>
+                            <td>@r.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@r.TenDN</td>
+                            <td>@r.MaQTV</td>
+                            <td style="max-width:400px;word-break:break-word">@r.MoTa</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

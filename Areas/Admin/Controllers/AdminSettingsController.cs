@@ -1,6 +1,7 @@
 using System;
 using System.Web.Mvc;
 using System.Web.Security;
+using shcool_event_management.Areas.Admin.Helpers;
 using school_event_management.Helpers;
 using shcool_event_management.Models;
 
@@ -9,6 +10,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
     [Authorize]
     public class AdminSettingsController : Controller
     {
+        private const string LogRetentionSessionKey = "AdminLogRetentionDays";
         private readonly school_event_managementEntities _db
             = new school_event_managementEntities();
 
@@ -21,6 +23,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             var tenDn = User.Identity?.Name;
             var admin = string.IsNullOrEmpty(tenDn) ? null : _db.QuanTriViens.Find(tenDn);
             ViewBag.Admin = admin;
+            ViewBag.LogRetentionDays = QtvHanhDongLogHelper.GetLogRetentionDays();
 
             return View();
         }
@@ -85,17 +88,35 @@ namespace shcool_event_management.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveNotifications(FormCollection form)
         {
-            // Lưu các toggle vào Session hoặc database cài đặt
             Session["Notif_NewReg"] = form["notif_new_reg"] == "on";
             Session["Notif_Reminder"] = form["notif_reminder"] == "on";
             Session["Notif_WeekReport"] = form["notif_week_report"] == "on";
-            Session["Notif_InApp"] = form["notif_inapp"] == "on";
 
             TempData["Success"] = "Đã lưu cài đặt thông báo!";
             return RedirectToAction("Index", new { tab = "notifications" });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveLogSettings(int? log_retention_days)
+        {
+            var days = log_retention_days ?? 7;
+            if (days != 0 && days != 1 && days != 3 && days != 7 && days != 14 && days != 30 && days != 90)
+            {
+                TempData["Error"] = "Thời gian lưu log không hợp lệ.";
+                return RedirectToAction("Index", new { tab = "notifications" });
+            }
+
+            Session[LogRetentionSessionKey] = days;
+            QtvHanhDongLogHelper.CleanupExpiredLogs();
+            TempData["Success"] = days == 0
+                ? "Đã bật chế độ không ghi log và xóa log hiện có."
+                : "Đã lưu thời gian lưu log: " + days + " ngày.";
+            return RedirectToAction("Index", new { tab = "notifications" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult SaveTheme(string theme)
         {
             if (theme != "dark" && theme != "light")

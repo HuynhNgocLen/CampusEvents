@@ -23,9 +23,17 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
         public JsonResult GetStudents(int id, string search = null)
         {
+            var currentAdmin = GetCurrentAdmin();
+            if (currentAdmin == null)
+            {
+                return Json(new { success = false, message = "Phiên đăng nhập đã hết hạn." }, JsonRequestBehavior.AllowGet);
+            }
+
             var ev = _db.EVENTs.FirstOrDefault(x => x.MaEvent == id);
             if (ev == null) return Json(new { success = false, message = "Không tìm thấy sự kiện." }, JsonRequestBehavior.AllowGet);
-            if (ev.NguoiDang != GetCurrentAdminMaQTV()) return Json(new { success = false, message = "Bạn không có quyền xem dữ liệu sự kiện này." }, JsonRequestBehavior.AllowGet);
+            var canAccessEvent = currentAdmin.Quyen == 0
+                || string.Equals(ev.NguoiDang, currentAdmin.MaQTV, StringComparison.OrdinalIgnoreCase);
+            if (!canAccessEvent) return Json(new { success = false, message = "Bạn không có quyền xem dữ liệu sự kiện này." }, JsonRequestBehavior.AllowGet);
 
             var query = _db.DangKySuKiens
                            .Include("SinhVien")

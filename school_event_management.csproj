@@ -234,6 +234,12 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminAccountController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminAdministratorsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminActivityLogController.cs" />
+    <Compile Include="Areas\Admin\Helpers\QtvHanhDongLogHelper.cs" />
+    <Compile Include="Areas\Admin\Helpers\AdminLoginAuditHelper.cs" />
+    <Compile Include="Areas\Admin\Helpers\AdminNotificationCenterHelper.cs" />
+    <Compile Include="Areas\Admin\Models\QtvHanhDongLogRow.cs" />
+    <Compile Include="Areas\Admin\Models\AdminDangNhapLogRow.cs" />
     <Compile Include="Areas\Admin\Controllers\BaseAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminDashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminEventPostsController.cs" />
@@ -289,6 +295,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\QTVAdminDangNhapLog.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\QTVHanhDongLog.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\QuanTriVien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -445,6 +457,8 @@
     <Content Include="Areas\Admin\Views\AdminAccount\Login.cshtml" />
     <Content Include="Areas\Admin\Views\AdminAccount\Locked.cshtml" />
     <Content Include="Areas\Admin\Views\AdminAdministrators\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminActivityLog\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminActivityLog\Audit.cshtml" />
     <Content Include="Areas\Admin\Views\AdminDashboard\Dashboard.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\AdminStats.cshtml" />
     <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
@@ -758,12 +772,13 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Web.config" />
     <None Include="Web.config.example" />
     <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config.example</DependentUpon>
+      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
-      <DependentUpon>Web.config.example</DependentUpon>
+      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />

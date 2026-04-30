@@ -29,6 +29,8 @@
         <AssociationConnector Association="school_event_managementModel.FK_YeuThich_SinhVien" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK__MaNghanh__THUOCV__6E01572D" />
         <AssociationConnector Association="school_event_managementModel.FK_QTV_Vien" />
+        <EntityTypeShape EntityType="school_event_managementModel.QTVAdminDangNhapLog" Width="1.5" PointX="5.375" PointY="10.75" />
+        <EntityTypeShape EntityType="school_event_managementModel.QTVHanhDongLog" Width="1.5" PointX="11.375" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

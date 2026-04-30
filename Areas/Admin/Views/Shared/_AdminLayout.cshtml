@@ -34,7 +34,18 @@
     }
 
     var canViewStats = adminQuyen == 0;
-    var canManageAdmins = adminQuyen == 0;
+    var canManageAdmins = adminQuyen == 0 || adminQuyen == 2;
+    var canViewActivityLogFull = adminQuyen == 0 || adminQuyen == 2;
+    var canViewActivityAudit = false;
+    var adminNotifications = new List<shcool_event_management.Areas.Admin.Helpers.AdminNotificationCenterHelper.AdminNotificationItem>();
+    if (!string.IsNullOrWhiteSpace(adminMaQTV))
+    {
+        using (var notifDb = new shcool_event_management.Models.school_event_managementEntities())
+        {
+            adminNotifications = shcool_event_management.Areas.Admin.Helpers.AdminNotificationCenterHelper
+                .Build(Session, notifDb, adminMaQTV);
+        }
+    }
 }
 <!DOCTYPE html>
 <html lang="vi" data-theme="light">
@@ -157,6 +168,28 @@
                        data-label="Quản lí QTV">
                         <span class="material-symbols-outlined">manage_accounts</span>
                         <span>Quản lí QTV</span>
+                    </a>
+                }
+
+                @if (canViewActivityLogFull)
+                {
+                    <a href="@Url.Action("Index", "AdminActivityLog", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "activity-log" ? "active" : "")"
+                       aria-current="@(ViewBag.ActiveMenu == "activity-log" ? "page" : null)"
+                       data-label="Nhật ký và đăng nhập">
+                        <span class="material-symbols-outlined">history</span>
+                        <span>Nhật ký &amp; đăng nhập</span>
+                    </a>
+                }
+
+                @if (canViewActivityAudit)
+                {
+                    <a href="@Url.Action("Audit", "AdminActivityLog", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "activity-audit" ? "active" : "")"
+                       aria-current="@(ViewBag.ActiveMenu == "activity-audit" ? "page" : null)"
+                       data-label="Đăng nhập và thêm QTV">
+                        <span class="material-symbols-outlined">fact_check</span>
+                        <span>Đăng nhập / thêm QTV</span>
                     </a>
                 }
 
@@ -336,6 +369,9 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        window.ceServerNotifications = @Html.Raw(System.Web.Helpers.Json.Encode(adminNotifications));
+    </script>
     <script src="@Url.Content("~/Scripts/campus-app.js")"></script>
 
     @RenderSection("scripts", required: false)

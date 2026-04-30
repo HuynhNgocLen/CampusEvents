@@ -130,20 +130,50 @@ function ceInitNotificationPopup() {
     var dot = document.querySelector('.ce-notif-dot');
     var KEY = 'ce-user-notifications-v1';
 
+    function normalizeItems(items) {
+        if (!Array.isArray(items)) return [];
+        return items
+            .filter(function (x) {
+                if (!x) return false;
+                var id = x.id != null ? x.id : x.Id;
+                var title = x.title != null ? x.title : x.Title;
+                return id && title;
+            })
+            .map(function (x) {
+                var id = x.id != null ? x.id : x.Id;
+                var title = x.title != null ? x.title : x.Title;
+                var message = x.message != null ? x.message : x.Message;
+                var time = x.time != null ? x.time : x.Time;
+                var read = x.read != null ? x.read : x.Read;
+                return {
+                    id: String(id),
+                    title: String(title || ''),
+                    message: String(message || ''),
+                    time: String(time || ''),
+                    read: read === true
+                };
+            });
+    }
+
     function seedData() {
-        return [
-            { id: 'n1', title: 'Workshop UI/UX', message: 'Sự kiện diễn ra vào 08:00 ngày mai.', time: 'Vừa xong', read: false },
-            { id: 'n2', title: 'Đăng ký thành công', message: 'Bạn đã đăng ký Talkshow Công nghệ 2026.', time: '10 phút trước', read: false },
-            { id: 'n3', title: 'Nhắc lịch', message: 'Bạn có sự kiện trong tuần này.', time: 'Hôm qua', read: true }
-        ];
+        var serverItems = normalizeItems(window.ceServerNotifications || []);
+        if (serverItems.length > 0) return serverItems;
+        return [];
     }
 
     function loadItems() {
         try {
             var raw = localStorage.getItem(KEY);
-            if (!raw) return seedData();
-            var parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : seedData();
+            var localItems = raw ? normalizeItems(JSON.parse(raw)) : [];
+            var seeded = seedData();
+            if (localItems.length === 0) return seeded;
+
+            var byId = {};
+            localItems.forEach(function (item) { byId[item.id] = item; });
+            seeded.forEach(function (item) {
+                if (!byId[item.id]) byId[item.id] = item;
+            });
+            return Object.keys(byId).map(function (k) { return byId[k]; });
         } catch (e) {
             return seedData();
         }

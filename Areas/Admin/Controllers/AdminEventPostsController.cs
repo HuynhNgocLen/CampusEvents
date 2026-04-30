@@ -19,7 +19,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             ViewBag.ActiveMenu = "event-post-create";
             var currentAdmin = GetCurrentAdmin();
             ViewBag.AdminQuyen = currentAdmin?.Quyen ?? -1;
-            var forcedMaVien = currentAdmin != null && currentAdmin.Quyen == 2 ? ResolveAdminVienCode(currentAdmin) : null;
+            var forcedMaVien = currentAdmin != null && (currentAdmin.Quyen == 1 || currentAdmin.Quyen == 2) ? ResolveAdminVienCode(currentAdmin) : null;
 
             AdminSelectListHelper.PopulateDropdowns(ViewBag, _db, selectedVien: forcedMaVien, currentAdmin: currentAdmin, applyVienPermission: true);
             ViewBag.DiaDiemText = string.Empty;
@@ -38,9 +38,9 @@ namespace shcool_event_management.Areas.Admin.Controllers
             ViewBag.ActiveMenu = "event-post-create";
             var currentAdmin = GetCurrentAdmin();
             ViewBag.AdminQuyen = currentAdmin?.Quyen ?? -1;
-            var forcedMaVien = currentAdmin != null && currentAdmin.Quyen == 2 ? ResolveAdminVienCode(currentAdmin) : null;
+            var forcedMaVien = currentAdmin != null && (currentAdmin.Quyen == 1 || currentAdmin.Quyen == 2) ? ResolveAdminVienCode(currentAdmin) : null;
 
-            if (currentAdmin != null && currentAdmin.Quyen == 2)
+            if (currentAdmin != null && (currentAdmin.Quyen == 1 || currentAdmin.Quyen == 2))
             {
                 if (string.IsNullOrWhiteSpace(forcedMaVien)) ModelState.AddModelError("MaVien", "Không tìm thấy viện của quản trị viên hiện tại.");
                 else model.MaVien = forcedMaVien;

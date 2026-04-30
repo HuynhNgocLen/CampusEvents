@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using shcool_event_management.Areas.Admin.Helpers;
 using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
@@ -10,6 +11,45 @@ namespace shcool_event_management.Areas.Admin.Controllers
     {
         protected readonly school_event_managementEntities _db
             = new school_event_managementEntities();
+
+        protected override void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+            base.OnActionExecuted(filterContext);
+            try
+            {
+                if (filterContext?.HttpContext?.Request == null)
+                    return;
+
+                var admin = GetCurrentAdmin();
+                if (admin == null || (admin.Quyen != 1 && admin.Quyen != 2))
+                    return;
+                var method = filterContext.HttpContext.Request.HttpMethod;
+
+                var rd = filterContext.RouteData;
+                var controllerName = (rd?.Values["controller"] as string)
+                    ?? filterContext.ActionDescriptor?.ControllerDescriptor?.ControllerName
+                    ?? "";
+                var actionName = (rd?.Values["action"] as string)
+                    ?? filterContext.ActionDescriptor?.ActionName
+                    ?? "";
+                var path = filterContext.HttpContext.Request.RawUrl;
+                if (!ShouldWriteAuditLog(method, controllerName, actionName, path))
+                    return;
+
+                QtvHanhDongLogHelper.Insert(
+                    admin.TenDN,
+                    admin.MaQTV,
+                    method,
+                    controllerName,
+                    actionName,
+                    path,
+                    BuildAuditPrefix(admin) + " " + method + " " + controllerName + "/" + actionName);
+            }
+            catch
+            {
+                // Ghi log không được thì bỏ qua, không chặn thao tác
+            }
+        }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -106,6 +146,45 @@ namespace shcool_event_management.Areas.Admin.Controllers
             }
 
             return admin.MaQTV;
+        }
+
+        protected static string BuildAuditPrefix(QuanTriVien admin)
+        {
+            if (admin == null)
+                return "[unknown]";
+            return "[" + (admin.TenDN ?? "unknown") + " - quyền " + admin.Quyen + "]";
+        }
+
+        private static bool ShouldWriteAuditLog(string method, string controllerName, string actionName, string path)
+        {
+            if (!string.IsNullOrWhiteSpace(method)
+                && (string.Equals(method, "POST", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(method, "PUT", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(method, "DELETE", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(method, "PATCH", StringComparison.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+
+            if (!string.Equals(method, "GET", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // GET chỉ ghi cho thao tác có tác động nghiệp vụ như xuất file.
+            if (!string.IsNullOrWhiteSpace(actionName)
+                && (actionName.IndexOf("Export", StringComparison.OrdinalIgnoreCase) >= 0
+                    || actionName.IndexOf("Download", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(path)
+                && (path.IndexOf("export", StringComparison.OrdinalIgnoreCase) >= 0
+                    || path.IndexOf("download", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         protected override void Dispose(bool disposing)

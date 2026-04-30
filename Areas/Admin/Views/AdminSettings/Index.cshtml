@@ -3,6 +3,8 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     string activeTab = ViewBag.ActiveTab as string ?? "general";
     var admin = ViewBag.Admin as shcool_event_management.Models.QuanTriVien;
+    int logRetentionDays = ViewBag.LogRetentionDays != null ? Convert.ToInt32(ViewBag.LogRetentionDays) : 7;
+    string currentTheme = (Session["Theme"]?.ToString() == "dark") ? "dark" : "light";
     string QuyenLabel(int q)
     {
         switch (q)
@@ -53,6 +55,17 @@
 .theme-swatch.selected { border-color:var(--primary); box-shadow:0 0 0 3px rgba(19,127,236,.18); }
 .theme-swatch__preview { height:64px; display:flex; align-items:center; padding:.5rem; gap:.4rem; }
 .theme-swatch__label { padding:.35rem .6rem; font-size:.75rem; font-weight:700; text-align:center; border-top:1px solid var(--border); }
+.appearance-toolbar { display:flex; justify-content:space-between; align-items:center; gap:.75rem; margin-bottom:1rem; flex-wrap:wrap; }
+.appearance-status { font-size:.74rem; font-weight:600; color:var(--text-muted); }
+.appearance-status.success { color:var(--success); }
+.appearance-status.error { color:var(--danger); }
+.appearance-preview { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.1rem; margin-bottom:1rem; }
+.appearance-preview__chips { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.6rem; }
+.appearance-chip { border:1px solid var(--border); border-radius:999px; padding:.25rem .55rem; font-size:.7rem; color:var(--text-muted); background:var(--surface); font-weight:600; }
+@@media (max-width: 767.98px) {
+    .settings-layout { grid-template-columns:1fr; }
+    .settings-sidenav { position:static; }
+}
 </style>
 }
 
@@ -227,19 +240,40 @@
                                     <div class="sw-track"></div>
                                 </label>
                             </div>
-                            <div class="toggle-row">
-                                <div>
-                                    <div class="toggle-label">Thông báo trong ứng dụng</div>
-                                    <div class="toggle-desc">Hiển thị popup khi có sự kiện mới hoặc cập nhật quan trọng</div>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" name="notif_inapp" @(Session["Notif_InApp"] as bool? == true ? "checked" : "")/>
-                                    <div class="sw-track"></div>
-                                </label>
-                            </div>
                             <div style="display:flex;justify-content:flex-end;padding-top:1rem;margin-top:.5rem;border-top:1px solid var(--border)">
                                 <button type="submit" class="ce-btn ce-btn-primary">
                                     <span class="material-symbols-outlined">save</span>Lưu cài đặt thông báo
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="ca-card" style="margin-top:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">history</span></div>
+                        <div class="ca-card__title">Lưu trữ nhật ký hệ thống</div>
+                    </div>
+                    <div class="ca-card__body">
+                        @using (Html.BeginForm("SaveLogSettings", "AdminSettings", new { area = "Admin" }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Thời gian giữ log</label>
+                                <select class="ca-form-select" name="log_retention_days">
+                                    <option value="0" @(logRetentionDays == 0 ? "selected" : "")>Không ghi</option>
+                                    <option value="1" @(logRetentionDays == 1 ? "selected" : "")>1 ngày</option>
+                                    <option value="3" @(logRetentionDays == 3 ? "selected" : "")>3 ngày</option>
+                                    <option value="7" @(logRetentionDays == 7 ? "selected" : "")>7 ngày</option>
+                                    <option value="14" @(logRetentionDays == 14 ? "selected" : "")>14 ngày</option>
+                                    <option value="30" @(logRetentionDays == 30 ? "selected" : "")>30 ngày</option>
+                                    <option value="90" @(logRetentionDays == 90 ? "selected" : "")>90 ngày</option>
+                                </select>
+                                <div class="ca-form-hint">Hệ thống sẽ tự xóa log cũ vượt quá mốc thời gian đã chọn.</div>
+                            </div>
+                            <div style="display:flex;justify-content:flex-end;padding-top:1rem;margin-top:.5rem;border-top:1px solid var(--border)">
+                                <button type="submit" class="ce-btn ce-btn-primary">
+                                    <span class="material-symbols-outlined">save</span>Lưu cài đặt log
                                 </button>
                             </div>
                         }
@@ -256,9 +290,24 @@
                     </div>
                     <div class="ca-card__body">
                         <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem">Chủ đề màu sắc</div>
+                        <div class="appearance-toolbar">
+                            <div class="ca-form-hint" style="margin:0">Chọn chủ đề để áp dụng ngay cho toàn bộ trang quản trị.</div>
+                            <div id="themeSaveStatus" class="appearance-status">Đang dùng: @(currentTheme == "dark" ? "Tối (Dark)" : "Sáng (Light)")</div>
+                        </div>
+
+                        <div class="appearance-preview">
+                            <div style="font-size:.78rem;font-weight:700;color:var(--text)">Xem trước nhanh</div>
+                            <div style="font-size:.73rem;color:var(--text-muted);margin-top:.2rem">Màu chủ đạo, thẻ và các badge sẽ thay đổi theo chủ đề bạn chọn.</div>
+                            <div class="appearance-preview__chips">
+                                <span class="appearance-chip">Nút chính</span>
+                                <span class="appearance-chip">Bảng dữ liệu</span>
+                                <span class="appearance-chip">Badge trạng thái</span>
+                                <span class="appearance-chip">Sidebar / Header</span>
+                            </div>
+                        </div>
 
                         <div class="theme-picker" style="margin-bottom:1.5rem">
-                            <div class="theme-swatch @(Session["Theme"]?.ToString()!="dark"?"selected":"")"
+                            <div class="theme-swatch @(currentTheme == "light" ? "selected" : "")"
                                  id="swLight" onclick="setTheme('light')">
                                 <div class="theme-swatch__preview" style="background:#f0f4f8">
                                     <div style="width:28px;height:100%;background:#fff;border-radius:4px;flex-shrink:0"></div>
@@ -271,7 +320,7 @@
                                 <div class="theme-swatch__label" style="background:#fff;border-top:1px solid #e2e8f0;color:#0f172a">Sáng (Light)</div>
                             </div>
 
-                            <div class="theme-swatch @(Session["Theme"]?.ToString()=="dark"?"selected":"")"
+                            <div class="theme-swatch @(currentTheme == "dark" ? "selected" : "")"
                                  id="swDark" onclick="setTheme('dark')">
                                 <div class="theme-swatch__preview" style="background:#0c1220">
                                     <div style="width:28px;height:100%;background:#131d2e;border-radius:4px;flex-shrink:0"></div>
@@ -344,14 +393,43 @@ function checkMatch() {
 
 // ── Theme switcher ────────────────────────────
 function setTheme(theme) {
+    const oldTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const statusEl = document.getElementById('themeSaveStatus');
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
     document.documentElement.setAttribute('data-theme', theme);
     document.getElementById('swLight')?.classList.toggle('selected', theme==='light');
     document.getElementById('swDark')?.classList.toggle('selected', theme==='dark');
+    try { localStorage.setItem('ce-theme', theme); } catch (e) {}
+    if (statusEl) {
+        statusEl.className = 'appearance-status';
+        statusEl.textContent = 'Đang lưu giao diện...';
+    }
 
     fetch('@Url.Action("SaveTheme","AdminSettings",new{area="Admin"})', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: 'theme=' + theme + '&__RequestVerificationToken=' + (document.querySelector('input[name="__RequestVerificationToken"]')?.value || '')
+        body: 'theme=' + encodeURIComponent(theme) + '&__RequestVerificationToken=' + encodeURIComponent(token)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data || data.success !== true) {
+            throw new Error((data && data.message) ? data.message : 'Không thể lưu giao diện.');
+        }
+        if (statusEl) {
+            statusEl.className = 'appearance-status success';
+            statusEl.textContent = 'Đã lưu: ' + (theme === 'dark' ? 'Tối (Dark)' : 'Sáng (Light)');
+        }
+    })
+    .catch(() => {
+        document.documentElement.setAttribute('data-theme', oldTheme);
+        document.getElementById('swLight')?.classList.toggle('selected', oldTheme==='light');
+        document.getElementById('swDark')?.classList.toggle('selected', oldTheme==='dark');
+        try { localStorage.setItem('ce-theme', oldTheme); } catch (e) {}
+        if (statusEl) {
+            statusEl.className = 'appearance-status error';
+            statusEl.textContent = 'Lưu thất bại, đã hoàn tác giao diện.';
+        }
     });
 }
 </script>

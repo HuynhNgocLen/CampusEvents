@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ClosedXML.Excel;
 using System.Data.Entity;
+using shcool_event_management.Areas.Admin.Helpers;
 
 namespace shcool_event_management.Areas.Admin.Controllers
 {
@@ -100,6 +101,25 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 var stream = new MemoryStream();
                 wb.SaveAs(stream);
                 stream.Position = 0;
+                var currentAdmin = GetCurrentAdmin();
+                if (currentAdmin != null)
+                {
+                    try
+                    {
+                        QtvHanhDongLogHelper.Insert(
+                            currentAdmin.TenDN,
+                            currentAdmin.MaQTV,
+                            "GET",
+                            "AdminStats",
+                            "ExportReport",
+                            Request?.RawUrl,
+                            BuildAuditPrefix(currentAdmin) + " Xuất Excel thống kê sự kiện năm " + year + " (" + semLabel + ")");
+                    }
+                    catch
+                    {
+                        // Không chặn export nếu ghi log lỗi.
+                    }
+                }
 
                 return File(
                     stream.ToArray(),
