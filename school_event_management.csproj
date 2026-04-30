@@ -433,6 +433,7 @@
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.dll" />
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.pdb" />
     <None Include="AppSettings.secret.config" />
+    <None Include="AppSettings.secret.config.example" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Create.cshtml" />
@@ -757,12 +758,12 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Web.config" />
+    <None Include="Web.config.example" />
     <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>Web.config.example</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>Web.config.example</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
