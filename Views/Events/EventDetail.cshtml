@@ -22,6 +22,9 @@
 
     //Sinh viên đã đăng ký rồi
     bool daDangKy = ViewBag.DaDangKy != null && (bool)ViewBag.DaDangKy;
+    var coverImageUrl = !string.IsNullOrWhiteSpace(Model.AnhBia)
+        ? Url.Content("~/Content/img/events/" + Model.AnhBia)
+        : string.Empty;
 }
 
 <div class="container py-4">
@@ -40,7 +43,7 @@
 
             @* Banner *@
             <div class="ce-event-banner ce-reveal mb-4" style="--cat-color:@eventCategoryColor">
-                <div class="ce-event-banner__bg"></div>
+                <div class="ce-event-banner__bg" style="@(string.IsNullOrEmpty(coverImageUrl) ? "" : "background-image:url('" + coverImageUrl + "');background-size:cover;background-position:center;")"></div>
                 <div class="ce-event-banner__overlay"></div>
                 <div class="ce-event-banner__centericon">
                     <span class="material-symbols-outlined">@eventCategoryIcon</span>
@@ -69,6 +72,9 @@
                     <h1>@(Model?.TenEvent)</h1>
                     <p style="opacity:.82;font-size:.88rem;margin-top:.4rem">
                         Tổ chức bởi <strong>@(Model.Vien.TenVien)</strong>
+                    </p>
+                    <p style="opacity:.82;font-size:.82rem;margin-top:.25rem">
+                        Trạng thái: <strong>@(string.IsNullOrWhiteSpace(Model.TrangThai) ? "Chưa cập nhật" : Model.TrangThai)</strong>
                     </p>
                 </div>
             </div>
@@ -108,6 +114,20 @@
                         <div class="ce-info-item__val">@(Model.NguoiDang)</div>
                     </div>
                 </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">workspace_premium</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Điểm rèn luyện</div>
+                        <div class="ce-info-item__val">@Model.DRL điểm</div>
+                    </div>
+                </div>
+                <div class="ce-info-item">
+                    <div class="ce-info-item__icon"><span class="material-symbols-outlined">visibility</span></div>
+                    <div>
+                        <div class="ce-info-item__label">Lượt xem</div>
+                        <div class="ce-info-item__val">@Model.LuotXem</div>
+                    </div>
+                </div>
             </div>
 
             @* Description *@
@@ -128,23 +148,16 @@
 
                 <div class="mt-4">
                     <h5 style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">Chương trình</h5>
-                    <div class="d-flex flex-column gap-2">
-                        @foreach (var s in new[] {
-                            new { Time="08:00", Label="Đón tiếp & Check-in" },
-                            new { Time="08:30", Label="Khai mạc & Phát biểu chào mừng" },
-                            new { Time="09:00", Label="Keynote: AI trong kỷ nguyên số" },
-                            new { Time="10:30", Label="Phiên workshop song song (4 chủ đề)" },
-                            new { Time="12:00", Label="Nghỉ trưa & Networking" },
-                            new { Time="13:30", Label="Cuộc thi Hackathon 4 tiếng" },
-                            new { Time="17:00", Label="Trao giải & Bế mạc" },
-                        })
-                        {
-                            <div style="display:flex;align-items:center;gap:.875rem;padding:.55rem .875rem;background:var(--surface-2);border-radius:var(--radius);font-size:.83rem">
-                                <span style="font-weight:700;color:var(--primary);min-width:38px">@s.Time</span>
-                                <span style="color:var(--text)">@s.Label</span>
-                            </div>
-                        }
-                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.ChiTiet))
+                    {
+                        <div style="font-size:.875rem;color:var(--text-muted);line-height:1.85;background:var(--surface-2);border-radius:var(--radius);padding:.875rem">
+                            @Html.Raw(Model.ChiTiet.Replace("\n", "<br/>"))
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="font-size:.83rem;color:var(--text-muted);margin:0">Ban tổ chức chưa cập nhật lịch trình chi tiết.</p>
+                    }
                 </div>
             </div>
 
@@ -155,7 +168,7 @@
             <div class="ce-sticky-reg ce-reveal">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h4 style="font-size:1.05rem;font-weight:800;margin:0">Đăng ký tham dự</h4>
-                    <span class="ce-badge ce-badge-primary">@(Model.GiaVe == 0 || Model.GiaVe == null ? "Miễn phí" : Model.GiaVe.Value.ToString("N0") + "đ")</span>
+                    <span class="ce-badge ce-badge-primary">@(Model.GiaVe <= 0 ? "Miễn phí" : Model.GiaVe.ToString("N0") + "đ")</span>
                 </div>
 
                 @* Capacity *@
@@ -191,6 +204,16 @@
                                 {
                                     <span style="color:red; font-weight:bold;">Đã hết hạn đăng ký</span>
                                 }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="background:var(--surface-2);border-radius:var(--radius);padding:.8rem;margin-bottom:1.1rem">
+                    <div style="display:flex;align-items:center;gap:.5rem;font-size:.83rem">
+                        <span class="material-symbols-outlined" style="font-size:17px;color:var(--accent)">event_available</span>
+                        <div>
+                            <div style="font-weight:600;color:var(--text)">
+                                Mở đăng ký: @(Model.NgayBatDauDangKy.HasValue ? Model.NgayBatDauDangKy.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")
                             </div>
                         </div>
                     </div>
@@ -265,6 +288,12 @@
                                 <span class="material-symbols-outlined" style="font-size:14px">qr_code_2</span> Mã QR
                             </button>
                         }
+                        @if (!string.IsNullOrWhiteSpace(Model.LinkZalo))
+                        {
+                            <a class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1" href="@Model.LinkZalo" target="_blank" rel="noopener">
+                                <span class="material-symbols-outlined" style="font-size:14px">groups</span> Zalo
+                            </a>
+                        }
                     </div>
                 </div>
             </div>
@@ -321,7 +350,7 @@
                         </div>
                         <div class="col-sm-6">
                             <strong style="color:var(--text)">Mã sinh viên:</strong>
-                            <span style="color:var(--text)">@Session["StudentId"]</span>
+                            <span style="color:var(--text)">@(ViewBag.SinhVien?.ID ?? ViewBag.CurrentStudentId ?? "N/A")</span>
                         </div>
                         <div class="col-sm-6">
                             <strong style="color:var(--text)">Lớp:</strong>

@@ -88,6 +88,87 @@ namespace school_event_management.Controllers
             return View(events);
         }
 
+        [RestrictGuest]
+        [HttpGet]
+        public ActionResult Notifications()
+        {
+            string studentId = GetCurrentStudentId();
+            if (string.IsNullOrEmpty(studentId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var now = DateTime.Now;
+            var inThreeDays = now.AddDays(3);
+
+            var upcomingRegistrations = db.DangKySuKiens
+                .Include(d => d.EVENT)
+                .Where(d => d.IDSinhVien == studentId
+                            && d.EVENT != null
+                            && d.EVENT.IsHidden == false
+                            && d.EVENT.NgayBatDau >= now)
+                .OrderBy(d => d.EVENT.NgayBatDau)
+                .Take(8)
+                .ToList();
+
+            var completedRecently = db.DangKySuKiens
+                .Include(d => d.EVENT)
+                .Where(d => d.IDSinhVien == studentId
+                            && d.EVENT != null
+                            && d.EVENT.IsHidden == false
+                            && d.TrangThai == "Đã hoàn thành")
+                .OrderByDescending(d => d.EVENT.NgayBatDau)
+                .Take(5)
+                .ToList();
+
+            ViewBag.Notifications = upcomingRegistrations.Select(d => new
+            {
+                Title = d.EVENT.TenEvent,
+                Message = d.EVENT.NgayBatDau <= inThreeDays
+                    ? "Sắp diễn ra trong 3 ngày tới."
+                    : "Bạn đã đăng ký sự kiện này.",
+                TimeLabel = d.EVENT.NgayBatDau.ToString("dd/MM/yyyy HH:mm"),
+                IsUrgent = d.EVENT.NgayBatDau <= inThreeDays
+            }).ToList();
+
+            ViewBag.CompletedNotifications = completedRecently.Select(d => new
+            {
+                Title = d.EVENT.TenEvent,
+                Message = "Bạn đã hoàn thành sự kiện và được ghi nhận.",
+                TimeLabel = d.EVENT.NgayBatDau.ToString("dd/MM/yyyy"),
+                IsUrgent = false
+            }).ToList();
+
+            ViewBag.Title = "Thông báo";
+            ViewBag.ActivePage = "notifications";
+            return View();
+        }
+
+        [RestrictGuest]
+        [HttpGet]
+        public ActionResult Settings()
+        {
+            ViewBag.ReceiveInApp = Session["ReceiveInApp"] as bool? ?? true;
+            ViewBag.ReceiveEmail = Session["ReceiveEmail"] as bool? ?? true;
+            ViewBag.ReceiveReminder = Session["ReceiveReminder"] as bool? ?? true;
+            ViewBag.Title = "Cài đặt";
+            ViewBag.ActivePage = "settings";
+            return View();
+        }
+
+        [RestrictGuest]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateSettings(bool? receiveInApp, bool? receiveEmail, bool? receiveReminder)
+        {
+            Session["ReceiveInApp"] = receiveInApp.HasValue;
+            Session["ReceiveEmail"] = receiveEmail.HasValue;
+            Session["ReceiveReminder"] = receiveReminder.HasValue;
+
+            TempData["Success"] = "Đã cập nhật cài đặt thông báo.";
+            return RedirectToAction("Settings");
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing) db.Dispose();

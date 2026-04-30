@@ -48,14 +48,16 @@
                                 : ev.TrangThai == "Đang diễn ra" ? "em-badge em-badge-success"
                                 : ev.TrangThai == "Đã hủy" ? "em-badge em-badge-danger"
                                 : ev.TrangThai == "Đã kết thúc" ? "em-badge em-badge-default"
+                                : string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase) ? "em-badge em-badge-draft"
                                 : "em-badge em-badge-warning";
+                            string statusText = string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase) ? "Nháp" : ev.TrangThai;
                             string safeTitle = ev.TenEvent?.Replace("'", "\\'") ?? "";
 
                             <tr>
                                 <td style="color:var(--text-muted);font-size:.78rem">@idx</td>
                                 <td>
                                     <div style="font-weight:600;font-size:.85rem;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@ev.TenEvent</div>
-                                    <div style="font-size:.72rem;color:var(--text-muted);margin-top:1px;">@ev.MaVien · DRL: @(ev.DRL.HasValue ? ev.DRL.Value.ToString() : "0")</div>
+                                    <div style="font-size:.72rem;color:var(--text-muted);margin-top:1px;">@ev.MaVien · DRL: @ev.DRL</div>
                                 </td>
                                 <td>
                                     @if (ev.DanhMuc != null)
@@ -72,7 +74,7 @@
                                         <span style="font-size:.72rem;color:var(--text-muted);white-space:nowrap">@ev.SoLuongDaDangKy/@ev.SoLuongToiDa</span>
                                     </div>
                                 </td>
-                                <td><span class="@badgeCls">@ev.TrangThai</span></td>
+                                <td><span class="@badgeCls">@statusText</span></td>
                                 <td style="text-align:center">
                                     <button class="toggle-hidden-btn" id="hideBtn-@ev.MaEvent"
                                             data-id="@ev.MaEvent" data-hidden="@ev.IsHidden.ToString().ToLower()"

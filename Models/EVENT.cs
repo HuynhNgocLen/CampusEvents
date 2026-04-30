@@ -31,22 +31,22 @@ namespace shcool_event_management.Models
         public Nullable<System.TimeSpan> GioBatDau { get; set; }
         public Nullable<System.DateTime> NgayKetThuc { get; set; }
         public Nullable<System.TimeSpan> GioKetThuc { get; set; }
+        public Nullable<System.DateTime> NgayBatDauDangKy { get; set; }
         public Nullable<System.DateTime> NgayHetHanDangKy { get; set; }
         public int SoLuongToiDa { get; set; }
         public int SoLuongDaDangKy { get; set; }
-        public Nullable<decimal> GiaVe { get; set; }
+        public decimal GiaVe { get; set; }
+        public int DRL { get; set; }
         public string MoTa { get; set; }
         public string ChiTiet { get; set; }
         public string NguoiDang { get; set; }
         public int LuotXem { get; set; }
         public string TrangThai { get; set; }
-        public System.DateTime NgayTao { get; set; }
-        public Nullable<System.DateTime> NgayCapNhat { get; set; }
-        public string LinkZalo { get; set; }
-        public Nullable<int> DRL { get; set; }
-        public Nullable<System.DateTime> NgayBatDauDangKy { get; set; }
         public bool IsHidden { get; set; }
         public string AnhBia { get; set; }
+        public string LinkZalo { get; set; }
+        public System.DateTime NgayTao { get; set; }
+        public Nullable<System.DateTime> NgayCapNhat { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }

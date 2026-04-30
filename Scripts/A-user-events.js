@@ -82,10 +82,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Mở sẵn danh sách trong bộ lọc
-    document.querySelectorAll('.cef-group__body').forEach(function (body) {
-        body.style.maxHeight = body.scrollHeight + 'px';
-        body.style.opacity = '1';
+    // Khởi tạo accordion theo trạng thái mặc định từ aria-expanded
+    document.querySelectorAll('.cef-group').forEach(function (group) {
+        var toggleBtn = group.querySelector('.cef-group__toggle');
+        var body = group.querySelector('.cef-group__body');
+        if (!toggleBtn || !body) return;
+
+        var isOpen = toggleBtn.getAttribute('aria-expanded') === 'true';
+        body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0';
+        body.style.opacity = isOpen ? '1' : '0';
     });
     updateFilterCount();
 });

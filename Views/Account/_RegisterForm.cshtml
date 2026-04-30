@@ -1,4 +1,11 @@
-﻿<div class="ce-auth-title">Tạo tài khoản</div>
+
+@using shcool_event_management.Models
+@{
+    var maNghanhs = ViewBag.MaNghanhs as IEnumerable<MaNghanh>;
+    var viens = ViewBag.Viens as IEnumerable<Vien>;
+}
+
+<div class="ce-auth-title">Tạo tài khoản</div>
 <div class="ce-auth-sub">Đăng ký với thông tin sinh viên của bạn</div>
 
 @using (Html.BeginForm("Register", "Account", FormMethod.Post))
@@ -54,20 +61,30 @@
         </div>
     </div>
     <div class="mb-3">
-        <label class="ce-form-label">Ngành học</label>
-        <select class="ce-form-select" name="faculty">
-            <option value="">Chọn Ngành</option>
-            <option value="CNTT">Công nghệ thông tin</option>
-            <option value="KTPM">Kỹ Thuật Phần Mềm</option>
+        <label class="ce-form-label">Khoa / Viện</label>
+        <select class="ce-form-select" name="institute" id="instituteSelect">
+            <option value="">Chọn Khoa / Viện</option>
+            @if (viens != null)
+            {
+                foreach (var v in viens)
+                {
+                    <option value="@v.MaVien">@v.TenVien</option>
+                }
+            }
         </select>
     </div>
 
     <div class="mb-3">
-        <label class="ce-form-label">Khoa / Viện</label>
-        <select class="ce-form-select" name="institute">
-            <option value="">Chọn Khoa / Viện</option>
-            <option value="CNS">Viện Công Nghệ Số</option>
-            <option value="KTCN">Viện Kỹ Thuật Công Nghệ</option>
+        <label class="ce-form-label">Ngành học</label>
+        <select class="ce-form-select" name="faculty" id="facultySelect" disabled>
+            <option value="">Chọn viện trước</option>
+            @if (maNghanhs != null)
+            {
+                foreach (var dm in maNghanhs)
+                {
+                    <option value="@dm.MaNghanh1" data-hidden-major="1" style="display:none;">@dm.TenNghanh</option>
+                }
+            }
         </select>
     </div>
 
@@ -98,18 +115,67 @@
 }
 
 <script>
-function ceRegisterSubmit(btn) {
-    var email = document.getElementById('emailInput').value.trim();
-    var errBox = document.getElementById('emailError');
+    function ceRegisterSubmit(btn) {
+        var email = document.getElementById('emailInput').value.trim();
+        var errBox = document.getElementById('emailError');
 
-    if (!email.endsWith('@@student.tdmu.edu.vn')) {
-        errBox.style.display = 'block';
-        document.getElementById('emailInput').focus();
-        return false; // chặn submit
+        if (!email.endsWith('@@student.tdmu.edu.vn')) {
+            errBox.style.display = 'block';
+            document.getElementById('emailInput').focus();
+            return false; // chặn submit
+        }
+
+        errBox.style.display = 'none';
+        ceSetLoading(btn, 'Đang xử lý...');
+        return true;
     }
 
-    errBox.style.display = 'none';
-    ceSetLoading(btn, 'Đang xử lý...');
-    return true;
-}
+    (function initInstituteMajorFilter() {
+        var instituteSelect = document.getElementById('instituteSelect');
+        var facultySelect = document.getElementById('facultySelect');
+        if (!instituteSelect || !facultySelect) return;
+
+        instituteSelect.addEventListener('change', function () {
+            var maVien = instituteSelect.value;
+            facultySelect.innerHTML = '';
+
+            if (!maVien) {
+                facultySelect.disabled = true;
+                facultySelect.innerHTML = '<option value="">Chọn viện trước</option>';
+                return;
+            }
+
+            facultySelect.disabled = true;
+            facultySelect.innerHTML = '<option value="">Đang tải ngành...</option>';
+
+            $.get('@Url.Action("GetMajorsByInstitute", "Account")', { maVien: maVien })
+                .done(function (majors) {
+                    facultySelect.innerHTML = '';
+
+                    if (!majors || majors.length === 0) {
+                        facultySelect.disabled = true;
+                        facultySelect.innerHTML = '<option value="">Chưa có ngành phù hợp cho viện này</option>';
+                        return;
+                    }
+
+                    var defaultOpt = document.createElement('option');
+                    defaultOpt.value = '';
+                    defaultOpt.textContent = 'Chọn Ngành';
+                    facultySelect.appendChild(defaultOpt);
+
+                    majors.forEach(function (m) {
+                        var opt = document.createElement('option');
+                        opt.value = m.maNghanh;
+                        opt.textContent = m.tenNghanh;
+                        facultySelect.appendChild(opt);
+                    });
+
+                    facultySelect.disabled = false;
+                })
+                .fail(function () {
+                    facultySelect.disabled = true;
+                    facultySelect.innerHTML = '<option value="">Không tải được danh sách ngành</option>';
+                });
+        });
+    })();
 </script>

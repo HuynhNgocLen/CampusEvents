@@ -5,6 +5,9 @@
     var danhMucList = ViewBag.DanhMucList as List<SelectListItem>;
     var vienList = ViewBag.VienList as List<SelectListItem>;
     var diaDiemText = ViewBag.DiaDiemText as string;
+    var isVienLocked = (bool?)(ViewBag.IsVienLocked) ?? false;
+    var vienLockMessage = ViewBag.VienLockMessage as string;
+    var minStartDate = DateTime.Today.AddDays(-20).ToString("yyyy-MM-dd");
 }
 
 @section styles {
@@ -24,12 +27,17 @@
 
     <br>
     
-    <h1 class="ca-page-title">Tạo sự kiện mới</h1>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
+        <h1 class="ca-page-title">Tạo sự kiện mới</h1>
+        <button type="button" class="ce-btn ce-btn-outline" id="btnCreateHelp">
+            <span class="material-symbols-outlined">help</span>Hướng dẫn
+        </button>
+    </div>
     <p class="ca-page-sub">Điền đầy đủ thông tin bên dưới để xuất bản sự kiện lên hệ thống.</p>
 
     @Html.ValidationSummary(false, "", new { @class = "ce-alert ce-alert-error", style = "margin-bottom:1.25rem;" })
 
-    @using (Html.BeginForm("Create","AdminEvents", new{area="Admin"}, FormMethod.Post, new { enctype="multipart/form-data", id="createForm" }))
+    @using (Html.BeginForm("Create","AdminEventPosts", new{area="Admin"}, FormMethod.Post, new { enctype="multipart/form-data", id="createForm" }))
     {
         @Html.AntiForgeryToken()
         <div class="ca-create-layout">
@@ -54,8 +62,18 @@
                             </div>
                             <div class="ca-form-group">
                                 <label class="ce-form-label">Viện tổ chức <span class="ca-required">*</span></label>
-                                @Html.DropDownListFor(m => m.MaVien, vienList ?? new List<SelectListItem>(),
-                                    "— Chọn viện —", new { @class = "ce-form-select" })
+                                @if (isVienLocked)
+                                {
+                                    @Html.DropDownListFor(m => m.MaVien, vienList ?? new List<SelectListItem>(),
+                                        new { @class = "ce-form-select", @disabled = "disabled" })
+                                    @Html.HiddenFor(m => m.MaVien)
+                                    <div class="text-muted" style="font-size:.76rem; margin-top:.35rem">@vienLockMessage</div>
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.MaVien, vienList ?? new List<SelectListItem>(),
+                                        "— Chọn viện —", new { @class = "ce-form-select" })
+                                }
                                 @Html.ValidationMessageFor(m => m.MaVien, "", new { @class = "text-danger", style = "font-size:.76rem" })
                             </div>
                         </div>
@@ -74,7 +92,8 @@
                             <div class="ca-form-group">
                                 <label class="ce-form-label">Ngày bắt đầu <span class="ca-required">*</span></label>
                                 @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-dd}",
-                                    new { @class = "ce-form-control", type = "date" })
+                                    new { @class = "ce-form-control", type = "date", min = minStartDate, id = "ngayBatDauInput" })
+                                <div class="text-muted" style="font-size:.76rem">Không được sớm hơn ngày hiện tại quá 20 ngày.</div>
                                 @Html.ValidationMessageFor(m => m.NgayBatDau, "", new { @class = "text-danger", style = "font-size:.76rem" })
                             </div>
                             <div class="ca-form-group">
@@ -242,6 +261,42 @@
             </div>
         </div>
     }
+</div>
+
+<div class="ce-modal-overlay" id="modal-create-help">
+    <div class="ce-modal-box" style="max-width: 620px;">
+        <div class="ce-modal-header">
+            <h5>
+                <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px">help</span>
+                Hướng dẫn tạo sự kiện
+            </h5>
+            <button class="ce-modal-close" type="button" id="btnCloseCreateHelp">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="ce-modal-body" style="font-size:.9rem;color:var(--text-muted);line-height:1.7">
+            <p style="margin:0 0 .75rem 0"><strong style="color:var(--text)">Các trường bắt buộc không được để trống:</strong></p>
+            <ul style="margin:0 0 1rem 1rem;padding:0">
+                <li>Tên sự kiện</li>
+                <li>Danh mục</li>
+                <li>Viện tổ chức</li>
+                <li>Địa điểm tổ chức</li>
+                <li>Ngày bắt đầu</li>
+                <li>Số lượng tối đa (ít nhất 10)</li>
+                <li>Ảnh bìa (JPG/PNG, tối đa 5MB)</li>
+            </ul>
+            <p style="margin:0 0 .5rem 0"><strong style="color:var(--text)">Quy tắc xét ngày:</strong></p>
+            <ul style="margin:0 0 1rem 1rem;padding:0">
+                <li>Ngày bắt đầu không được nhỏ hơn ngày hiện tại quá 20 ngày.</li>
+                <li>Ngày kết thúc (nếu có) phải bằng hoặc sau ngày bắt đầu.</li>
+                <li>Hạn đăng ký (nếu có) phải trước ngày bắt đầu.</li>
+            </ul>
+            <p style="margin:0"><strong style="color:var(--text)">Phân quyền viện:</strong> tài khoản quyền 2 chỉ được tạo sự kiện cho viện gắn với tài khoản; quyền khác có thể chọn viện từ danh sách DB.</p>
+        </div>
+        <div class="ce-modal-footer">
+            <button type="button" class="ce-btn ce-btn-primary" id="btnOkCreateHelp">Đã hiểu</button>
+        </div>
+    </div>
 </div>
 
 @section scripts {

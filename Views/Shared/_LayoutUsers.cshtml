@@ -72,7 +72,7 @@
             </button>
             @if (!isGuestUser)
             {
-                <button class="ce-navbar__icon-btn d-none d-sm-flex" title="Thông báo"
+                <button class="ce-navbar__icon-btn" title="Thông báo"
                         onclick="ceOpenModal('modal-notif')">
                     <span class="material-symbols-outlined">notifications</span>
                     <span class="ce-notif-dot"></span>
@@ -93,6 +93,8 @@
                         @if (!isGuestUser)
                         {
                             <li><a class="dropdown-item py-2" href="@Url.Action("Profile", "Home")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">person</span> Hồ sơ cá nhân</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2" href="@Url.Action("Settings", "Home")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">settings</span> Cài đặt</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item py-2" href="@Url.Action("Registrations", "Registration")" style="color: var(--text)"><span class="material-symbols-outlined v-align-middle me-2" style="font-size:20px; color: var(--text);">assignment_turned_in</span> Tổng quan đăng ký</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -133,6 +135,9 @@
                 </a>
                 @if (!isGuestUser)
                 {
+                    <a href="@Url.Action("Settings", "Home")" class="@(ViewBag.ActivePage == "settings" ? "active" : "")">
+                        <span class="material-symbols-outlined">settings</span> Cài đặt
+                    </a>
                     <a href="@Url.Action("Events", "Events")" class="@(ViewBag.ActivePage == "events" ? "active" : "")">
                         <span class="material-symbols-outlined">event</span> Sự kiện
                     </a>
@@ -147,7 +152,39 @@
         </div>
     </div>
 
-    <!-- Mobile Menu và Notification Modal giữ nguyên như cũ của bạn -->
+    @if (!isGuestUser)
+    {
+        <div class="ce-modal-overlay" id="modal-notif">
+            <div class="ce-modal-box">
+                <div class="ce-modal-header">
+                    <h5 class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-size:20px;color:var(--primary)">notifications</span>
+                        Thông báo
+                    </h5>
+                    <button class="ce-modal-close" type="button" onclick="ceCloseModal('modal-notif')">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div class="ce-modal-body pt-3">
+                    <div class="d-flex justify-content-end gap-2 mb-3">
+                        <button id="ce-notif-read-all" type="button" class="ce-btn ce-btn-ghost ce-btn-sm">
+                            <span class="material-symbols-outlined">drafts</span>
+                            Đọc tất cả
+                        </button>
+                        <button id="ce-notif-clear-all" type="button" class="ce-btn ce-btn-danger ce-btn-sm">
+                            <span class="material-symbols-outlined">delete</span>
+                            Xóa tất cả
+                        </button>
+                    </div>
+                    <div id="ce-notif-list" class="d-flex flex-column gap-2"></div>
+                </div>
+                <div class="ce-modal-footer">
+                    <button type="button" class="ce-btn ce-btn-primary" onclick="ceCloseModal('modal-notif')">Đóng</button>
+                </div>
+            </div>
+        </div>
+    }
+
     @* ── PAGE WRAPPER ── *@
     <div class="ce-page-wrapper">
         @if (isGuestUser)

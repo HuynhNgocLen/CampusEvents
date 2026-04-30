@@ -64,7 +64,22 @@ thumb.style.transform = chk.checked ? 'translateX(18px)' : 'translateX(0)';
 
 const createForm = document.getElementById('createForm');
 if (createForm) {
-    createForm.addEventListener('submit', function () {
+    createForm.addEventListener('submit', function (e) {
+        const ngayBatDauInput = document.getElementById('ngayBatDauInput');
+        if (ngayBatDauInput && ngayBatDauInput.value) {
+            const selectedDate = new Date(ngayBatDauInput.value + 'T00:00:00');
+            const minDate = new Date();
+            minDate.setHours(0, 0, 0, 0);
+            minDate.setDate(minDate.getDate() - 20);
+
+            if (selectedDate < minDate) {
+                e.preventDefault();
+                window.alert('Ngày bắt đầu không được nhỏ hơn ngày hiện tại quá 20 ngày.');
+                ngayBatDauInput.focus();
+                return;
+            }
+        }
+
         if (detailEditor) {
             document.querySelector('#richContent').value = detailEditor.getData();
         }
@@ -77,5 +92,27 @@ if (cancelBtn) {
         e.preventDefault();
         const ok = window.confirm('Bạn có chắc muốn hủy?\nCác thay đổi chưa lưu sẽ bị mất.');
         if (ok) window.location.href = cancelBtn.getAttribute('href');
+    });
+}
+
+const createHelpModal = document.getElementById('modal-create-help');
+const btnCreateHelp = document.getElementById('btnCreateHelp');
+const btnCloseCreateHelp = document.getElementById('btnCloseCreateHelp');
+const btnOkCreateHelp = document.getElementById('btnOkCreateHelp');
+
+function openCreateHelpModal() {
+    if (createHelpModal) createHelpModal.classList.add('open');
+}
+
+function closeCreateHelpModal() {
+    if (createHelpModal) createHelpModal.classList.remove('open');
+}
+
+if (btnCreateHelp) btnCreateHelp.addEventListener('click', openCreateHelpModal);
+if (btnCloseCreateHelp) btnCloseCreateHelp.addEventListener('click', closeCreateHelpModal);
+if (btnOkCreateHelp) btnOkCreateHelp.addEventListener('click', closeCreateHelpModal);
+if (createHelpModal) {
+    createHelpModal.addEventListener('click', function (e) {
+        if (e.target === createHelpModal) closeCreateHelpModal();
     });
 }

@@ -1,0 +1,71 @@
+@* ── CTA BANNER ── *@
+<section class="ce-cta-banner">
+    <div class="container">
+        <div class="ce-cta-inner">
+            <div class="ce-cta-badge">
+                <span class="material-symbols-outlined" style="font-size:14px">smartphone</span>
+                Mobile · Desktop · PWA
+            </div>
+            <h2 class="ce-cta-title">Sẵn sàng tham gia sự kiện đầu tiên?</h2>
+            <p class="ce-cta-sub">
+                Tạo tài khoản miễn phí với mã sinh viên và bắt đầu khám phá hàng trăm sự kiện ngay hôm nay.
+            </p>
+            <div class="ce-cta-btns">
+                <a href="@Url.Action("Login","Account")" class="ce-btn ce-btn-dark ce-btn-lg">
+                    Đăng ký ngay →
+                </a>
+                <a href="#" class="ce-btn ce-btn-outline-light ce-btn-lg">Xem demo</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* ── FOOTER ── *@
+<footer class="ce-footer">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div style="width:36px;height:36px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center">
+                        <span class="material-symbols-outlined" style="color:#fff;font-size:20px">school</span>
+                    </div>
+                    <span style="font-size:1.05rem;font-weight:800;color:var(--text)">Campus<span style="color:var(--primary)">Events</span></span>
+                </div>
+                <p style="font-size:.83rem;color:var(--text-muted);max-width:240px">
+                    Nền tảng kết nối sinh viên với hàng trăm sự kiện thú vị tại trường.
+                </p>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="ce-footer__heading">Sản phẩm</div>
+                <ul class="ce-footer__list">
+                    <li><a href="@Url.Action("Events","Events")">Sự kiện</a></li>
+                    <li><a href="#">Câu lạc bộ</a></li>
+                    <li><a href="#">Workshop</a></li>
+                    <li><a href="#">Lịch của tôi</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="ce-footer__heading">Hỗ trợ</div>
+                <ul class="ce-footer__list">
+                    <li><a href="#">Trung tâm trợ giúp</a></li>
+                    <li><a href="#">Hướng dẫn check-in</a></li>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">Báo cáo lỗi</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="ce-footer__heading">Trường</div>
+                <ul class="ce-footer__list">
+                    <li><a href="#">Về CampusEvents</a></li>
+                    <li><a href="#">Đối tác CLB</a></li>
+                    <li><a href="#">Quyền riêng tư</a></li>
+                    <li><a href="#">Điều khoản</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="ce-footer__bottom">
+            <span>© 2026 Campus Events. Trường Đại học ABC.</span>
+            <span>Made with <span style="color:#ef4444">♥</span> for students</span>
+        </div>
+    </div>
+</footer>

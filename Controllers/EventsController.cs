@@ -54,7 +54,7 @@ namespace shcool_event_management.Controllers
                 .Where(e => e.IsHidden == false)
                 .Where(e =>
                     e.TrangThai == "Sắp diễn ra"
-                    || e.TrangThai == "Đang diễn ra"
+                    || e.TrangThai == "Đang mở đăng ký"
                     || (e.TrangThai == "Đã kết thúc"
                         && (e.NgayKetThuc.HasValue
                             ? e.NgayKetThuc.Value >= threeDaysAgo
@@ -149,6 +149,7 @@ namespace shcool_event_management.Controllers
             if (id == null) return RedirectToAction("Events");
 
             string currentStudentId = GetCurrentStudentId();
+            ViewBag.CurrentStudentId = currentStudentId;
             ViewBag.SinhVien = db.SinhViens.Include(s => s.Vien).FirstOrDefault(s => s.ID == currentStudentId);
 
             var tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == id);

@@ -121,6 +121,109 @@ function ceInitReveal() {
     document.querySelectorAll('.ce-reveal').forEach(function (el) { obs.observe(el); });
 }
 
+function ceInitNotificationPopup() {
+    var listEl = document.getElementById('ce-notif-list');
+    if (!listEl) return;
+
+    var btnReadAll = document.getElementById('ce-notif-read-all');
+    var btnClearAll = document.getElementById('ce-notif-clear-all');
+    var dot = document.querySelector('.ce-notif-dot');
+    var KEY = 'ce-user-notifications-v1';
+
+    function seedData() {
+        return [
+            { id: 'n1', title: 'Workshop UI/UX', message: 'Sự kiện diễn ra vào 08:00 ngày mai.', time: 'Vừa xong', read: false },
+            { id: 'n2', title: 'Đăng ký thành công', message: 'Bạn đã đăng ký Talkshow Công nghệ 2026.', time: '10 phút trước', read: false },
+            { id: 'n3', title: 'Nhắc lịch', message: 'Bạn có sự kiện trong tuần này.', time: 'Hôm qua', read: true }
+        ];
+    }
+
+    function loadItems() {
+        try {
+            var raw = localStorage.getItem(KEY);
+            if (!raw) return seedData();
+            var parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : seedData();
+        } catch (e) {
+            return seedData();
+        }
+    }
+
+    function saveItems(items) {
+        localStorage.setItem(KEY, JSON.stringify(items));
+    }
+
+    function hasUnread(items) {
+        return items.some(function (x) { return !x.read; });
+    }
+
+    function updateDot(items) {
+        if (!dot) return;
+        dot.style.display = hasUnread(items) ? 'inline-flex' : 'none';
+    }
+
+    function escapeHtml(text) {
+        return String(text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function render() {
+        var items = loadItems();
+        updateDot(items);
+        if (!items.length) {
+            listEl.innerHTML = '<div class="text-muted text-center py-4">Không có thông báo nào.</div>';
+            return;
+        }
+
+        listEl.innerHTML = items.map(function (item) {
+            return '<div class="border rounded-3 p-3 ' + (item.read ? '' : 'bg-primary-subtle') + '" data-id="' + escapeHtml(item.id) + '">'
+                + '<div class="d-flex justify-content-between align-items-start gap-2">'
+                + '<div>'
+                + '<div class="fw-semibold">' + escapeHtml(item.title) + '</div>'
+                + '<div class="text-muted small mt-1">' + escapeHtml(item.message) + '</div>'
+                + '</div>'
+                + (!item.read ? '<span class="badge text-bg-primary">Mới</span>' : '')
+                + '</div>'
+                + '<div class="small text-muted mt-2">' + escapeHtml(item.time) + '</div>'
+                + '</div>';
+        }).join('');
+    }
+
+    listEl.addEventListener('click', function (e) {
+        var card = e.target.closest('[data-id]');
+        if (!card) return;
+        var id = card.getAttribute('data-id');
+        var items = loadItems();
+        var item = items.find(function (x) { return x.id === id; });
+        if (!item || item.read) return;
+        item.read = true;
+        saveItems(items);
+        render();
+    });
+
+    if (btnReadAll) {
+        btnReadAll.addEventListener('click', function () {
+            var items = loadItems();
+            items.forEach(function (x) { x.read = true; });
+            saveItems(items);
+            render();
+        });
+    }
+
+    if (btnClearAll) {
+        btnClearAll.addEventListener('click', function () {
+            saveItems([]);
+            render();
+        });
+    }
+
+    render();
+}
+
 /* ── Counter animation ────────────────────────────────────────── */
 function ceCountUp(el, target, dur) {
     if (!el) return;
@@ -151,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ceInitTabs();
     ceInitChips();
     ceInitReveal();
+    ceInitNotificationPopup();
 
     // Theme toggle buttons
     document.querySelectorAll('[data-action="toggle-theme"]').forEach(function (btn) {
