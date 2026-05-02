@@ -1,0 +1,230 @@
+@using shcool_event_management.Areas.Admin.Models
+@{
+    ViewBag.Title = "Nhật ký & đăng nhập";
+    ViewBag.ActiveMenu = "activity-log";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var activityRows = ViewBag.ActivityRows as List<QtvHanhDongLogRow> ?? new List<QtvHanhDongLogRow>();
+    var loginRows = ViewBag.LoginRows as List<AdminDangNhapLogRow> ?? new List<AdminDangNhapLogRow>();
+    var tableMissing = ViewBag.LogTableMissing as bool? ?? false;
+    var page = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    var actCount = ViewBag.ActivityCount as int? ?? 0;
+    var loginCount = ViewBag.LoginCount as int? ?? 0;
+    var roleFilter = ViewBag.RoleFilter as int?;
+    var tenDnFilter = ViewBag.TenDnFilter as string;
+    var dayFilter = ViewBag.DayFilter as int?;
+    var filterableAccounts = ViewBag.FilterableAccounts as List<string> ?? new List<string>();
+    var canFilterRole0 = ViewBag.CanFilterRole0 as bool? ?? false;
+
+    Func<string, string> actionLabel = (controllerAction) =>
+    {
+        if (string.IsNullOrWhiteSpace(controllerAction)) return "Thao tác hệ thống";
+        var key = controllerAction.Trim().ToLowerInvariant();
+        if (key.Contains("adminstats / exportreport")) return "Thống kê / Xuất Excel";
+        if (key.Contains("adminstats / adminstats")) return "Thống kê";
+        if (key.Contains("adminevents / edit")) return "Cập nhật sự kiện";
+        if (key.Contains("adminevents / delete")) return "Xóa sự kiện";
+        if (key.Contains("adminevents / manage")) return "Quản lí sự kiện";
+        if (key.Contains("adminevents / index")) return "Sự kiện";
+        if (key.Contains("admineventposts / create")) return "Thêm bài/sự kiện";
+        if (key.Contains("adminevents / registrationdetail")) return "Xem danh sách đăng ký";
+        if (key.Contains("adminevents / exportexcel")) return "Xuất danh sách sinh viên";
+        if (key.Contains("adminadministrators / create")) return "Thêm quản trị viên";
+        if (key.Contains("adminadministrators / updaterole")) return "Cập nhật quyền quản trị viên";
+        if (key.Contains("adminadministrators / togglelock")) return "Khóa/Mở khóa quản trị viên";
+        if (key.Contains("adminadministrators / delete")) return "Xóa quản trị viên";
+        if (key.Contains("adminsettings / index")) return "Cài đặt";
+        if (key.Contains("adminactivitylog / index")) return "Nhật ký & đăng nhập";
+        return controllerAction;
+    };
+
+    Func<string, string> shortMethod = (method) =>
+    {
+        if (string.IsNullOrWhiteSpace(method)) return "-";
+        var m = method.Trim().ToUpperInvariant();
+        if (m == "POST") return "Cập nhật";
+        if (m == "PUT" || m == "PATCH") return "Chỉnh sửa";
+        if (m == "DELETE") return "Xóa";
+        if (m == "GET") return "Xem/Xuất";
+        return m;
+    };
+
+    Func<string, string> roleText = (detail) =>
+    {
+        if (string.IsNullOrWhiteSpace(detail) || !detail.StartsWith("[")) return "-";
+        var end = detail.IndexOf(']');
+        if (end <= 1) return "-";
+        var actor = detail.Substring(1, end - 1);
+        var idx = actor.IndexOf("quyền", StringComparison.OrdinalIgnoreCase);
+        if (idx < 0) return "-";
+        return actor.Substring(idx).Trim();
+    };
+}
+
+<section class="ca-page">
+    <div class="ca-page-header">
+        <div>
+            <h1 class="ca-page-title">Nhật ký & đăng nhập</h1>
+            <p class="ca-page-sub">Dành cho quyền 2: toàn bộ nhật ký thao tác (kể cả QTV quyền 1) và lịch sử đăng nhập — IP, thiết bị (User-Agent), thời gian.</p>
+        </div>
+    </div>
+
+    @if (tableMissing)
+    {
+        <div class="alert alert-warning border-0 rounded-3 mb-4" role="alert">
+            Chưa tạo đủ bảng trên SQL Server. Chạy các script:
+            <code>Scripts/QTVHanhDongLog.sql</code> và <code>Scripts/QTVAdminDangNhapLog.sql</code> trên database <code>school_event_management</code>.
+        </div>
+    }
+
+    <div class="ca-card mb-4">
+        <div class="ca-card__body">
+            <form method="get" action="@Url.Action("Index", "AdminActivityLog", new { area = "Admin" })" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Lọc theo quyền</label>
+                    <select class="form-select" name="role">
+                        <option value="">-- Tất cả quyền --</option>
+                        @if (canFilterRole0)
+                        {
+                            <option value="0" @(roleFilter == 0 ? "selected" : "")>0</option>
+                        }
+                        <option value="1" @(roleFilter == 1 ? "selected" : "")>1</option>
+                        <option value="2" @(roleFilter == 2 ? "selected" : "")>2</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Lọc theo tài khoản</label>
+                    <select class="form-select" name="tenDn">
+                        <option value="">-- Tất cả tài khoản trong phạm vi --</option>
+                        @foreach (var acc in filterableAccounts)
+                        {
+                            <option value="@acc" @(string.Equals(acc, tenDnFilter, StringComparison.OrdinalIgnoreCase) ? "selected" : "")>@acc</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Thời gian</label>
+                    <select class="form-select" name="days">
+                        <option value="">-- Tất cả thời gian --</option>
+                        <option value="1" @(dayFilter == 1 ? "selected" : "")>Hôm nay</option>
+                        <option value="7" @(dayFilter == 7 ? "selected" : "")>7 ngày gần nhất</option>
+                        <option value="30" @(dayFilter == 30 ? "selected" : "")>30 ngày gần nhất</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="ce-btn ce-btn-primary w-100">Lọc</button>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="@Url.Action("Index", "AdminActivityLog", new { area = "Admin" })" class="ce-btn ce-btn-outline w-100">Bỏ lọc</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ca-card mb-4">
+        <div class="ca-card__header d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="ca-card__title">Lịch sử đăng nhập (@loginCount)</div>
+            @if (totalPages > 1)
+            {
+                <div class="d-flex align-items-center gap-2 small">
+                    @if (page > 1)
+                    {
+                        <a class="ce-btn ce-btn-ghost ce-btn-sm" href="@Url.Action("Index", new { area = "Admin", page = page - 1, role = roleFilter, tenDn = tenDnFilter, days = dayFilter })">Trước</a>
+                    }
+                    <span>Trang @page / @totalPages</span>
+                    @if (page < totalPages)
+                    {
+                        <a class="ce-btn ce-btn-ghost ce-btn-sm" href="@Url.Action("Index", new { area = "Admin", page = page + 1, role = roleFilter, tenDn = tenDnFilter, days = dayFilter })">Sau</a>
+                    }
+                </div>
+            }
+        </div>
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Tài khoản</th>
+                        <th>Mã QTV</th>
+                        <th>Quyền</th>
+                        <th>IP</th>
+                        <th>Thiết bị / trình duyệt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!loginRows.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-muted text-center py-4">Chưa có lượt đăng nhập được ghi nhận.</td>
+                        </tr>
+                    }
+                    @foreach (var r in loginRows)
+                    {
+                        <tr>
+                            <td>@r.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@r.TenDN</td>
+                            <td>@r.MaQTV</td>
+                            <td>@(r.Quyen?.ToString() ?? "-")</td>
+                            <td>@(string.Equals(r.DiaChiIP, "::1", StringComparison.OrdinalIgnoreCase) ? "127.0.0.1 (local)" : r.DiaChiIP)</td>
+                            <td style="max-width:360px;word-break:break-word;font-size:.85rem" title="@r.ThietBi">
+                                @(string.IsNullOrWhiteSpace(r.ThietBi)
+                                    ? "-"
+                                    : (r.ThietBi.Length > 90 ? r.ThietBi.Substring(0, 90) + "..." : r.ThietBi))
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="ca-card">
+        <div class="ca-card__header d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="ca-card__title">Nhật ký hành động hệ thống (@actCount)</div>
+            @if (totalPages > 1)
+            {
+                <div class="d-flex align-items-center gap-2 small text-muted">Cùng phân trang với bảng trên</div>
+            }
+        </div>
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Tài khoản</th>
+                        <th>Mã QTV</th>
+                        <th>Loại thao tác</th>
+                        <th>Hành động</th>
+                        <th>Quyền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!activityRows.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-muted text-center py-4">Chưa có nhật ký hành động.</td>
+                        </tr>
+                    }
+                    @foreach (var r in activityRows)
+                    {
+                        <tr>
+                            <td>@r.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@r.TenDN</td>
+                            <td>@r.MaQTV</td>
+                            <td>
+                                <span class="badge text-bg-light border">@shortMethod(r.PhuongThuc)</span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@actionLabel((r.ControllerName ?? "-") + " / " + (r.ActionName ?? "-"))</div>
+                            </td>
+                            <td style="max-width:180px;font-size:.9rem">
+                                @roleText(r.MoTa)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

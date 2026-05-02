@@ -1,5 +1,6 @@
 using school_event_management.Filters;
 using school_event_management.Models;
+using shcool_event_management.Infrastructure.Constants;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -75,9 +76,9 @@ namespace school_event_management.Controllers
                 .Include(e => e.Vien)
                 .Where(e => e.IsHidden == false)
                 .Where(e =>
-                    e.TrangThai == "Sắp diễn ra"
-                    || e.TrangThai == "Đang diễn ra"
-                    || (e.TrangThai == "Đã kết thúc"
+                    e.TrangThai == EventTrangThai.SapDienRa
+                    || e.TrangThai == EventTrangThai.DangDienRa
+                    || (e.TrangThai == EventTrangThai.DaKetThuc
                         && (e.NgayKetThuc.HasValue
                             ? e.NgayKetThuc.Value >= threeDaysAgo
                             : e.NgayBatDau >= threeDaysAgo))
@@ -86,6 +87,87 @@ namespace school_event_management.Controllers
                 .ToList();
 
             return View(events);
+        }
+
+        [RestrictGuest]
+        [HttpGet]
+        public ActionResult Notifications()
+        {
+            string studentId = GetCurrentStudentId();
+            if (string.IsNullOrEmpty(studentId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var now = DateTime.Now;
+            var inThreeDays = now.AddDays(3);
+
+            var upcomingRegistrations = db.DangKySuKiens
+                .Include(d => d.EVENT)
+                .Where(d => d.IDSinhVien == studentId
+                            && d.EVENT != null
+                            && d.EVENT.IsHidden == false
+                            && d.EVENT.NgayBatDau >= now)
+                .OrderBy(d => d.EVENT.NgayBatDau)
+                .Take(8)
+                .ToList();
+
+            var completedRecently = db.DangKySuKiens
+                .Include(d => d.EVENT)
+                .Where(d => d.IDSinhVien == studentId
+                            && d.EVENT != null
+                            && d.EVENT.IsHidden == false
+                            && d.TrangThai == "Đã hoàn thành")
+                .OrderByDescending(d => d.EVENT.NgayBatDau)
+                .Take(5)
+                .ToList();
+
+            ViewBag.Notifications = upcomingRegistrations.Select(d => new
+            {
+                Title = d.EVENT.TenEvent,
+                Message = d.EVENT.NgayBatDau <= inThreeDays
+                    ? "Sắp diễn ra trong 3 ngày tới."
+                    : "Bạn đã đăng ký sự kiện này.",
+                TimeLabel = d.EVENT.NgayBatDau.ToString("dd/MM/yyyy HH:mm"),
+                IsUrgent = d.EVENT.NgayBatDau <= inThreeDays
+            }).ToList();
+
+            ViewBag.CompletedNotifications = completedRecently.Select(d => new
+            {
+                Title = d.EVENT.TenEvent,
+                Message = "Bạn đã hoàn thành sự kiện và được ghi nhận.",
+                TimeLabel = d.EVENT.NgayBatDau.ToString("dd/MM/yyyy"),
+                IsUrgent = false
+            }).ToList();
+
+            ViewBag.Title = "Thông báo";
+            ViewBag.ActivePage = "notifications";
+            return View();
+        }
+
+        [RestrictGuest]
+        [HttpGet]
+        public ActionResult Settings()
+        {
+            ViewBag.ReceiveInApp = Session["ReceiveInApp"] as bool? ?? true;
+            ViewBag.ReceiveEmail = Session["ReceiveEmail"] as bool? ?? true;
+            ViewBag.ReceiveReminder = Session["ReceiveReminder"] as bool? ?? true;
+            ViewBag.Title = "Cài đặt";
+            ViewBag.ActivePage = "settings";
+            return View();
+        }
+
+        [RestrictGuest]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateSettings(bool? receiveInApp, bool? receiveEmail, bool? receiveReminder)
+        {
+            Session["ReceiveInApp"] = receiveInApp.HasValue;
+            Session["ReceiveEmail"] = receiveEmail.HasValue;
+            Session["ReceiveReminder"] = receiveReminder.HasValue;
+
+            TempData["Success"] = "Đã cập nhật cài đặt thông báo.";
+            return RedirectToAction("Settings");
         }
 
         protected override void Dispose(bool disposing)
@@ -121,24 +203,32 @@ namespace school_event_management.Controllers
             int currentSemester = (currentMonth >= 1 && currentMonth <= 5) ? 1 : 2;
             int namHocBatDau = (currentMonth >= 1 && currentMonth <= 5) ? currentYear - 1 : currentYear;
 
-            var lichSuThamGia = db.DangKySuKiens
+            var daHoanThanh = db.DangKySuKiens.Where(d => d.IDSinhVien == targetId && d.TrangThai == "Đã hoàn thành");
+
+            // HK1 năm học (nam–nam+1): tháng 9–12 năm nam + tháng 1–5 năm nam+1 (không chỉ tháng 1–5 của năm hiện tại).
+            IQueryable<DangKySuKien> trongHocKyHienTai(IQueryable<DangKySuKien> q)
+            {
+                if (currentSemester == 1)
+                {
+                    int cy = currentYear;
+                    return q.Where(d =>
+                        (d.EVENT.NgayBatDau.Year == cy && d.EVENT.NgayBatDau.Month >= 1 && d.EVENT.NgayBatDau.Month <= 5)
+                        || (d.EVENT.NgayBatDau.Year == cy - 1 && d.EVENT.NgayBatDau.Month >= 9 && d.EVENT.NgayBatDau.Month <= 12));
+                }
+
+                return q.Where(d => d.EVENT.NgayBatDau.Year == currentYear
+                    && d.EVENT.NgayBatDau.Month >= 6 && d.EVENT.NgayBatDau.Month <= 12);
+            }
+
+            var lichSuThamGia = trongHocKyHienTai(daHoanThanh)
                 .Include(d => d.EVENT)
-                .Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành")
                 .OrderByDescending(d => d.EVENT.NgayBatDau)
                 .ToList();
 
             ViewBag.DaThamDu = lichSuThamGia;
             ViewBag.TongHoanThanh = lichSuThamGia.Count;
 
-            var queryDRL = db.DangKySuKiens.Where(d => d.IDSinhVien == targetId && d.TrangThai.Trim() == "Đã hoàn thành");
-            if (currentSemester == 1)
-            {
-                queryDRL = queryDRL.Where(d => d.EVENT.NgayBatDau.Year == currentYear && d.EVENT.NgayBatDau.Month >= 1 && d.EVENT.NgayBatDau.Month <= 5);
-            }
-            else
-            {
-                queryDRL = queryDRL.Where(d => d.EVENT.NgayBatDau.Year == currentYear && d.EVENT.NgayBatDau.Month >= 6 && d.EVENT.NgayBatDau.Month <= 12);
-            }
+            var queryDRL = trongHocKyHienTai(daHoanThanh);
 
             ViewBag.DRL = queryDRL.Select(d => (int?)d.EVENT.DRL).Sum() ?? 0;
             ViewBag.HocKy = currentSemester;

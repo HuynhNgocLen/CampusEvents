@@ -9,16 +9,17 @@
     string search = ViewBag.Search as string;
     string status = ViewBag.Status as string;
     string cat    = ViewBag.Cat as string;
+    string vien   = ViewBag.Vien as string;
     int? semester = ViewBag.Semester as int?;
     int? year     = ViewBag.Year as int?;
     var danhMucs  = ViewBag.DanhMucs as List<shcool_event_management.Models.DanhMuc>;
 
     Func<int, string> pageUrl = p => Url.Action("Manage", "AdminEvents",
-        new { area = "Admin", page = p, search, status, cat, semester, year });
+        new { area = "Admin", page = p, search, status, cat, vien, semester, year });
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/campus-event-manage.css?v=2")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/app/campus-event-manage.css?v=3")" rel="stylesheet" />
 }
 
 <div class="ca-content">
@@ -113,5 +114,5 @@
         toggleHiddenUrl: '@Url.Action("ToggleHidden","AdminEvents",new{area="Admin"})'
     };
 </script>
-<script src="@Url.Content("~/Scripts/A-event-manage.js")"></script>
+<script src="@Url.Content("~/Scripts/app/A-event-manage.js")"></script>
 }

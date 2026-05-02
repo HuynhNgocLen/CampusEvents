@@ -1,0 +1,310 @@
+/* ============================================================
+   Content/campus-vibrant.css
+   Vibrant redesign overrides (global)
+   ============================================================ */
+
+:root {
+    --primary: #137fec;
+    --primary-dark: #0e65c0;
+    --primary-light: #e8f3fd;
+    --accent: #38bdf8;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg: #ffffff;
+    --surface: rgba(255, 255, 255, 0.92);
+    --surface-2: #f0f7ff;
+    --border: #dbeafe;
+    --text: #0f2a43;
+    --text-muted: #5c7e9d;
+    --text-light: #8aa8c2;
+    --shadow-xs: 0 6px 16px rgba(19, 127, 236, 0.08);
+    --shadow-sm: 0 12px 26px rgba(19, 127, 236, 0.12);
+    --shadow-md: 0 18px 34px rgba(19, 127, 236, 0.16);
+    --shadow-lg: 0 24px 48px rgba(14, 101, 192, 0.2);
+}
+
+[data-theme="dark"] {
+    --bg: #0b1a2c;
+    --surface: rgba(20, 37, 58, 0.92);
+    --surface-2: #12263d;
+    --border: #234364;
+    --text: #e8f3ff;
+    --text-muted: #9dc0df;
+    --text-light: #7292b4;
+    --primary-light: rgba(19, 127, 236, 0.2);
+}
+
+body {
+    background: var(--bg);
+    background-attachment: fixed;
+}
+
+.ce-navbar {
+    background: color-mix(in srgb, var(--surface), #ffffff 16%);
+    border-bottom-color: color-mix(in srgb, var(--primary), transparent 78%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.ce-navbar__logo,
+.ce-upcoming__icon {
+    background: linear-gradient(135deg, #137fec 0%, #38bdf8 100%);
+}
+
+.ce-navbar__nav a:hover,
+.ce-navbar__nav a.active,
+.ce-mobile-menu a:hover,
+.ce-mobile-menu a.active {
+    background: linear-gradient(135deg, #e8f3fd 0%, #e0f2fe 100%);
+    color: #137fec;
+}
+
+[data-theme="dark"] .ce-navbar__nav a:hover,
+[data-theme="dark"] .ce-navbar__nav a.active,
+[data-theme="dark"] .ce-mobile-menu a:hover,
+[data-theme="dark"] .ce-mobile-menu a.active {
+    background: rgba(19, 127, 236, 0.2);
+    color: #93c5fd;
+}
+
+.ce-card,
+.ce-event-card,
+.ce-auth-card,
+.ce-sticky-reg,
+.ce-filter-sidebar,
+.ce-reg-item,
+.ce-stat-card,
+.ca-card,
+.kpi-card,
+.em-card,
+.em-toolbar,
+.ca-table-wrap {
+    border-color: color-mix(in srgb, var(--primary), transparent 80%);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.ce-event-card:hover,
+.ce-reg-item:hover,
+.em-card:hover {
+    border-color: color-mix(in srgb, var(--primary), transparent 58%);
+}
+
+.ce-btn-primary {
+    background: linear-gradient(135deg, #137fec 0%, #38bdf8 100%);
+    box-shadow: 0 10px 24px rgba(19, 127, 236, 0.32);
+}
+
+.ce-btn-primary:hover {
+    background: linear-gradient(135deg, #0e65c0 0%, #0ea5e9 100%);
+}
+
+.ce-btn-outline {
+    border-color: color-mix(in srgb, var(--primary), transparent 15%);
+}
+
+.ce-hero,
+.ce-profile-banner,
+.ce-auth-hero,
+.ce-event-banner {
+    background: linear-gradient(125deg, #0e65c0 0%, #137fec 42%, #38bdf8 75%, #7dd3fc 100%);
+}
+
+.ce-hero::after,
+.ce-profile-banner::before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    filter: blur(6px);
+}
+
+.ce-hero::after {
+    right: -80px;
+    top: -120px;
+}
+
+.ce-profile-banner::before {
+    left: -120px;
+    bottom: -120px;
+}
+
+.ce-hero__search input,
+.ce-form-control,
+.ce-form-select {
+    border-color: color-mix(in srgb, var(--primary), transparent 78%);
+}
+
+.ce-hero__search-btn {
+    background: linear-gradient(135deg, #137fec 0%, #38bdf8 100%);
+}
+
+.ce-section-title::before {
+    background: linear-gradient(180deg, #137fec 0%, #38bdf8 100%);
+}
+
+.ce-badge-primary {
+    background: linear-gradient(135deg, #e8f3fd 0%, #e0f2fe 100%);
+    color: #137fec;
+}
+
+.ce-cap-bar__fill {
+    background: linear-gradient(90deg, #137fec 0%, #38bdf8 65%, #7dd3fc 100%);
+}
+
+.ce-pagination li a {
+    border-color: var(--border);
+    color: var(--text-muted);
+}
+
+.ce-pagination li.active a {
+    background: linear-gradient(135deg, #137fec 0%, #38bdf8 100%);
+    border-color: transparent;
+}
+
+/* Event card heart button: clearer in light/dark */
+.ce-event-card__save {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(19, 127, 236, 0.3);
+    color: #5c7e9d;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.ce-event-card__save:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #ef4444;
+}
+
+.ce-event-card__save.saved {
+    background: rgba(254, 226, 226, 0.94);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+}
+
+.ce-event-card__save:focus-visible {
+    outline: 2px solid rgba(19, 127, 236, 0.55);
+    outline-offset: 2px;
+}
+
+[data-theme="dark"] .ce-event-card__save {
+    background: rgba(12, 27, 45, 0.72);
+    border: 1px solid rgba(147, 197, 253, 0.35);
+    color: #bfdbfe;
+}
+
+[data-theme="dark"] .ce-event-card__save:hover {
+    background: rgba(12, 27, 45, 0.92);
+    border-color: rgba(248, 113, 113, 0.45);
+    color: #fda4af;
+}
+
+[data-theme="dark"] .ce-event-card__save.saved {
+    background: rgba(69, 20, 28, 0.88);
+    border-color: rgba(248, 113, 113, 0.5);
+    color: #fda4af;
+}
+
+/* Make category/state badges transparent-glass style */
+.ce-badge-category {
+    background-color: color-mix(in srgb, var(--cat-color), transparent 92%);
+    border-color: color-mix(in srgb, var(--cat-color), transparent 55%);
+}
+
+.ce-badge-warning {
+    background-color: rgba(202, 138, 4, 0.08);
+    border-color: rgba(202, 138, 4, 0.38);
+}
+
+.ce-badge-success {
+    background-color: rgba(22, 163, 74, 0.08);
+    border-color: rgba(22, 163, 74, 0.34);
+}
+
+[data-theme="dark"] .ce-badge-category {
+    background-color: color-mix(in srgb, var(--cat-color), transparent 94%);
+    border-color: color-mix(in srgb, var(--cat-color), transparent 48%);
+}
+
+[data-theme="dark"] .ce-badge-warning {
+    background-color: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.42);
+}
+
+[data-theme="dark"] .ce-badge-success {
+    background-color: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.38);
+}
+
+/* Event detail banner follows category color */
+.ce-event-banner {
+    --cat-color: var(--primary);
+}
+
+.ce-event-banner__bg {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 16% 14%, color-mix(in srgb, var(--cat-color) 34%, #ffffff), transparent 42%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--cat-color) 28%, #ffffff), transparent 45%),
+        linear-gradient(125deg,
+            color-mix(in srgb, var(--cat-color) 78%, #0f172a) 0%,
+            color-mix(in srgb, var(--cat-color) 88%, #1d4ed8) 56%,
+            color-mix(in srgb, var(--cat-color) 74%, #38bdf8) 100%);
+    transition: transform .45s ease, filter .45s ease;
+}
+
+.ce-event-banner__centericon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--cat-color) 22%, rgba(255, 255, 255, 0.2));
+    border: 1px solid color-mix(in srgb, var(--cat-color) 45%, rgba(255, 255, 255, 0.35));
+    box-shadow: 0 14px 28px color-mix(in srgb, var(--cat-color) 24%, transparent);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1;
+    transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.ce-event-banner__centericon .material-symbols-outlined {
+    font-size: 64px;
+    color: rgba(255, 255, 255, 0.56);
+    transition: color .3s ease;
+}
+
+.ce-event-banner:hover .ce-event-banner__bg {
+    transform: scale(1.04);
+    filter: saturate(1.08);
+}
+
+.ce-event-banner:hover .ce-event-banner__centericon {
+    transform: translate(-50%, -52%) scale(1.08);
+    box-shadow: 0 18px 34px color-mix(in srgb, var(--cat-color) 34%, transparent);
+}
+
+.ce-event-banner:hover .ce-event-banner__centericon .material-symbols-outlined {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+[data-theme="dark"] .ce-event-banner__bg {
+    background:
+        radial-gradient(circle at 16% 14%, color-mix(in srgb, var(--cat-color) 26%, #0b1220), transparent 42%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--cat-color) 20%, #0b1220), transparent 45%),
+        linear-gradient(125deg,
+            color-mix(in srgb, var(--cat-color) 62%, #020617) 0%,
+            color-mix(in srgb, var(--cat-color) 70%, #0c4a6e) 56%,
+            color-mix(in srgb, var(--cat-color) 54%, #0369a1) 100%);
+}

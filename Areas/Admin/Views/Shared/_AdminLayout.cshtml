@@ -1,3 +1,52 @@
+@{
+    var adminQuyen = Session["AdminQuyen"] != null ? Convert.ToInt32(Session["AdminQuyen"]) : -1;
+    var adminMaQTV = Session["AdminMaQTV"]?.ToString();
+    var currentTenDN = User?.Identity?.Name;
+
+    // Đồng bộ quyền theo DB để tránh lệch khi đổi quyền trực tiếp trong SQL.
+    using (var db = new shcool_event_management.Models.school_event_managementEntities())
+    {
+        int? quyenFromDb = null;
+
+        if (!string.IsNullOrEmpty(adminMaQTV))
+        {
+            quyenFromDb = db.QuanTriViens
+                .Where(x => x.MaQTV == adminMaQTV)
+                .Select(x => (int?)x.Quyen)
+                .FirstOrDefault();
+        }
+        else if (!string.IsNullOrEmpty(currentTenDN))
+        {
+            var admin = db.QuanTriViens.FirstOrDefault(x => x.TenDN == currentTenDN);
+            if (admin != null)
+            {
+                adminMaQTV = admin.MaQTV;
+                quyenFromDb = admin.Quyen;
+                Session["AdminMaQTV"] = adminMaQTV;
+            }
+        }
+
+        if (quyenFromDb.HasValue)
+        {
+            adminQuyen = quyenFromDb.Value;
+            Session["AdminQuyen"] = adminQuyen;
+        }
+    }
+
+    var canViewStats = adminQuyen == 0 || adminQuyen == 1 || adminQuyen == 2;
+    var canManageAdmins = adminQuyen == 0 || adminQuyen == 2;
+    var canViewActivityLogFull = adminQuyen == 0 || adminQuyen == 2;
+    var canViewActivityAudit = false;
+    var adminNotifications = new List<shcool_event_management.Areas.Admin.Helpers.AdminNotificationCenterHelper.AdminNotificationItem>();
+    if (!string.IsNullOrWhiteSpace(adminMaQTV))
+    {
+        using (var notifDb = new shcool_event_management.Models.school_event_managementEntities())
+        {
+            adminNotifications = shcool_event_management.Areas.Admin.Helpers.AdminNotificationCenterHelper
+                .Build(Session, notifDb, adminMaQTV);
+        }
+    }
+}
 <!DOCTYPE html>
 <html lang="vi" data-theme="light">
 <head>
@@ -14,12 +63,13 @@
     <!-- toastr -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
-    <link href="@Url.Content("~/Content/campus-variables.css")"  rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-base.css")"       rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-navbar.css")"     rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-components.css")" rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-pages.css")"      rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-admin.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-variables.css")"  rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-base.css")"       rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-navbar.css")"     rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-components.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-pages.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-admin.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-vibrant.css")"    rel="stylesheet" />
 
     @RenderSection("styles", required: false)
 
@@ -79,15 +129,26 @@
                     <span>Quản lí sự kiện</span>
                 </a>
 
-                <span class="ca-nav-section-label">Báo cáo</span>
-
-                <a href="@Url.Action("AdminStats", "AdminStats", new { area = "Admin" })"
-                   class="ca-nav-item @(ViewBag.ActiveMenu == "stats" ? "active" : "")"
-                   aria-current="@(ViewBag.ActiveMenu == "stats" ? "page" : null)"
-                   data-label="Thống kê">
-                    <span class="material-symbols-outlined">bar_chart</span>
-                    <span>Thống kê</span>
+                <a href="@Url.Action("Create", "AdminEventPosts", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "event-post-create" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "event-post-create" ? "page" : null)"
+                   data-label="Tạo bài đăng sự kiện">
+                    <span class="material-symbols-outlined">add</span>
+                    <span>Tạo bài đăng sự kiện</span>
                 </a>
+
+                @if (canViewStats)
+                {
+                    <span class="ca-nav-section-label">Báo cáo</span>
+
+                    <a href="@Url.Action("AdminStats", "AdminStats", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "stats" ? "active" : "")"
+                       aria-current="@(ViewBag.ActiveMenu == "stats" ? "page" : null)"
+                       data-label="Thống kê">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                        <span>Thống kê</span>
+                    </a>
+                }
 
                 <span class="ca-nav-section-label">Hệ thống</span>
 
@@ -99,8 +160,41 @@
                     <span>Cài đặt</span>
                 </a>
 
+                @if (canManageAdmins)
+                {
+                    <a href="@Url.Action("Index", "AdminAdministrators", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "admin-managers" ? "active" : "")"
+                       aria-current="@(ViewBag.ActiveMenu == "admin-managers" ? "page" : null)"
+                       data-label="Quản lí QTV">
+                        <span class="material-symbols-outlined">manage_accounts</span>
+                        <span>Quản lí QTV</span>
+                    </a>
+                }
+
+                @if (canViewActivityLogFull)
+                {
+                    <a href="@Url.Action("Index", "AdminActivityLog", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "activity-log" ? "active" : "")"
+                       aria-current="@(ViewBag.ActiveMenu == "activity-log" ? "page" : null)"
+                       data-label="Nhật ký và đăng nhập">
+                        <span class="material-symbols-outlined">history</span>
+                        <span>Nhật ký &amp; đăng nhập</span>
+                    </a>
+                }
+
+                @if (canViewActivityAudit)
+                {
+                    <a href="@Url.Action("Audit", "AdminActivityLog", new { area = "Admin" })"
+                       class="ca-nav-item @(ViewBag.ActiveMenu == "activity-audit" ? "active" : "")"
+                       aria-current="@(ViewBag.ActiveMenu == "activity-audit" ? "page" : null)"
+                       data-label="Đăng nhập và thêm QTV">
+                        <span class="material-symbols-outlined">fact_check</span>
+                        <span>Đăng nhập / thêm QTV</span>
+                    </a>
+                }
+
                 <div style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border)">
-                    <a href="@Url.Action("Logout", "AdminAuth", new { area = "Admin" })"
+                    <a href="@Url.Action("Logout", "AdminAccount", new { area = "Admin" })"
                        class="ca-nav-item" style="color:var(--danger)"
                        data-label="Đăng xuất">
                         <span class="material-symbols-outlined">logout</span>
@@ -146,7 +240,8 @@
                         <span class="ce-notif-dot"></span>
                     </button>
 
-                    <button class="ca-header__icon-btn" type="button" title="Trợ giúp">
+                    <button class="ca-header__icon-btn" type="button" title="Trợ giúp"
+                            onclick="ceOpenModal('modal-help')">
                         <span class="material-symbols-outlined">help</span>
                     </button>
 
@@ -207,11 +302,77 @@
     </div>
 
 
+    <div class="ce-modal-overlay" id="modal-notif">
+        <div class="ce-modal-box">
+            <div class="ce-modal-header">
+                <h5 class="d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined" style="font-size:20px;color:var(--primary)">notifications</span>
+                    Thông báo
+                </h5>
+                <button class="ce-modal-close" type="button" onclick="ceCloseModal('modal-notif')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ce-modal-body pt-3">
+                <div class="d-flex justify-content-end gap-2 mb-3">
+                    <button id="ce-notif-read-all" type="button" class="ce-btn ce-btn-ghost ce-btn-sm">
+                        <span class="material-symbols-outlined">drafts</span>
+                        Đọc tất cả
+                    </button>
+                    <button id="ce-notif-clear-all" type="button" class="ce-btn ce-btn-danger ce-btn-sm">
+                        <span class="material-symbols-outlined">delete</span>
+                        Xóa tất cả
+                    </button>
+                </div>
+                <div id="ce-notif-list" class="d-flex flex-column gap-2"></div>
+            </div>
+            <div class="ce-modal-footer">
+                <button type="button" class="ce-btn ce-btn-primary" onclick="ceCloseModal('modal-notif')">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ce-modal-overlay" id="modal-help">
+        <div class="ce-modal-box">
+            <div class="ce-modal-header">
+                <h5 class="d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined" style="font-size:20px;color:var(--primary)">help</span>
+                    Trợ giúp nhanh
+                </h5>
+                <button class="ce-modal-close" type="button" onclick="ceCloseModal('modal-help')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ce-modal-body">
+                <div class="d-flex flex-column gap-2">
+                    <div class="border rounded-3 p-3">
+                        <div class="fw-semibold mb-1">Tạo sự kiện mới</div>
+                        <div class="text-muted small">Vào mục Tạo bài đăng sự kiện để thêm sự kiện và lịch trình.</div>
+                    </div>
+                    <div class="border rounded-3 p-3">
+                        <div class="fw-semibold mb-1">Quản lí đăng ký</div>
+                        <div class="text-muted small">Mở Quản lí sự kiện và chọn chi tiết để duyệt danh sách đăng ký.</div>
+                    </div>
+                    <div class="border rounded-3 p-3">
+                        <div class="fw-semibold mb-1">Liên hệ hỗ trợ</div>
+                        <div class="text-muted small">Nếu gặp lỗi hệ thống, vui lòng liên hệ quản trị cấp cao để kiểm tra quyền.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ce-modal-footer">
+                <button type="button" class="ce-btn ce-btn-primary" onclick="ceCloseModal('modal-help')">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="@Url.Content("~/Scripts/campus-app.js")"></script>
+    <script>
+        window.ceServerNotifications = @Html.Raw(System.Web.Helpers.Json.Encode(adminNotifications));
+    </script>
+    <script src="@Url.Content("~/Scripts/app/campus-app.js")"></script>
 
     @RenderSection("scripts", required: false)
 </body>

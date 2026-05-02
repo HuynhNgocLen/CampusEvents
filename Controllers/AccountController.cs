@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using school_event_management.Helpers;
 using school_event_management.Models;
 using shcool_event_management.Models;
 using System;
@@ -57,7 +58,7 @@ namespace school_event_management.Controllers
 
             string otp = new Random().Next(10000000, 99999999).ToString();
             Session["RegisterOTP"] = otp;
-            Session["OTPExpiry"] = DateTime.Now.AddMinutes(10);
+            Session["OTPExpiry"] = DateTime.Now.AddMinutes(5);
             Session["ResendCount"] = resendCount + 1;
 
             try
@@ -74,7 +75,7 @@ namespace school_event_management.Controllers
                 <div style='background: #f4f7fe; border-radius: 10px; padding: 20px; text-align: center; margin: 20px 0;'>
                     <span style='font-size: 36px; font-weight: bold; color: #2D3FE2; letter-spacing: 10px;'>{otp}</span>
                 </div>
-                <p style='color: #888; font-size: 13px;'>⏱ Mã có hiệu lực trong <b>10 phút</b>.</p>
+                <p style='color: #888; font-size: 13px;'>⏱ Mã có hiệu lực trong <b>5 phút</b>.</p>
             </div>
         </div>";
 
@@ -99,12 +100,50 @@ namespace school_event_management.Controllers
 
         [ChildActionOnly]
         public ActionResult GetForm(string type)
-            => PartialView(type == "Register" ? "_RegisterForm" : "_LoginForm");
+        {
+            if (type == "Register")
+            {
+                ViewBag.MaNghanhs = db.MaNghanhs.OrderBy(n => n.TenNghanh).ToList();
+                ViewBag.Viens = db.Viens.OrderBy(v => v.TenVien).ToList();
+                return PartialView("_RegisterForm");
+            }
+
+            return PartialView("_LoginForm");
+        }
 
         public ActionResult GetFormAjax(string type)
         {
-            if (type == "Register") return PartialView("_RegisterForm");
+            if (type == "Register")
+            {
+                ViewBag.MaNghanhs = db.MaNghanhs.OrderBy(n => n.TenNghanh).ToList();
+                ViewBag.Viens = db.Viens.OrderBy(v => v.TenVien).ToList();
+                return PartialView("_RegisterForm");
+            }
+
             return PartialView("_LoginForm");
+        }
+
+        [HttpGet]
+        public JsonResult GetMajorsByInstitute(string maVien)
+        {
+            if (string.IsNullOrWhiteSpace(maVien))
+                return Json(Enumerable.Empty<object>(), JsonRequestBehavior.AllowGet);
+
+            var majors = db.Database.SqlQuery<MajorOption>(
+                @"SELECT MaNghanh AS MaNghanh, TenNghanh AS TenNghanh
+                  FROM MaNghanh
+                  WHERE THUOCVIEN = @p0
+                  ORDER BY TenNghanh",
+                maVien)
+                .ToList()
+                .Select(m => new
+                {
+                    maNghanh = m.MaNghanh,
+                    tenNghanh = m.TenNghanh
+                })
+                .ToList();
+
+            return Json(majors, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>Đăng nhập khách: chỉ được xem trang chủ (JWT có claim userType=guest).</summary>
@@ -125,9 +164,24 @@ namespace school_event_management.Controllers
                 TempData["Error"] = "Vui lòng nhập đầy đủ thông tin.";
                 return View();
             }
-            var sv = db.SinhViens.FirstOrDefault(s =>
-                (s.Email == username || s.ID == username) && s.MatKhau == password);
-            if (sv == null) { TempData["Error"] = "Sai tên đăng nhập hoặc mật khẩu."; return View(); }
+            var sv = db.SinhViens.FirstOrDefault(s => s.Email == username || s.ID == username);
+            if (sv == null)
+            {
+                TempData["Error"] = "Tài khoản không tồn tại.";
+                return View();
+            }
+            if (!PasswordHasher.Verify(password, sv.MatKhau))
+            {
+                TempData["Error"] = "Sai tên đăng nhập hoặc mật khẩu.";
+                return View();
+            }
+
+            if (PasswordHasher.NeedsUpgrade(sv.MatKhau))
+            {
+                sv.MatKhau = PasswordHasher.HashPassword(password);
+                db.SaveChanges();
+            }
+
             SetJwtCookie(sv.ID, sv.Ten);
             return RedirectToAction("Home", "Home");
         }
@@ -180,7 +234,13 @@ namespace school_event_management.Controllers
             var sv = db.SinhViens.FirstOrDefault(s => s.ID == mssv);
             if (sv == null)
             {
-                sv = new SinhVien { ID = mssv, Ten = googleName ?? mssv, Email = email, MatKhau = Guid.NewGuid().ToString() };
+                sv = new SinhVien
+                {
+                    ID = mssv,
+                    Ten = googleName ?? mssv,
+                    Email = email,
+                    MatKhau = PasswordHasher.HashPassword(Guid.NewGuid().ToString("N"))
+                };
                 try { db.SinhViens.Add(sv); db.SaveChanges(); }
                 catch (Exception ex) { TempData["Error"] = "Lỗi tạo tài khoản: " + ex.Message; return RedirectToAction("Login"); }
             }
@@ -199,7 +259,17 @@ namespace school_event_management.Controllers
             { TempData["Error"] = "Mã sinh viên này đã được đăng ký!"; return RedirectToAction("Login"); }
 
             string otp = new Random().Next(10000000, 99999999).ToString();
-            var newStudent = new SinhVien { ID = studentId, Ten = (lastName + " " + firstName).Trim(), Email = email, SoDienThoai = phoneNumber, Lop = className, MaNghanh = faculty, MaVien = institute, MatKhau = password };
+            var newStudent = new SinhVien
+            {
+                ID = studentId,
+                Ten = (lastName + " " + firstName).Trim(),
+                Email = email,
+                SoDienThoai = phoneNumber,
+                Lop = className,
+                MaNghanh = faculty,
+                MaVien = institute,
+                MatKhau = PasswordHasher.HashPassword(password)
+            };
             Session["TempStudent"] = newStudent;
             Session["RegisterOTP"] = otp;
             Session["OTPExpiry"] = DateTime.Now.AddMinutes(10);
@@ -328,7 +398,8 @@ namespace school_event_management.Controllers
             if (sv == null) { TempData["Error"] = "Tài khoản không tồn tại."; return RedirectToAction("Login"); }
             try
             {
-                sv.MatKhau = newPassword; db.SaveChanges();
+                sv.MatKhau = PasswordHasher.HashPassword(newPassword);
+                db.SaveChanges();
                 Session.Remove("ResetToken_" + token); Session.Remove("ResetToken_Expiry_" + token);
                 TempData["Success"] = "Đổi mật khẩu thành công! Vui lòng đăng nhập lại.";
                 return RedirectToAction("Login");
@@ -363,17 +434,11 @@ namespace school_event_management.Controllers
         }
 
         protected override void Dispose(bool disposing) { if (disposing) db.Dispose(); base.Dispose(disposing); }
-    }
 
-    public class JwtAuthorizeAttribute : AuthorizeAttribute
-    {
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
+        private class MajorOption
         {
-            var cookie = httpContext.Request.Cookies["jwt"];
-            if (cookie == null) return false;
-            return JwtService.ValidateToken(cookie.Value) != null;
+            public string MaNghanh { get; set; }
+            public string TenNghanh { get; set; }
         }
-        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
-            => filterContext.Result = new RedirectResult("/Account/Login?tokenExpired=true");
     }
 }

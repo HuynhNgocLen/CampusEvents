@@ -2,11 +2,23 @@
     ViewBag.Title = "Cài đặt — CampusEvents Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     string activeTab = ViewBag.ActiveTab as string ?? "general";
-    var admin = ViewBag.Admin as shcool_event_management.Models.SinhVien;
+    var admin = ViewBag.Admin as shcool_event_management.Models.QuanTriVien;
+    int logRetentionDays = ViewBag.LogRetentionDays != null ? Convert.ToInt32(ViewBag.LogRetentionDays) : 7;
+    string currentTheme = (Session["Theme"]?.ToString() == "dark") ? "dark" : "light";
+    string QuyenLabel(int q)
+    {
+        switch (q)
+        {
+            case 0: return "Xem / hỗ trợ";
+            case 1: return "Quản lý nội dung";
+            case 2: return "Toàn quyền";
+            default: return "—";
+        }
+    }
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/campus-event-form.css?v=2")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/app/campus-event-form.css?v=2")" rel="stylesheet" />
 <style>
 .settings-layout { display:grid; grid-template-columns:220px 1fr; gap:1.5rem; align-items:start; }
 .settings-sidenav { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:.4rem; box-shadow:var(--shadow-sm); position:sticky; top:calc(var(--header-h,62px) + 1.25rem); }
@@ -43,6 +55,17 @@
 .theme-swatch.selected { border-color:var(--primary); box-shadow:0 0 0 3px rgba(19,127,236,.18); }
 .theme-swatch__preview { height:64px; display:flex; align-items:center; padding:.5rem; gap:.4rem; }
 .theme-swatch__label { padding:.35rem .6rem; font-size:.75rem; font-weight:700; text-align:center; border-top:1px solid var(--border); }
+.appearance-toolbar { display:flex; justify-content:space-between; align-items:center; gap:.75rem; margin-bottom:1rem; flex-wrap:wrap; }
+.appearance-status { font-size:.74rem; font-weight:600; color:var(--text-muted); }
+.appearance-status.success { color:var(--success); }
+.appearance-status.error { color:var(--danger); }
+.appearance-preview { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.1rem; margin-bottom:1rem; }
+.appearance-preview__chips { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.6rem; }
+.appearance-chip { border:1px solid var(--border); border-radius:999px; padding:.25rem .55rem; font-size:.7rem; color:var(--text-muted); background:var(--surface); font-weight:600; }
+@@media (max-width: 767.98px) {
+    .settings-layout { grid-template-columns:1fr; }
+    .settings-sidenav { position:static; }
+}
 </style>
 }
 
@@ -64,7 +87,7 @@
             <span class="sn-section">Hệ thống</span>
             <a href="#" class="sn-item @(activeTab=="notifications"?"active":"")" onclick="switchTab(event,'notifications')">
                 <span class="material-symbols-outlined">notifications</span>Thông báo
-            </a>D
+            </a>
             <a href="#" class="sn-item @(activeTab=="appearance"?"active":"")" onclick="switchTab(event,'appearance')">
                 <span class="material-symbols-outlined">palette</span>Giao diện
             </a>
@@ -84,45 +107,25 @@
                         @* Avatar preview *@
                         <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
                             <div style="width:64px;height:64px;border-radius:50%;background:var(--primary-light);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--primary);flex-shrink:0">
-                                @(admin != null && !string.IsNullOrEmpty(admin.Ten) ? admin.Ten.Split(' ').Last().Substring(0,1).ToUpper() : "A")
+                                @(admin != null && !string.IsNullOrEmpty(admin.TenDN) ? char.ToUpper(admin.TenDN[0]) : 'A')
                             </div>
                             <div>
-                                <div style="font-size:1rem;font-weight:700">@(admin?.Ten ?? "Admin Campus")</div>
-                                <div style="font-size:.8rem;color:var(--text-muted)">@(admin?.Email ?? "admin@university.edu.vn")</div>
-                                <div style="font-size:.75rem;color:var(--text-light);margin-top:.1rem">Mã SV: @(admin?.ID ?? "—")</div>
+                                <div style="font-size:1rem;font-weight:700">@(admin?.TenDN ?? "—")</div>
+                                <div style="font-size:.8rem;color:var(--text-muted)">Quyền: @QuyenLabel(admin?.Quyen ?? -1)</div>
+                                <div style="font-size:.75rem;color:var(--text-light);margin-top:.1rem">Tài khoản quản trị (QuanTriVien)</div>
                             </div>
                         </div>
 
                         @using (Html.BeginForm("SaveGeneral","AdminSettings",new{area="Admin"},FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Họ và tên</label>
-                                    <input class="ca-form-input" name="fullName" value="@admin?.Ten" placeholder="Nhập họ tên"/>
-                                </div>
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Mã số</label>
-                                    <input class="ca-form-input" value="@admin?.ID" readonly style="background:var(--surface-2);cursor:not-allowed"/>
-                                </div>
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Tên đăng nhập</label>
+                                <input class="ca-form-input" value="@(admin != null ? admin.TenDN : "")" readonly style="background:var(--surface-2);cursor:not-allowed"/>
                             </div>
                             <div class="ca-form-group">
-                                <label class="ca-form-label">Email</label>
-                                <input class="ca-form-input" type="email" name="email" value="@admin?.Email"/>
-                            </div>
-                            <div class="ca-form-group">
-                                <label class="ca-form-label">Số điện thoại</label>
-                                <input class="ca-form-input" type="tel" name="phone" value="@admin?.SoDienThoai"/>
-                            </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Lớp</label>
-                                    <input class="ca-form-input" value="@admin?.Lop" readonly style="background:var(--surface-2);cursor:not-allowed"/>
-                                </div>
-                                <div class="ca-form-group">
-                                    <label class="ca-form-label">Ngành</label>
-                                    <input class="ca-form-input" value="@admin?.MaNghanh" readonly style="background:var(--surface-2);cursor:not-allowed"/>
-                                </div>
+                                <label class="ca-form-label">Mức quyền (0–2)</label>
+                                <input class="ca-form-input" value="@(admin != null ? admin.Quyen + " — " + QuyenLabel(admin.Quyen) : "—")" readonly style="background:var(--surface-2);cursor:not-allowed"/>
                             </div>
                             <div style="display:flex;gap:.5rem;justify-content:flex-end;padding-top:.875rem;border-top:1px solid var(--border);margin-top:.5rem">
                                 <button type="submit" class="ce-btn ce-btn-primary">
@@ -237,19 +240,40 @@
                                     <div class="sw-track"></div>
                                 </label>
                             </div>
-                            <div class="toggle-row">
-                                <div>
-                                    <div class="toggle-label">Thông báo trong ứng dụng</div>
-                                    <div class="toggle-desc">Hiển thị popup khi có sự kiện mới hoặc cập nhật quan trọng</div>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" name="notif_inapp" @(Session["Notif_InApp"] as bool? == true ? "checked" : "")/>
-                                    <div class="sw-track"></div>
-                                </label>
-                            </div>
                             <div style="display:flex;justify-content:flex-end;padding-top:1rem;margin-top:.5rem;border-top:1px solid var(--border)">
                                 <button type="submit" class="ce-btn ce-btn-primary">
                                     <span class="material-symbols-outlined">save</span>Lưu cài đặt thông báo
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="ca-card" style="margin-top:1.25rem">
+                    <div class="ca-card__header">
+                        <div class="ca-card__header-icon"><span class="material-symbols-outlined">history</span></div>
+                        <div class="ca-card__title">Lưu trữ nhật ký hệ thống</div>
+                    </div>
+                    <div class="ca-card__body">
+                        @using (Html.BeginForm("SaveLogSettings", "AdminSettings", new { area = "Admin" }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="ca-form-group">
+                                <label class="ca-form-label">Thời gian giữ log</label>
+                                <select class="ca-form-select" name="log_retention_days">
+                                    <option value="0" @(logRetentionDays == 0 ? "selected" : "")>Không ghi</option>
+                                    <option value="1" @(logRetentionDays == 1 ? "selected" : "")>1 ngày</option>
+                                    <option value="3" @(logRetentionDays == 3 ? "selected" : "")>3 ngày</option>
+                                    <option value="7" @(logRetentionDays == 7 ? "selected" : "")>7 ngày</option>
+                                    <option value="14" @(logRetentionDays == 14 ? "selected" : "")>14 ngày</option>
+                                    <option value="30" @(logRetentionDays == 30 ? "selected" : "")>30 ngày</option>
+                                    <option value="90" @(logRetentionDays == 90 ? "selected" : "")>90 ngày</option>
+                                </select>
+                                <div class="ca-form-hint">Hệ thống sẽ tự xóa log cũ vượt quá mốc thời gian đã chọn.</div>
+                            </div>
+                            <div style="display:flex;justify-content:flex-end;padding-top:1rem;margin-top:.5rem;border-top:1px solid var(--border)">
+                                <button type="submit" class="ce-btn ce-btn-primary">
+                                    <span class="material-symbols-outlined">save</span>Lưu cài đặt log
                                 </button>
                             </div>
                         }
@@ -266,9 +290,24 @@
                     </div>
                     <div class="ca-card__body">
                         <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem">Chủ đề màu sắc</div>
+                        <div class="appearance-toolbar">
+                            <div class="ca-form-hint" style="margin:0">Chọn chủ đề để áp dụng ngay cho toàn bộ trang quản trị.</div>
+                            <div id="themeSaveStatus" class="appearance-status">Đang dùng: @(currentTheme == "dark" ? "Tối (Dark)" : "Sáng (Light)")</div>
+                        </div>
+
+                        <div class="appearance-preview">
+                            <div style="font-size:.78rem;font-weight:700;color:var(--text)">Xem trước nhanh</div>
+                            <div style="font-size:.73rem;color:var(--text-muted);margin-top:.2rem">Màu chủ đạo, thẻ và các badge sẽ thay đổi theo chủ đề bạn chọn.</div>
+                            <div class="appearance-preview__chips">
+                                <span class="appearance-chip">Nút chính</span>
+                                <span class="appearance-chip">Bảng dữ liệu</span>
+                                <span class="appearance-chip">Badge trạng thái</span>
+                                <span class="appearance-chip">Sidebar / Header</span>
+                            </div>
+                        </div>
 
                         <div class="theme-picker" style="margin-bottom:1.5rem">
-                            <div class="theme-swatch @(Session["Theme"]?.ToString()!="dark"?"selected":"")"
+                            <div class="theme-swatch @(currentTheme == "light" ? "selected" : "")"
                                  id="swLight" onclick="setTheme('light')">
                                 <div class="theme-swatch__preview" style="background:#f0f4f8">
                                     <div style="width:28px;height:100%;background:#fff;border-radius:4px;flex-shrink:0"></div>
@@ -281,7 +320,7 @@
                                 <div class="theme-swatch__label" style="background:#fff;border-top:1px solid #e2e8f0;color:#0f172a">Sáng (Light)</div>
                             </div>
 
-                            <div class="theme-swatch @(Session["Theme"]?.ToString()=="dark"?"selected":"")"
+                            <div class="theme-swatch @(currentTheme == "dark" ? "selected" : "")"
                                  id="swDark" onclick="setTheme('dark')">
                                 <div class="theme-swatch__preview" style="background:#0c1220">
                                     <div style="width:28px;height:100%;background:#131d2e;border-radius:4px;flex-shrink:0"></div>
@@ -298,11 +337,11 @@
                         <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem">Thông tin hiển thị</div>
                         <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem">
                             <div style="width:52px;height:52px;border-radius:50%;background:var(--primary-light);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:var(--primary);flex-shrink:0">
-                                @(admin != null && !string.IsNullOrEmpty(admin.Ten) ? admin.Ten.Split(' ').Last().Substring(0,1).ToUpper() : "A")
+                                @(admin != null && !string.IsNullOrEmpty(admin.TenDN) ? admin.TenDN.Substring(0,1).ToUpper() : "A")
                             </div>
                             <div>
-                                <div style="font-weight:700;font-size:.92rem">@(admin?.Ten ?? "Admin Campus")</div>
-                                <div style="font-size:.77rem;color:var(--text-muted)">@(admin?.Email ?? "admin@university.edu.vn")</div>
+                                <div style="font-weight:700;font-size:.92rem">@(admin?.TenDN ?? "Admin Campus")</div>
+                                <div style="font-size:.77rem;color:var(--text-muted)">@(admin?.MaQTV ?? "QTV-DEFAULT")</div>
                                 <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem">Hiển thị ở góc phải header</div>
                             </div>
                         </div>
@@ -354,14 +393,43 @@ function checkMatch() {
 
 // ── Theme switcher ────────────────────────────
 function setTheme(theme) {
+    const oldTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const statusEl = document.getElementById('themeSaveStatus');
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
     document.documentElement.setAttribute('data-theme', theme);
     document.getElementById('swLight')?.classList.toggle('selected', theme==='light');
     document.getElementById('swDark')?.classList.toggle('selected', theme==='dark');
+    try { localStorage.setItem('ce-theme', theme); } catch (e) {}
+    if (statusEl) {
+        statusEl.className = 'appearance-status';
+        statusEl.textContent = 'Đang lưu giao diện...';
+    }
 
     fetch('@Url.Action("SaveTheme","AdminSettings",new{area="Admin"})', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: 'theme=' + theme + '&__RequestVerificationToken=' + (document.querySelector('input[name="__RequestVerificationToken"]')?.value || '')
+        body: 'theme=' + encodeURIComponent(theme) + '&__RequestVerificationToken=' + encodeURIComponent(token)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data || data.success !== true) {
+            throw new Error((data && data.message) ? data.message : 'Không thể lưu giao diện.');
+        }
+        if (statusEl) {
+            statusEl.className = 'appearance-status success';
+            statusEl.textContent = 'Đã lưu: ' + (theme === 'dark' ? 'Tối (Dark)' : 'Sáng (Light)');
+        }
+    })
+    .catch(() => {
+        document.documentElement.setAttribute('data-theme', oldTheme);
+        document.getElementById('swLight')?.classList.toggle('selected', oldTheme==='light');
+        document.getElementById('swDark')?.classList.toggle('selected', oldTheme==='dark');
+        try { localStorage.setItem('ce-theme', oldTheme); } catch (e) {}
+        if (statusEl) {
+            statusEl.className = 'appearance-status error';
+            statusEl.textContent = 'Lưu thất bại, đã hoàn tác giao diện.';
+        }
     });
 }
 </script>

@@ -14,23 +14,47 @@
         foreach (var ev in Model)
         {
             double pct = ev.SoLuongToiDa > 0 ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa, 0) : 0;
+            bool isDraftStatus =
+                string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(ev.TrangThai, "Nháp", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(ev.TrangThai, "Bản nháp", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(ev.TrangThai, "Bản Nháp", StringComparison.OrdinalIgnoreCase);
+
             string badgeCls = ev.TrangThai == "Sắp diễn ra" ? "em-badge em-badge-info"
                 : ev.TrangThai == "Đang diễn ra" ? "em-badge em-badge-success"
                 : ev.TrangThai == "Đã hủy" ? "em-badge em-badge-danger"
                 : ev.TrangThai == "Đã kết thúc" ? "em-badge em-badge-default"
+                : isDraftStatus ? "em-badge em-badge-draft"
                 : "em-badge em-badge-warning";
+            string statusText = isDraftStatus ? "Bản nháp" : ev.TrangThai;
             string safeTitle = ev.TenEvent?.Replace("'", "\\'") ?? "";
 
             <div class="em-card">
-                <div class="em-card__thumb">
-                    @if (!string.IsNullOrEmpty(ev.AnhBia))
+                <div class="em-card__thumb" style="--cat-color:@(ev.DanhMuc != null && !string.IsNullOrWhiteSpace(ev.DanhMuc.MauSac) ? ev.DanhMuc.MauSac : "#3b82f6")">
+                    @{
+                        string coverImageUrl = null;
+                        if (!string.IsNullOrWhiteSpace(ev.AnhBia))
+                        {
+                            var rawCover = ev.AnhBia.Trim();
+                            var coverVirtualPath = rawCover.StartsWith("~")
+                                ? rawCover
+                                : ("~/Uploads/Events/" + rawCover.TrimStart('/'));
+                            var coverPhysicalPath = Server.MapPath(coverVirtualPath);
+
+                            if (!string.IsNullOrEmpty(coverPhysicalPath) && System.IO.File.Exists(coverPhysicalPath))
+                            {
+                                coverImageUrl = Url.Content(coverVirtualPath);
+                            }
+                        }
+                    }
+                    @if (!string.IsNullOrEmpty(coverImageUrl))
                     {
-                        <img src="@Url.Content(ev.AnhBia)" alt="@ev.TenEvent" />
+                        <img src="@coverImageUrl" alt="@ev.TenEvent" />
                     }
                     else
                     {
                         <div class="em-card__thumb-placeholder">
-                            <span class="material-symbols-outlined">event</span>
+                            <span class="material-symbols-outlined">@(ev.DanhMuc != null && !string.IsNullOrWhiteSpace(ev.DanhMuc.Icon) ? ev.DanhMuc.Icon : "event")</span>
                         </div>
                     }
                     @if (ev.DanhMuc != null)
@@ -38,7 +62,7 @@
                         <span class="em-card__cat">@ev.DanhMuc.TenDanhMuc</span>
                     }
                     <div class="em-card__status">
-                        <span class="@badgeCls">@ev.TrangThai</span>
+                        <span class="@badgeCls">@statusText</span>
                     </div>
                 </div>
 

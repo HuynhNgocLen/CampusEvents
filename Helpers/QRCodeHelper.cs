@@ -1,26 +1,28 @@
-﻿// Helpers/QRCodeHelper.cs
 using QRCoder;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-public static class QRCodeHelper
+namespace shcool_event_management.Helpers
 {
-    public static string GenerateQRCodeFromLink(string link, int pixelsPerModule = 20)
+    public static class QRCodeHelper
     {
-        if (string.IsNullOrEmpty(link)) return null;
-
-        using (var qrGenerator = new QRCodeGenerator())
+        public static string GenerateQRCodeFromLink(string link, int pixelsPerModule = 20)
         {
-            var qrCodeData = qrGenerator.CreateQrCode(link, QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new QRCode(qrCodeData);
+            if (string.IsNullOrEmpty(link)) return null;
 
-            using (var qrCodeImage = qrCode.GetGraphic(pixelsPerModule, Color.Black, Color.White, true))
-            using (var ms = new MemoryStream())
+            using (var qrGenerator = new QRCodeGenerator())
             {
-                qrCodeImage.Save(ms, ImageFormat.Png);
-                return "data:image/png;base64," + Convert.ToBase64String(ms.ToArray());
+                var qrCodeData = qrGenerator.CreateQrCode(link, QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new QRCode(qrCodeData);
+
+                using (var qrCodeImage = qrCode.GetGraphic(pixelsPerModule, Color.Black, Color.White, true))
+                using (var ms = new MemoryStream())
+                {
+                    qrCodeImage.Save(ms, ImageFormat.Png);
+                    return "data:image/png;base64," + Convert.ToBase64String(ms.ToArray());
+                }
             }
         }
     }

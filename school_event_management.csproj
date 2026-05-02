@@ -69,6 +69,15 @@
     <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
       <HintPath>packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
     </Reference>
+    <Reference Include="Isopoh.Cryptography.Argon2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ce4f270b5b22aea9, processorArchitecture=MSIL">
+      <HintPath>packages\Isopoh.Cryptography.Argon2.2.0.0\lib\netstandard2.0\Isopoh.Cryptography.Argon2.dll</HintPath>
+    </Reference>
+    <Reference Include="Isopoh.Cryptography.Blake2b, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ce4f270b5b22aea9, processorArchitecture=MSIL">
+      <HintPath>packages\Isopoh.Cryptography.Blake2b.2.0.0\lib\netstandard2.0\Isopoh.Cryptography.Blake2b.dll</HintPath>
+    </Reference>
+    <Reference Include="Isopoh.Cryptography.SecureArray, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ce4f270b5b22aea9, processorArchitecture=MSIL">
+      <HintPath>packages\Isopoh.Cryptography.SecureArray.2.0.0\lib\netstandard2.0\Isopoh.Cryptography.SecureArray.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -223,10 +232,25 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminAccountController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminAdministratorsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminActivityLogController.cs" />
+    <Compile Include="Areas\Admin\Helpers\QtvHanhDongLogHelper.cs" />
+    <Compile Include="Areas\Admin\Helpers\AdminLoginAuditHelper.cs" />
+    <Compile Include="Areas\Admin\Helpers\AdminNotificationCenterHelper.cs" />
+    <Compile Include="Areas\Admin\Models\QtvHanhDongLogRow.cs" />
+    <Compile Include="Areas\Admin\Models\AdminDangNhapLogRow.cs" />
+    <Compile Include="Areas\Admin\Controllers\BaseAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminDashboardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminEventPostsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminEventsController.Ajax.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminEventsController.Registrations.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminEventsController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminSettingsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminStatsController.Export.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminStatsController.cs" />
+    <Compile Include="Areas\Admin\Helpers\AdminEventCommonHelper.cs" />
+    <Compile Include="Areas\Admin\Helpers\AdminSelectListHelper.cs" />
     <Compile Include="Areas\Admin\ViewModels\EventDashboardViewModel.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
@@ -237,8 +261,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\JwtService.cs" />
+    <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Filters\JwtAuthorizeAttribute.cs" />
     <Compile Include="Filters\RestrictGuestAttribute.cs" />
     <Compile Include="Helpers\QRCodeHelper.cs" />
+    <Compile Include="Helpers\RegistrationStatusHelper.cs" />
     <Compile Include="Models\DangKySuKien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -251,7 +278,7 @@
     <Compile Include="Models\EVENT.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\HomeViewModel.cs" />
+    <Compile Include="ViewModels\Home\HomeViewModel.cs" />
     <Compile Include="Models\MaNghanh.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -269,6 +296,15 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\QTVAdminDangNhapLog.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\QTVHanhDongLog.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\QuanTriVien.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SinhVien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -290,7 +326,10 @@
     </Compile>
     <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Infrastructure\Constants\EventTrangThai.cs" />
     <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\Interfaces\IEmailSender.cs" />
+    <Compile Include="Services\SmtpEmailSender.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
@@ -310,19 +349,19 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
-    <Content Include="Content\campus-admin.css" />
-    <Content Include="Content\campus-base.css" />
-    <Content Include="Content\campus-components.css" />
-    <Content Include="Content\campus-filter.css" />
-    <Content Include="Content\campus-index.css" />
-    <Content Include="Content\campus-navbar.css" />
-    <Content Include="Content\campus-pages.css" />
-    <Content Include="Content\campus-variables.css" />
-    <Content Include="Content\campus-profile.css" />
-    <Content Include="Content\AdminStats.css" />
+    <Content Include="Content\app\campus-admin.css" />
+    <Content Include="Content\app\campus-base.css" />
+    <Content Include="Content\app\campus-components.css" />
+    <Content Include="Content\app\campus-filter.css" />
+    <Content Include="Content\app\campus-index.css" />
+    <Content Include="Content\app\campus-navbar.css" />
+    <Content Include="Content\app\campus-pages.css" />
+    <Content Include="Content\app\campus-variables.css" />
+    <Content Include="Content\app\campus-profile.css" />
+    <Content Include="Content\app\AdminStats.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\app\Site.css" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -410,13 +449,7 @@
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.dll" />
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.pdb" />
     <None Include="AppSettings.secret.config" />
-    <EntityDeploy Include="Models\Model1.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\Model1.edmx.diagram">
-      <DependentUpon>Model1.edmx</DependentUpon>
-    </Content>
+    <None Include="AppSettings.secret.config.example" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Create.cshtml" />
@@ -425,19 +458,34 @@
     <Content Include="Areas\Admin\Views\AdminEvents\Manage\_ListView.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage\_StudentModal.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\RegistrationDetail.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminAccount\Login.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminAccount\Locked.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminAdministrators\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminActivityLog\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminActivityLog\Audit.cshtml" />
     <Content Include="Areas\Admin\Views\AdminDashboard\Dashboard.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\AdminStats.cshtml" />
     <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage.cshtml" />
-    <Content Include="Areas\Admin\Views\AdminEvents\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Edit.cshtml" />
-    <Content Include="Content\campus-event-index.css" />
-    <Content Include="Scripts\A-event-create.js" />
-    <Content Include="Scripts\A-event-edit.js" />
+    <Content Include="Content\app\campus-event-index.css" />
+    <Content Include="Content\app\campus-event-form.css" />
+    <Content Include="Content\app\campus-event-manage.css" />
+    <Content Include="Content\app\campus-vibrant.css" />
+    <Content Include="Scripts\app\A-event-create.js" />
+    <Content Include="Scripts\app\A-event-edit.js" />
+    <Content Include="Scripts\app\A-event-manage.js" />
     <Content Include="Areas\Admin\Views\AdminStats\_KpiCards.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\_StatusDoughnut.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\_CategoryTable.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\_TopTables.cshtml" />
+    <EntityDeploy Include="Models\Model1.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\Model1.edmx.diagram">
+      <DependentUpon>Model1.edmx</DependentUpon>
+    </Content>
     <None Include="packages\jQuery.3.7.0\Content\Scripts\jquery-3.7.0-vsdoc.js" />
     <Content Include="packages\jQuery.3.7.0\Content\Scripts\jquery-3.7.0.js" />
     <Content Include="packages\jQuery.3.7.0\Content\Scripts\jquery-3.7.0.min.js" />
@@ -717,10 +765,11 @@
     <Content Include="packages\QRCoder.1.7.0\QRCoder.1.7.0.nupkg" />
     <Content Include="packages\QRCoder.1.7.0\README.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
-    <Content Include="Scripts\campus-app.js" />
-    <Content Include="Scripts\A-user-events.js" />
-    <Content Include="Scripts\AdminDashboard.js" />
-    <Content Include="Scripts\A-StatsScripts.js" />
+    <Content Include="Scripts\app\campus-app.js" />
+    <Content Include="Scripts\app\A-user-events.js" />
+    <Content Include="Scripts\app\AdminDashboard.js" />
+    <Content Include="Scripts\QuanTriVien.sql" />
+    <Content Include="Scripts\app\A-StatsScripts.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -732,6 +781,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
+    <None Include="Web.config.example" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -761,17 +811,36 @@
     <Content Include="Views\Schedule\Schedule.cshtml" />
     <Content Include="Views\Account\VerifyOTP.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexHero.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexCategories.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexFeaturedEvents.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexHowItWorks.cshtml" />
-    <Content Include="Views\Home\HomePartials\_IndexCtaFooter.cshtml" />
+    <Content Include="Views\Home\HomePartials\_LandingHero.cshtml" />
+    <Content Include="Views\Home\HomePartials\_LandingPosters.cshtml" />
+    <Content Include="Views\Home\HomePartials\_LandingAbout.cshtml" />
     <Content Include="Views\Events\Events.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Images\" />
+    <Folder Include="Infrastructure\Configuration\" />
+    <Folder Include="Infrastructure\Constants\" />
+    <Folder Include="Infrastructure\Extensions\" />
+    <Folder Include="Repositories\" />
+    <Folder Include="Services\Interfaces\" />
+    <Folder Include="ViewModels\Account\" />
+    <Folder Include="ViewModels\Events\" />
+    <Folder Include="ViewModels\Home\" />
+    <Folder Include="ViewModels\Registration\" />
+    <Folder Include="ViewModels\Schedule\" />
+    <Folder Include="ViewModels\Shared\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Infrastructure\Configuration\.gitkeep" />
+    <Content Include="Infrastructure\Extensions\.gitkeep" />
+    <Content Include="Repositories\.gitkeep" />
+    <Content Include="ViewModels\Account\.gitkeep" />
+    <Content Include="ViewModels\Events\.gitkeep" />
+    <Content Include="ViewModels\Registration\.gitkeep" />
+    <Content Include="ViewModels\Schedule\.gitkeep" />
+    <Content Include="ViewModels\Shared\.gitkeep" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

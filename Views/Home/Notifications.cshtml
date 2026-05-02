@@ -1,0 +1,77 @@
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+    ViewBag.ActivePage = "notifications";
+    var notifications = ViewBag.Notifications as IEnumerable;
+    var completed = ViewBag.CompletedNotifications as IEnumerable;
+}
+
+<div class="container py-4">
+    <div class="ce-card p-4 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="material-symbols-outlined" style="color: var(--primary);">notifications</span>
+            <h4 class="mb-0">Thông báo của bạn</h4>
+        </div>
+        <p class="text-muted mb-0">Tổng hợp các sự kiện bạn đã đăng ký và nhắc lịch sắp diễn ra.</p>
+    </div>
+
+    <div class="ce-card p-4 mb-4">
+        <h5 class="mb-3">Sắp diễn ra</h5>
+        @if (notifications != null)
+        {
+            var hasUpcoming = false;
+            foreach (dynamic item in notifications)
+            {
+                hasUpcoming = true;
+                <div class="d-flex align-items-start justify-content-between border-bottom py-3">
+                    <div class="me-3">
+                        <div class="fw-semibold">@item.Title</div>
+                        <div class="text-muted">@item.Message</div>
+                    </div>
+                    <div class="text-end">
+                        @if (item.IsUrgent)
+                        {
+                            <span class="ce-badge ce-badge-warning mb-1">Sắp đến hạn</span>
+                        }
+                        <div class="small text-muted">@item.TimeLabel</div>
+                    </div>
+                </div>
+            }
+            if (!hasUpcoming)
+            {
+                <div class="text-muted">Hiện chưa có thông báo mới.</div>
+            }
+        }
+        else
+        {
+            <div class="text-muted">Hiện chưa có thông báo mới.</div>
+        }
+    </div>
+
+    <div class="ce-card p-4">
+        <h5 class="mb-3">Đã hoàn thành gần đây</h5>
+        @if (completed != null)
+        {
+            var hasCompleted = false;
+            foreach (dynamic item in completed)
+            {
+                hasCompleted = true;
+                <div class="d-flex align-items-start justify-content-between border-bottom py-3">
+                    <div class="me-3">
+                        <div class="fw-semibold">@item.Title</div>
+                        <div class="text-muted">@item.Message</div>
+                    </div>
+                    <div class="small text-muted text-end">@item.TimeLabel</div>
+                </div>
+            }
+            if (!hasCompleted)
+            {
+                <div class="text-muted">Chưa có sự kiện hoàn thành gần đây.</div>
+            }
+        }
+        else
+        {
+            <div class="text-muted">Chưa có sự kiện hoàn thành gần đây.</div>
+        }
+    </div>
+</div>

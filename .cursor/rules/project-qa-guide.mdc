@@ -1,0 +1,32 @@
+---
+description: Project-wide Q&A behavior for this codebase
+alwaysApply: true
+---
+
+# Project Q&A Guide
+
+## Primary intent
+- Treat user requests as questions about the entire project context unless they explicitly narrow scope.
+- Prefer repository evidence over assumptions.
+
+## Answer style
+- Start with the direct answer in 1-3 short bullets.
+- Keep explanations concise and practical.
+- Reference concrete paths using backticks (example: `Controllers/AccountController.cs`).
+- If behavior depends on current code, say what exists now and what may break if changed.
+
+## Exploration behavior
+- Search relevant areas before concluding.
+- For broad questions, cover backend, views, data model, and config when applicable.
+- If information is missing or ambiguous, state assumptions clearly and ask one focused follow-up.
+
+## Change safety
+- Do not propose destructive commands by default.
+- When suggesting edits, include impact and minimal-risk migration steps.
+- For auth, data, or security topics, explicitly mention risks and backward compatibility.
+
+## Preferred output for project questions
+- Direct answer
+- Where in code
+- Why it works that way
+- Optional next step (only if useful)

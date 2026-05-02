@@ -4,28 +4,33 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="10282ac4ee984d06a829f6bcaf79d3e8" Name="Diagram1">
-        <EntityTypeShape EntityType="school_event_managementModel.DangKySuKien" Width="1.5" PointX="8.25" PointY="5.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.DanhMuc" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.DiaDiem" Width="1.5" PointX="0.75" PointY="9.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.EVENT" Width="1.5" PointX="3" PointY="3.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.MaNghanh" Width="1.5" PointX="3.75" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.SinhVien" Width="1.5" PointX="6" PointY="5" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.SuKienYeuThich" Width="1.5" PointX="8.25" PointY="2.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.Vien" Width="1.5" PointX="0.75" PointY="5.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.vw_SoChoConLai" Width="1.5" PointX="8.75" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.vw_UserStatsByYear" Width="1.5" PointX="5.75" PointY="9.75" IsExpanded="true" />
+      <Diagram DiagramId="b581b7b26e324117a8b30510cc9241d3" Name="Diagram1" ZoomLevel="74">
+        <EntityTypeShape EntityType="school_event_managementModel.DangKySuKien" Width="1.5" PointX="8.25" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.DanhMuc" Width="1.5" PointX="0.75" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.DiaDiem" Width="1.5" PointX="0.75" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.EVENT" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.MaNghanh" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.QuanTriVien" Width="1.5" PointX="5.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.SinhVien" Width="1.5" PointX="6" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.SuKienYeuThich" Width="1.5" PointX="8.25" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.Vien" Width="1.5" PointX="0.75" PointY="6.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" Width="1.5" PointX="8.75" PointY="10.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_SoChoConLai" Width="1.5" PointX="10.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_UserStatsByYear" Width="1.5" PointX="10.75" PointY="4.125" IsExpanded="true" />
         <AssociationConnector Association="school_event_managementModel.FK_DangKy_Event" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_DangKy_SinhVien" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_EVENT_DANHMUC" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_EVENT_DIADIEM" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_EVENT_NGUOIDANG" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_EVENT_VIEN" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_Favorites_Event" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_NGHANH" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_Favorites_SinhVien" ManuallyRouted="false" />
-        <AssociationConnector Association="school_event_managementModel.FK_SINHVIEN_VIEN" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" Width="1.5" PointX="10.375" PointY="0.75" />
+        <AssociationConnector Association="school_event_managementModel.FK_Event_DanhMuc" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_Event_DiaDiem" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_Event_NguoiDang" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_Event_Vien" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_YeuThich_Event" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_SinhVien_Nghanh" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_SinhVien_Vien" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK_YeuThich_SinhVien" ManuallyRouted="false" />
+        <AssociationConnector Association="school_event_managementModel.FK__MaNghanh__THUOCV__6E01572D" />
+        <AssociationConnector Association="school_event_managementModel.FK_QTV_Vien" />
+        <EntityTypeShape EntityType="school_event_managementModel.QTVAdminDangNhapLog" Width="1.5" PointX="5.375" PointY="10.75" />
+        <EntityTypeShape EntityType="school_event_managementModel.QTVHanhDongLog" Width="1.5" PointX="11.375" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

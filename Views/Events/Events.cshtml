@@ -89,7 +89,8 @@
                             <div class="ce-event-card">
                                 <div class="ce-event-card__img">
                                     <a href="@Url.Action("EventDetail","Events", new { id = item.MaEvent })">
-                                        <div class="ce-event-card__img-placeholder">
+                                        <div class="ce-event-card__img-placeholder"
+                                             style="--cat-color: @(item.DanhMuc?.MauSac ?? "#3b82f6");">
                                             <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "event")</span>
                                         </div>
                                     </a>
@@ -175,5 +176,5 @@
 </div>
 
 @section scripts {
-    <script src="~/Scripts/A-user-events.js"></script>
+    <script src="~/Scripts/app/A-user-events.js"></script>
 }

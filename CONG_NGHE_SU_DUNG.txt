@@ -1,0 +1,55 @@
+Cac cong nghe duoc su dung trong project school_event_management
+==============================================================
+
+1) Nen tang va kien truc
+- ASP.NET MVC 5 (System.Web.Mvc 5.2.9) tren .NET Framework 4.7.2
+- Kieu ung dung: monolithic web app (MVC Areas cho phan Admin)
+- Ngon ngu backend: C#
+
+2) ORM va truy cap du lieu
+- Entity Framework 6 (Database First qua file Model1.edmx)
+- SQL Server (co script SQL tao schema va du lieu mau)
+
+3) Xac thuc va bao mat
+- User auth:
+  + JWT token (System.IdentityModel.Tokens.Jwt + Microsoft.IdentityModel.*)
+  + Luu token trong cookie HttpOnly
+- Admin auth:
+  + Forms Authentication (System.Web.Security)
+- Mat khau:
+  + Da chuyen sang Argon2id (Isopoh.Cryptography.Argon2)
+  + Co co che verify hash cu (SHA-256/plain) va nang cap len Argon2id khi dang nhap
+
+4) Frontend
+- Razor Views (.cshtml)
+- Bootstrap 5.2.3
+- jQuery 3.7.0
+- jQuery Validation + Unobtrusive Validation
+- CSS/JS custom trong thu muc Content va Scripts
+
+5) Thu vien va tinh nang bo tro
+- Newtonsoft.Json (xu ly JSON)
+- Microsoft.AspNet.WebApi.Client/Core/WebHost (ho tro HTTP/Web API stack)
+- ClosedXML + DocumentFormat.OpenXml (xuat/lam viec voi file Excel)
+- QRCoder (tao QR code)
+
+6) Tich hop ngoai
+- Google OAuth2 login (xac thuc tai khoan email domain truong)
+- SMTP email service (gui OTP, quen mat khau, reset mat khau)
+
+7) Quan ly goi thu vien
+- NuGet packages (packages.config + thu muc packages)
+- Build project dang o dinh dang .csproj (non-SDK style)
+
+8) Cau truc module chinh
+- User/public: Controllers + Views thong thuong
+- Admin: Areas/Admin (Controllers, Views, settings, stats, events)
+- Model du lieu: Models/* + EDMX generated files
+
+flowchart LR
+  Request --> Controllers
+  Controllers --> ViewModels
+  Controllers --> Services
+  Services --> Models
+  Controllers --> Views
+  ViewModels --> Views

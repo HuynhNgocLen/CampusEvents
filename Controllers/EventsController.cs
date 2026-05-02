@@ -1,5 +1,6 @@
 using school_event_management.Filters;
 using school_event_management.Models;
+using shcool_event_management.Infrastructure.Constants;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -53,9 +54,9 @@ namespace shcool_event_management.Controllers
                 .Include(e => e.Vien)
                 .Where(e => e.IsHidden == false)
                 .Where(e =>
-                    e.TrangThai == "Sắp diễn ra"
-                    || e.TrangThai == "Đang diễn ra"
-                    || (e.TrangThai == "Đã kết thúc"
+                    e.TrangThai == EventTrangThai.SapDienRa
+                    || e.TrangThai == EventTrangThai.DangMoDangKy
+                    || (e.TrangThai == EventTrangThai.DaKetThuc
                         && (e.NgayKetThuc.HasValue
                             ? e.NgayKetThuc.Value >= threeDaysAgo
                             : e.NgayBatDau >= threeDaysAgo))
@@ -149,6 +150,7 @@ namespace shcool_event_management.Controllers
             if (id == null) return RedirectToAction("Events");
 
             string currentStudentId = GetCurrentStudentId();
+            ViewBag.CurrentStudentId = currentStudentId;
             ViewBag.SinhVien = db.SinhViens.Include(s => s.Vien).FirstOrDefault(s => s.ID == currentStudentId);
 
             var tinhTrang = db.vw_SoChoConLai.FirstOrDefault(v => v.MaEvent == id);

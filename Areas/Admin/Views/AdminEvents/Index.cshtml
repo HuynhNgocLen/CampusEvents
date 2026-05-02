@@ -1,4 +1,5 @@
 @model List<shcool_event_management.Models.EVENT>
+@using System.IO
 @{
     ViewBag.Title = "Sự kiện — CampusEvents Admin";
     ViewBag.ActiveMenu = "events";
@@ -6,10 +7,13 @@
     var danhMucs = ViewBag.DanhMucs as List<shcool_event_management.Models.DanhMuc>;
     var currentCat = ViewBag.CurrentCat as string;
     var currentSearch = ViewBag.CurrentSearch as string;
+    int selectedYear = (int?)(ViewBag.Year) ?? DateTime.Now.Year;
+    int? selectedSemester = ViewBag.Semester as int?;
+    var availableYears = (ViewBag.AvailableYears as List<int>) ?? new List<int> { selectedYear };
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/campus-event-index.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/app/campus-event-index.css")" rel="stylesheet" />
 }
 
 <div class="ca-content">
@@ -17,11 +21,8 @@
         <div>
             <h1 class="ca-page-title">Sự kiện</h1>
         </div>
-        <a href="@Url.Action("Create","AdminEvents",new{area="Admin"})" class="ce-btn ce-btn-primary">
-            <span class="material-symbols-outlined">add</span>Tạo sự kiện mới
-        </a>
     </div>
-    <p class="ca-page-sub">Duyệt và lọc toàn bộ sự kiện đang hoạt động trên hệ thống.</p>
+    <p class="ca-page-sub">Duyệt các sự kiện ở trạng thái bản nháp theo tài khoản đang đăng nhập.</p>
 
     @* Search + filter *@
     <form method="get" action="@Url.Action("Index","AdminEvents",new{area="Admin"})" style="display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;">
@@ -31,6 +32,18 @@
                    placeholder="Tìm kiếm sự kiện..."
                    style="width:100%;height:38px;padding:0 1rem 0 2.4rem;border-radius:999px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.83rem;outline:none;"/>
         </div>
+        <select name="year" class="ca-dash-filter-select" onchange="this.form.submit()">
+            @foreach (var y in availableYears)
+            {
+                <option value="@y" @(y == selectedYear ? "selected" : "")>@y</option>
+            }
+        </select>
+        <select name="semester" class="ca-dash-filter-select" onchange="this.form.submit()">
+            <option value="" @(!selectedSemester.HasValue ? "selected" : "")>Cả năm</option>
+            <option value="1" @(selectedSemester == 1 ? "selected" : "")>Kỳ 1 (T9-T12)</option>
+            <option value="2" @(selectedSemester == 2 ? "selected" : "")>Kỳ 2 (T1-T4)</option>
+            <option value="3" @(selectedSemester == 3 ? "selected" : "")>Kỳ 3 (T5-T8)</option>
+        </select>
         @if (!string.IsNullOrWhiteSpace(currentCat))
         {
             <input type="hidden" name="cat" value="@currentCat"/>
@@ -40,7 +53,7 @@
         </button>
         @if (!string.IsNullOrWhiteSpace(currentSearch))
         {
-            <a href="@Url.Action("Index","AdminEvents",new{area="Admin",cat=currentCat})" class="ce-btn ce-btn-outline">
+            <a href="@Url.Action("Index","AdminEvents",new{area="Admin",cat=currentCat,year=selectedYear,semester=selectedSemester})" class="ce-btn ce-btn-outline">
                 <span class="material-symbols-outlined">close</span>Xóa tìm kiếm
             </a>
         }
@@ -49,7 +62,7 @@
     @* Category chip filters *@
     <div class="filter-chips">
         <a class="chip @(string.IsNullOrWhiteSpace(currentCat) ? "active" : "")"
-           href="@Url.Action("Index","AdminEvents",new{area="Admin",search=currentSearch})">
+           href="@Url.Action("Index","AdminEvents",new{area="Admin",search=currentSearch,year=selectedYear,semester=selectedSemester})">
             Tất cả
         </a>
         @if (danhMucs != null)
@@ -57,7 +70,7 @@
             foreach (var dm in danhMucs)
             {
                 <a class="chip @(currentCat == dm.MaDanhMuc ? "active" : "")"
-                   href="@Url.Action("Index","AdminEvents",new{area="Admin",cat=dm.MaDanhMuc,search=currentSearch})">
+                   href="@Url.Action("Index","AdminEvents",new{area="Admin",cat=dm.MaDanhMuc,search=currentSearch,year=selectedYear,semester=selectedSemester})">
                     @dm.TenDanhMuc
                 </a>
             }
@@ -81,21 +94,55 @@
                 double pct = ev.SoLuongToiDa > 0
                     ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa, 0) : 0;
 
+                bool isDraftStatus =
+                    string.Equals(ev.TrangThai, "Nhap", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(ev.TrangThai, "Nháp", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(ev.TrangThai, "Bản nháp", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(ev.TrangThai, "Bản Nháp", StringComparison.OrdinalIgnoreCase);
+
                 string statusClass = ev.TrangThai == "Sắp diễn ra" ? "ce-badge ce-badge-info"
                     : ev.TrangThai == "Đang diễn ra" ? "ce-badge ce-badge-success"
                     : ev.TrangThai == "Đã hủy" ? "ce-badge ce-badge-danger"
+                    : isDraftStatus ? "ce-badge ce-badge-warning ev-badge-draft"
                     : "ce-badge ce-badge-default";
+                string statusText = isDraftStatus ? "Bản nháp" : ev.TrangThai;
 
                 <div class="ev-card">
                     <div class="ev-card__thumb">
-                        @if (!string.IsNullOrEmpty(ev.AnhBia))
+                        @{
+                            string coverVirtualPath = null;
+                            string coverImageUrl = null;
+                            if (!string.IsNullOrWhiteSpace(ev.AnhBia))
+                            {
+                                var rawCover = ev.AnhBia.Trim();
+                                if (rawCover.StartsWith("~/"))
+                                {
+                                    coverVirtualPath = rawCover;
+                                }
+                                else if (rawCover.StartsWith("/"))
+                                {
+                                    coverVirtualPath = "~" + rawCover;
+                                }
+                                else
+                                {
+                                    coverVirtualPath = "~/Uploads/Events/" + rawCover.TrimStart('/');
+                                }
+
+                                var coverPhysicalPath = Server.MapPath(coverVirtualPath);
+                                if (!string.IsNullOrEmpty(coverPhysicalPath) && File.Exists(coverPhysicalPath))
+                                {
+                                    coverImageUrl = Url.Content(coverVirtualPath);
+                                }
+                            }
+                        }
+                        @if (!string.IsNullOrEmpty(coverImageUrl))
                         {
-                            <img src="@Url.Content(ev.AnhBia)" alt="@ev.TenEvent"/>
+                            <img src="@coverImageUrl" alt="@ev.TenEvent"/>
                         }
                         else
                         {
-                            <div class="ev-card__thumb-placeholder">
-                                <span class="material-symbols-outlined">event</span>
+                            <div class="ev-card__thumb-placeholder" style="--cat-color:@(ev.DanhMuc?.MauSac ?? "#3b82f6")">
+                                <span class="material-symbols-outlined">@(ev.DanhMuc != null && !string.IsNullOrWhiteSpace(ev.DanhMuc.Icon) ? ev.DanhMuc.Icon : "event")</span>
                             </div>
                         }
                         @if (ev.DanhMuc != null)
@@ -103,7 +150,7 @@
                             <span class="ev-card__cat">@ev.DanhMuc.TenDanhMuc</span>
                         }
                         <div class="ev-card__status-badge">
-                            <span class="@statusClass">@ev.TrangThai</span>
+                            <span class="@statusClass">@statusText</span>
                         </div>
                         @if (ev.IsHidden == true)
                         {

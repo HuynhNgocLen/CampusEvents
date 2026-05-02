@@ -1,90 +1,211 @@
-﻿@model shcool_event_management.Areas.Admin.ViewModels.EventDashboardViewModel
+@model shcool_event_management.Areas.Admin.ViewModels.EventDashboardViewModel
+@using System.IO
 @{
     ViewBag.Title = "Dashboard - Quản trị sự kiện";
     ViewBag.ActiveMenu = "dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 
-    // Bảo vệ null
+    // Fallback: ưu tiên Model, nếu null thì lấy từ ViewBag.
     var m = Model ?? new shcool_event_management.Areas.Admin.ViewModels.EventDashboardViewModel();
+    var totalEvents = m.TotalEvents > 0 ? m.TotalEvents : (int?)(ViewBag.TotalEvents) ?? 0;
+    var upcomingEvents = m.UpcomingEvents > 0 ? m.UpcomingEvents : (int?)(ViewBag.UpcomingEvents) ?? 0;
+    var ongoingEvents = m.OngoingEvents > 0 ? m.OngoingEvents : (int?)(ViewBag.OngoingEvents) ?? 0;
+    var completedEvents = (int?)(ViewBag.CompletedEvents) ?? 0;
+    var totalRegistrations = m.TotalRegistrations > 0 ? m.TotalRegistrations : (int?)(ViewBag.TotalRegistrations) ?? 0;
+    var totalStudents = (int?)(ViewBag.TotalStudents) ?? 0;
+    var cancelledEvents = (int?)(ViewBag.CancelledEvents) ?? 0;
+
+    var upcomingList = m.UpcomingList;
+    if ((upcomingList == null || !upcomingList.Any()) && ViewBag.UpcomingList != null)
+    {
+        upcomingList = ViewBag.UpcomingList as List<shcool_event_management.Models.EVENT>;
+    }
+
+    var categoryStats = m.CategoryStats;
+    if ((categoryStats == null || !categoryStats.Any()) && ViewBag.CategoryStats != null)
+    {
+        categoryStats = ViewBag.CategoryStats as List<shcool_event_management.Areas.Admin.ViewModels.CategoryStat>;
+    }
+
+    string[] monthlyLabels = (ViewBag.MonthlyLabels as string[]) ?? new string[0];
+    int[] monthlyCounts = (ViewBag.MonthlyCounts as int[]) ?? new int[0];
+    var maxMonthlyCount = monthlyCounts.Any() ? monthlyCounts.Max() : 0;
+    int selectedYear = (int?)(ViewBag.Year) ?? DateTime.Now.Year;
+    int? selectedSemester = ViewBag.Semester as int?;
+    var availableYears = (ViewBag.AvailableYears as List<int>) ?? new List<int> { selectedYear };
+    var adminVienCode = ViewBag.AdminVienCode as string;
+    var studentsInAdminFaculty = (int?)(ViewBag.StudentsInAdminFaculty) ?? 0;
+    var studentsOutAdminFaculty = (int?)(ViewBag.StudentsOutAdminFaculty) ?? 0;
 }
 
-<div class="ca-content">
-
-    <h1 class="ca-page-title">Tổng quan hệ thống</h1>
-    <p class="ca-page-sub">Chào mừng quay lại! Đây là bức tranh tổng thể về hoạt động sự kiện.</p>
-
-    <!-- Thống kê Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
-
-        <div class="ca-stat-card">
-            <div class="ca-stat-card__icon">
-                <span class="material-symbols-outlined">event</span>
-            </div>
-            <div>
-                <div class="ca-stat-card__label">TỔNG SỰ KIỆN</div>
-                <div class="ca-stat-card__val">@m.TotalEvents</div>
-            </div>
+<section class="ca-dash-page">
+    <div class="ca-page-header">
+        <div>
+            <h1 class="ca-page-title">Bảng điều khiển sự kiện</h1>
+            <p class="ca-page-sub">Tổng quan nhanh tình trạng vận hành và mức độ quan tâm của sinh viên.</p>
         </div>
-
-        <div class="ca-stat-card">
-            <div class="ca-stat-card__icon">
-                <span class="material-symbols-outlined">schedule</span>
-            </div>
-            <div>
-                <div class="ca-stat-card__label">SẮP DIỄN RA</div>
-                <div class="ca-stat-card__val">@m.UpcomingEvents</div>
-            </div>
-        </div>
-
-        <div class="ca-stat-card">
-            <div class="ca-stat-card__icon">
-                <span class="material-symbols-outlined">play_circle</span>
-            </div>
-            <div>
-                <div class="ca-stat-card__label">ĐANG DIỄN RA</div>
-                <div class="ca-stat-card__val">@m.OngoingEvents</div>
-            </div>
-        </div>
-
-        <div class="ca-stat-card">
-            <div class="ca-stat-card__icon">
-                <span class="material-symbols-outlined">how_to_reg</span>
-            </div>
-            <div>
-                <div class="ca-stat-card__label">TỔNG ĐĂNG KÝ</div>
-                <div class="ca-stat-card__val">@m.TotalRegistrations.ToString("N0")</div>
-            </div>
+        <div class="ca-dash-actions">
+            <form method="get" action="@Url.Action("Dashboard", "AdminDashboard", new { area = "Admin" })" class="ca-dash-filter-form">
+                <select name="year" class="ca-dash-filter-select" onchange="this.form.submit()">
+                    @foreach (var y in availableYears)
+                    {
+                        <option value="@y" @(y == selectedYear ? "selected" : "")>@y</option>
+                    }
+                </select>
+                <select name="semester" class="ca-dash-filter-select" onchange="this.form.submit()">
+                    <option value="" @(!selectedSemester.HasValue ? "selected" : "")>Cả năm</option>
+                    <option value="1" @(selectedSemester == 1 ? "selected" : "")>Kỳ 1 (T9-T12)</option>
+                    <option value="2" @(selectedSemester == 2 ? "selected" : "")>Kỳ 2 (T1-T4)</option>
+                    <option value="3" @(selectedSemester == 3 ? "selected" : "")>Kỳ 3 (T5-T8)</option>
+                </select>
+            </form>
+            <a class="ce-btn ce-btn-outline" href="@Url.Action("Index", "AdminEvents", new { area = "Admin" })">
+                <span class="material-symbols-outlined">calendar_month</span>
+                Danh sách sự kiện
+            </a>
         </div>
     </div>
 
-    <div class="ca-create-layout">
+    <div class="kpi-row">
+        <article class="kpi-card">
+            <div class="kpi-card__label">
+                <span class="kpi-card__icon ca-dash-icon-primary">
+                    <span class="material-symbols-outlined">event</span>
+                </span>
+                Tổng sự kiện
+            </div>
+            <div class="kpi-card__val">@totalEvents</div>
+            <div class="kpi-card__sub neu">
+                <span class="material-symbols-outlined">calendar_today</span>
+                Quy mô sự kiện hiện có
+            </div>
+        </article>
 
-        <!-- Sự kiện sắp diễn ra -->
-        <div>
-            <div class="ca-card">
-                <div class="ca-card__header">
-                    <div class="ca-card__header-icon">
-                        <span class="material-symbols-outlined">upcoming</span>
-                    </div>
-                    <div class="ca-card__title">Sự kiện sắp diễn ra</div>
+        <article class="kpi-card">
+            <div class="kpi-card__label">
+                <span class="kpi-card__icon ca-dash-icon-info">
+                    <span class="material-symbols-outlined">schedule</span>
+                </span>
+                Sắp diễn ra
+            </div>
+            <div class="kpi-card__val">@upcomingEvents</div>
+            <div class="kpi-card__sub up">
+                <span class="material-symbols-outlined">trending_up</span>
+                Chuẩn bị mở đăng ký
+            </div>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-card__label">
+                <span class="kpi-card__icon ca-dash-icon-success">
+                    <span class="material-symbols-outlined">play_circle</span>
+                </span>
+                Đang diễn ra
+            </div>
+            <div class="kpi-card__val">@ongoingEvents</div>
+            <div class="kpi-card__sub neu">
+                <span class="material-symbols-outlined">timelapse</span>
+                Cần theo dõi theo thời gian thực
+            </div>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-card__label">
+                <span class="kpi-card__icon ca-dash-icon-neutral">
+                    <span class="material-symbols-outlined">task_alt</span>
+                </span>
+                Đã hoàn thành
+            </div>
+            <div class="kpi-card__val">@completedEvents</div>
+            <div class="kpi-card__sub neu">
+                <span class="material-symbols-outlined">event_available</span>
+                Tổng sự kiện đã kết thúc
+            </div>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-card__label">
+                <span class="kpi-card__icon ca-dash-icon-warning">
+                    <span class="material-symbols-outlined">how_to_reg</span>
+                </span>
+                Tổng đăng ký
+            </div>
+            <div class="kpi-card__val">@totalRegistrations.ToString("N0")</div>
+            <div class="kpi-card__sub neu">
+                <span class="material-symbols-outlined">groups</span>
+                Lượt đăng ký toàn hệ thống
+            </div>
+        </article>
+    </div>
+
+    <div class="two-col">
+        <section class="ca-card">
+            <div class="ca-card__header">
+                <div class="ca-card__header-icon">
+                    <span class="material-symbols-outlined">upcoming</span>
                 </div>
-
-                @if (m.UpcomingList != null && m.UpcomingList.Any())
+                <div class="ca-card__title">Bản nháp sự kiện theo MaQTV</div>
+            </div>
+            <div class="ca-card__body">
+                @if (upcomingList != null && upcomingList.Any())
                 {
-                    foreach (var e in m.UpcomingList)
+                    foreach (var e in upcomingList)
                     {
-                        <div class="ce-reg-item" style="margin-bottom: 0.75rem;">
-                            <div class="ce-reg-item__thumb" style="background: var(--primary-light); color: var(--primary); font-weight: bold;">
-                                @e.DanhMuc?.MaDanhMuc
+                        var maxCap = e.SoLuongToiDa > 0 ? e.SoLuongToiDa : 1;
+                        var percent = (int)Math.Round(((double)e.SoLuongDaDangKy / maxCap) * 100);
+                        string coverVirtualPath = null;
+                        string coverImageUrl = null;
+                        if (!string.IsNullOrWhiteSpace(e.AnhBia))
+                        {
+                            var rawCover = e.AnhBia.Trim();
+                            if (rawCover.StartsWith("~/"))
+                            {
+                                coverVirtualPath = rawCover;
+                            }
+                            else if (rawCover.StartsWith("/"))
+                            {
+                                coverVirtualPath = "~" + rawCover;
+                            }
+                            else
+                            {
+                                coverVirtualPath = "~/Uploads/Events/" + rawCover.TrimStart('/');
+                            }
+
+                            var coverPhysicalPath = Server.MapPath(coverVirtualPath);
+                            if (!string.IsNullOrEmpty(coverPhysicalPath) && File.Exists(coverPhysicalPath))
+                            {
+                                coverImageUrl = Url.Content(coverVirtualPath);
+                            }
+                        }
+
+                        <div class="ca-dash-event-row">
+                            <div class="ca-dash-event-thumb" style="--cat-color:@(e.DanhMuc?.MauSac ?? "#3b82f6")">
+                                @if (!string.IsNullOrEmpty(coverImageUrl))
+                                {
+                                    <img src="@coverImageUrl" alt="@e.TenEvent" loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="ca-dash-event-thumb-placeholder">
+                                        <span class="material-symbols-outlined">@(e.DanhMuc?.Icon ?? "event")</span>
+                                    </div>
+                                }
                             </div>
-                            <div class="ce-reg-item__info">
-                                <div class="ce-reg-item__title">@e.TenEvent</div>
-                                <div class="ce-reg-item__sub">
-                                    @e.NgayBatDau.ToString("dd/MM/yyyy HH:mm") — @(e.SoLuongDaDangKy)/@(e.SoLuongToiDa) người
+                            <div class="ca-dash-event-main">
+                                <div class="ca-dash-event-title">@e.TenEvent</div>
+                                <div class="ca-dash-event-sub">
+                                    Tạo lúc: @e.NgayTao.ToString("dd/MM/yyyy HH:mm") — Trạng thái: @e.TrangThai
+                                </div>
+                                <div class="prog-wrap">
+                                    <div class="prog-bg">
+                                        <div class="prog-fill ca-dash-progress-fill" style="width:@Math.Min(percent, 100)%"></div>
+                                    </div>
+                                    <strong>@Math.Min(percent, 100)%</strong>
                                 </div>
                             </div>
-                            <a href="@Url.Action("RegistrationDetail", new { id = e.MaEvent })"
-                               class="ce-btn ce-btn-sm ce-btn-outline">Xem DS</a>
+                            <a href="@Url.Action("Edit", "AdminEvents", new { area = "Admin", id = e.MaEvent })" class="ce-btn ce-btn-sm ce-btn-outline">
+                                Chỉnh sửa
+                            </a>
                         </div>
                     }
                 }
@@ -92,53 +213,126 @@
                 {
                     <div class="ce-empty">
                         <span class="material-symbols-outlined">event_busy</span>
-                        <div class="ce-empty__title">Hiện chưa có sự kiện sắp diễn ra</div>
+                        <div class="ce-empty__title">Hiện chưa có bài đăng bản nháp theo MaQTV đang đăng nhập</div>
                     </div>
                 }
             </div>
-        </div>
+        </section>
 
-        <!-- Thống kê theo danh mục -->
-        <div>
-            <div class="ca-card">
-                <div class="ca-card__header">
-                    <div class="ca-card__header-icon">
-                        <span class="material-symbols-outlined">pie_chart</span>
-                    </div>
-                    <div class="ca-card__title">Thống kê theo danh mục</div>
+        <section class="ca-card">
+            <div class="ca-card__header">
+                <div class="ca-card__header-icon">
+                    <span class="material-symbols-outlined">monitoring</span>
                 </div>
+                <div class="ca-card__title">Tình trạng hệ thống</div>
+            </div>
+            <div class="ca-card__body ca-dash-health">
+                <div class="ca-dash-health-item">
+                    <span class="material-symbols-outlined">school</span>
+                    <div>
+                        <div class="ca-dash-health-label">Sinh viên toàn hệ thống (theo bộ lọc)</div>
+                        <div class="ca-dash-health-value">@totalStudents.ToString("N0")</div>
+                    </div>
+                </div>
+                <div class="ca-dash-health-item">
+                    <span class="material-symbols-outlined">domain</span>
+                    <div>
+                        <div class="ca-dash-health-label">SV đăng ký thuộc viện @(string.IsNullOrWhiteSpace(adminVienCode) ? "N/A" : adminVienCode)</div>
+                        <div class="ca-dash-health-value">@studentsInAdminFaculty.ToString("N0")</div>
+                    </div>
+                </div>
+                <div class="ca-dash-health-item">
+                    <span class="material-symbols-outlined">public</span>
+                    <div>
+                        <div class="ca-dash-health-label">SV đăng ký không thuộc viện @(string.IsNullOrWhiteSpace(adminVienCode) ? "N/A" : adminVienCode)</div>
+                        <div class="ca-dash-health-value">@studentsOutAdminFaculty.ToString("N0")</div>
+                    </div>
+                </div>
+                <div class="ca-dash-health-item">
+                    <span class="material-symbols-outlined">event_busy</span>
+                    <div>
+                        <div class="ca-dash-health-label">Sự kiện đã hủy</div>
+                        <div class="ca-dash-health-value">@cancelledEvents</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-                <table class="ca-table" style="margin-top: 0.5rem;">
-                    <thead>
-                        <tr>
-                            <th>Danh mục</th>
-                            <th>Số sự kiện</th>
-                            <th>Tổng đăng ký</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (m.CategoryStats != null && m.CategoryStats.Any())
-                        {
-                            foreach (var item in m.CategoryStats)
-                            {
-                                <tr>
-                                    <td><strong>@item.Category</strong></td>
-                                    <td>@item.Count</td>
-                                    <td>@item.TotalReg.ToString("N0")</td>
-                                </tr>
-                            }
-                        }
-                        else
+    <section class="ca-card ca-dash-spacing">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon">
+                <span class="material-symbols-outlined">pie_chart</span>
+            </div>
+            <div class="ca-card__title">Thống kê theo danh mục</div>
+        </div>
+        <div class="ca-table-scroll">
+            <table class="ca-table">
+                <thead>
+                    <tr>
+                        <th>Danh mục</th>
+                        <th>Số sự kiện</th>
+                        <th>Tổng đăng ký</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (categoryStats != null && categoryStats.Any())
+                    {
+                        foreach (var item in categoryStats.OrderByDescending(x => x.TotalReg))
                         {
                             <tr>
-                                <td colspan="3" style="text-align:center; padding:2rem; color:var(--text-muted);">
-                                    Chưa có dữ liệu thống kê theo danh mục
-                                </td>
+                                <td><strong>@item.Category</strong></td>
+                                <td>@item.Count</td>
+                                <td>@item.TotalReg.ToString("N0")</td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="ca-dash-empty-cell">
+                                Chưa có dữ liệu thống kê theo danh mục
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    </div>
-</div>
+    </section>
+
+    <section class="ca-card ca-dash-spacing">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon">
+                <span class="material-symbols-outlined">stacked_bar_chart</span>
+            </div>
+            <div class="ca-card__title">Đăng ký theo tháng (@selectedYear)</div>
+        </div>
+        <div class="ca-card__body">
+            @if (monthlyCounts.Any())
+            {
+                <div class="ca-dash-monthly-grid">
+                    @for (int i = 0; i < monthlyCounts.Length; i++)
+                    {
+                        var heightPercent = maxMonthlyCount > 0
+                            ? (int)Math.Round((double)monthlyCounts[i] / maxMonthlyCount * 100)
+                            : 0;
+                        <div class="ca-dash-month-item">
+                            <div class="ca-dash-month-col-wrap">
+                                <div class="ca-dash-month-col" style="height:@Math.Max(heightPercent, 4)%;" title="@monthlyCounts[i] lượt đăng ký"></div>
+                            </div>
+                            <div class="ca-dash-month-label">@monthlyLabels[i]</div>
+                            <div class="ca-dash-month-value">@monthlyCounts[i]</div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="ce-empty">
+                    <span class="material-symbols-outlined">bar_chart_off</span>
+                    <div class="ce-empty__title">Chưa có dữ liệu đăng ký theo tháng</div>
+                </div>
+            }
+        </div>
+    </section>
+</section>
