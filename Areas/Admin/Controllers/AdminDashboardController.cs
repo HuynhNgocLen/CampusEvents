@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using shcool_event_management.Areas.Admin.ViewModels;
+using shcool_event_management.Infrastructure.Constants;
 using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
@@ -60,17 +61,17 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             // Thống kê tổng quan 
             ViewBag.TotalEvents = eventsQuery.Count();
-            ViewBag.UpcomingEvents = eventsQuery.Count(e => e.TrangThai == "Sắp diễn ra"
+            ViewBag.UpcomingEvents = eventsQuery.Count(e => e.TrangThai == EventTrangThai.SapDienRa
                                                             && e.NgayBatDau > DateTime.Now);
-            ViewBag.OngoingEvents = eventsQuery.Count(e => e.TrangThai == "Đang diễn ra");
-            ViewBag.CompletedEvents = eventsQuery.Count(e => e.TrangThai == "Đã kết thúc");
+            ViewBag.OngoingEvents = eventsQuery.Count(e => e.TrangThai == EventTrangThai.DangDienRa);
+            ViewBag.CompletedEvents = eventsQuery.Count(e => e.TrangThai == EventTrangThai.DaKetThuc);
             ViewBag.TotalRegistrations = registrationsQuery.Count();
             // "Sinh viên toàn hệ thống" theo bộ lọc hiện tại: mỗi sinh viên trong từng sự kiện được tính là 1 lượt.
             ViewBag.TotalStudents = registrationsQuery
                 .Select(d => new { d.IDSinhVien, d.MaEvent })
                 .Distinct()
                 .Count();
-            ViewBag.CancelledEvents = eventsQuery.Count(e => e.TrangThai == "Đã hủy");
+            ViewBag.CancelledEvents = eventsQuery.Count(e => e.TrangThai == EventTrangThai.DaHuy);
 
             int inFacultyCount = 0;
             int outFacultyCount = 0;

@@ -261,9 +261,14 @@ namespace shcool_event_management.Areas.Admin.Controllers
             return lockState.GetValueOrDefault() == 1;
         }
 
+        /// <summary>
+        /// Quyền 0: có thể tạo QTV cấp 0, 1 hoặc 2.
+        /// Quyền 2: chỉ tạo được QTV quyền 1 (cùng viện).
+        /// Quyền 1: không được thêm (không vào được trang).
+        /// </summary>
         private static List<int> GetCreatableRoles(int currentRole)
         {
-            if (currentRole == 0) return new List<int> { 1, 2 };
+            if (currentRole == 0) return new List<int> { 0, 1, 2 };
             if (currentRole == 2) return new List<int> { 1 };
             return new List<int>();
         }

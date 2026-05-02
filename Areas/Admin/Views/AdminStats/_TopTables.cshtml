@@ -95,6 +95,8 @@
         var year = document.getElementById('top-year-select').value;
         var url  = '@Url.Action("GetTopEvents", "AdminStats", new { area = "Admin" })'
                  + '?type=' + _currentTopType + '&year=' + year;
+        var mv = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.StatsMaVien ?? ""));
+        if (mv) url += '&maVien=' + encodeURIComponent(mv);
 
         // Render header
         var heads = _topHeaders[_currentTopType];

@@ -5,13 +5,25 @@ using System.Web.Mvc;
 using ClosedXML.Excel;
 using System.Data.Entity;
 using shcool_event_management.Areas.Admin.Helpers;
+using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
 {
     public partial class AdminStatsController
     {
-        public ActionResult ExportReport(int year = 0, string semester = "")
+        public ActionResult ExportReport(int year = 0, string semester = "", string maVien = "")
         {
+            var currentAdmin = GetCurrentAdmin();
+            if (currentAdmin == null)
+                return new HttpStatusCodeResult(403);
+
+            int aq = currentAdmin.Quyen;
+            if (aq != 0 && aq != 1 && aq != 2)
+                return new HttpStatusCodeResult(403);
+
+            string effectiveMaVien = ResolveEffectiveMaVien(maVien, currentAdmin, out _);
+            var eventsScope = BuildScopedEventsQuery(aq, effectiveMaVien);
+
             if (year == 0) year = DateTime.Now.Year;
 
             int[] activeMonths = GetSemesterMonths(semester);
@@ -20,7 +32,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
                             : semester == "hk3" ? "Học kỳ 3 (T6-T7)"
                             : "Cả năm";
 
-            var events = _db.EVENTs
+            var events = eventsScope
                 .Include("DanhMuc")
                 .Include("DiaDiem")
                 .Where(e => e.NgayBatDau.Year == year && activeMonths.Contains(e.NgayBatDau.Month))
@@ -101,7 +113,6 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 var stream = new MemoryStream();
                 wb.SaveAs(stream);
                 stream.Position = 0;
-                var currentAdmin = GetCurrentAdmin();
                 if (currentAdmin != null)
                 {
                     try

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Data.Entity;
 using school_event_management.Helpers;
+using shcool_event_management.Infrastructure.Constants;
 
 namespace shcool_event_management.Areas.Admin.Controllers
 {
@@ -113,7 +114,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             if (ev == null) return Json(new { success = false, message = "Không tìm thấy sự kiện." });
             if (ev.NguoiDang != GetCurrentAdminMaQTV()) return Json(new { success = false, message = "Bạn không có quyền thao tác sự kiện này." });
 
-            ev.TrangThai = "Đã hủy";
+            ev.TrangThai = EventTrangThai.DaHuy;
             ev.IsHidden = true;
             ev.NgayCapNhat = DateTime.Now;
             _db.SaveChanges();
@@ -132,9 +133,9 @@ namespace shcool_event_management.Areas.Admin.Controllers
             var startReg = ev.NgayBatDauDangKy;
             var endReg = ev.NgayHetHanDangKy;
 
-            if (startReg.HasValue && startReg.Value > now) ev.TrangThai = "Sắp diễn ra";
-            else if (startReg.HasValue && endReg.HasValue && now >= startReg.Value && now <= endReg.Value) ev.TrangThai = "Đang diễn ra";
-            else ev.TrangThai = "Sắp diễn ra";
+            if (startReg.HasValue && startReg.Value > now) ev.TrangThai = EventTrangThai.SapDienRa;
+            else if (startReg.HasValue && endReg.HasValue && now >= startReg.Value && now <= endReg.Value) ev.TrangThai = EventTrangThai.DangDienRa;
+            else ev.TrangThai = EventTrangThai.SapDienRa;
 
             ev.IsHidden = false;
             ev.NgayCapNhat = DateTime.Now;

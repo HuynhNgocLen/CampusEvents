@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity.Validation;
 using shcool_event_management.Areas.Admin.Helpers;
+using shcool_event_management.Infrastructure.Constants;
 using shcool_event_management.Models;
 
 namespace shcool_event_management.Areas.Admin.Controllers
@@ -81,7 +82,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 return View(CreateViewPath, model);
             }
 
-            model.TrangThai = btnAction == "draft" ? "Bản nháp" : "Sắp diễn ra";
+            model.TrangThai = btnAction == "draft" ? EventTrangThai.BanNhap : EventTrangThai.SapDienRa;
             model.ChiTiet = model.MoTa;
             model.NgayTao = DateTime.Now;
             model.SoLuongDaDangKy = 0;

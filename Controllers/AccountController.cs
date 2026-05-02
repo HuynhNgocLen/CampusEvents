@@ -441,16 +441,4 @@ namespace school_event_management.Controllers
             public string TenNghanh { get; set; }
         }
     }
-
-    public class JwtAuthorizeAttribute : AuthorizeAttribute
-    {
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
-        {
-            var cookie = httpContext.Request.Cookies["jwt"];
-            if (cookie == null) return false;
-            return JwtService.ValidateToken(cookie.Value) != null;
-        }
-        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
-            => filterContext.Result = new RedirectResult("/Account/Login?tokenExpired=true");
-    }
 }

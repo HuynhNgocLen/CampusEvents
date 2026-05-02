@@ -33,7 +33,7 @@
         }
     }
 
-    var canViewStats = adminQuyen == 0;
+    var canViewStats = adminQuyen == 0 || adminQuyen == 1 || adminQuyen == 2;
     var canManageAdmins = adminQuyen == 0 || adminQuyen == 2;
     var canViewActivityLogFull = adminQuyen == 0 || adminQuyen == 2;
     var canViewActivityAudit = false;
@@ -63,13 +63,13 @@
     <!-- toastr -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
-    <link href="@Url.Content("~/Content/campus-variables.css")"  rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-base.css")"       rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-navbar.css")"     rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-components.css")" rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-pages.css")"      rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-admin.css")"      rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-vibrant.css")"    rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-variables.css")"  rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-base.css")"       rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-navbar.css")"     rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-components.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-pages.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-admin.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-vibrant.css")"    rel="stylesheet" />
 
     @RenderSection("styles", required: false)
 
@@ -372,7 +372,7 @@
     <script>
         window.ceServerNotifications = @Html.Raw(System.Web.Helpers.Json.Encode(adminNotifications));
     </script>
-    <script src="@Url.Content("~/Scripts/campus-app.js")"></script>
+    <script src="@Url.Content("~/Scripts/app/campus-app.js")"></script>
 
     @RenderSection("scripts", required: false)
 </body>

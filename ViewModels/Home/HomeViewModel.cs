@@ -1,7 +1,7 @@
-﻿using shcool_event_management.Models;
+using shcool_event_management.Models;
 using System.Collections.Generic;
 
-namespace school_event_management.Models
+namespace shcool_event_management.ViewModels.Home
 {
     public class HomeViewModel
     {
@@ -9,6 +9,5 @@ namespace school_event_management.Models
         public IEnumerable<EVENT> DanhSachSuKien { get; set; }
 
         public IEnumerable<DanhMuc> DanhMucs { get; set; }
-
     }
 }
