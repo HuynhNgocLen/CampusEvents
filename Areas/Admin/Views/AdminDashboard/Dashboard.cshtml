@@ -54,9 +54,9 @@
                 </select>
                 <select name="semester" class="ca-dash-filter-select" onchange="this.form.submit()">
                     <option value="" @(!selectedSemester.HasValue ? "selected" : "")>Cả năm</option>
-                    <option value="1" @(selectedSemester == 1 ? "selected" : "")>Kỳ 1 (T9-T12)</option>
-                    <option value="2" @(selectedSemester == 2 ? "selected" : "")>Kỳ 2 (T1-T4)</option>
-                    <option value="3" @(selectedSemester == 3 ? "selected" : "")>Kỳ 3 (T5-T8)</option>
+                    <option value="1" @(selectedSemester == 1 ? "selected" : "")>Học kì 1</option>
+                    <option value="2" @(selectedSemester == 2 ? "selected" : "")>Học kì 2</option>
+                    <option value="3" @(selectedSemester == 3 ? "selected" : "")>Học kì 3</option>
                 </select>
             </form>
             <a class="ce-btn ce-btn-outline" href="@Url.Action("Index", "AdminEvents", new { area = "Admin" })">
@@ -318,7 +318,7 @@
                             : 0;
                         <div class="ca-dash-month-item">
                             <div class="ca-dash-month-col-wrap">
-                                <div class="ca-dash-month-col" style="height:@Math.Max(heightPercent, 4)%;" title="@monthlyCounts[i] lượt đăng ký"></div>
+                                <div class="ca-dash-month-col@(monthlyCounts[i] == 0 ? " ca-dash-month-col--zero" : "")" style="height:@Math.Max(heightPercent, 4)%;" title="@monthlyCounts[i] lượt đăng ký"></div>
                             </div>
                             <div class="ca-dash-month-label">@monthlyLabels[i]</div>
                             <div class="ca-dash-month-value">@monthlyCounts[i]</div>

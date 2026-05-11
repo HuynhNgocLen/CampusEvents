@@ -27,9 +27,9 @@ namespace shcool_event_management.Areas.Admin.Controllers
             if (year == 0) year = DateTime.Now.Year;
 
             int[] activeMonths = GetSemesterMonths(semester);
-            string semLabel = semester == "hk1" ? "Học kỳ 1 (T8-T12)"
-                            : semester == "hk2" ? "Học kỳ 2 (T1-T5)"
-                            : semester == "hk3" ? "Học kỳ 3 (T6-T7)"
+            string semLabel = semester == "hk1" ? "Học kì 1"
+                            : semester == "hk2" ? "Học kì 2"
+                            : semester == "hk3" ? "Học kì 3"
                             : "Cả năm";
 
             var events = eventsScope

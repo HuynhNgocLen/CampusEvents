@@ -182,4 +182,12 @@ img { max-width: 100%; display: block; }
 }
 .ce-reveal.visible { opacity: 1; transform: none; }
 
+/* Tránh khối opacity:0 chiếm chỗ / IO không kịp bật trên mobile */
+@media (max-width: 991.98px) {
+  .ce-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 

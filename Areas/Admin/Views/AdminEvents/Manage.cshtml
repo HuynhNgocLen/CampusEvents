@@ -19,7 +19,7 @@
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/app/campus-event-manage.css?v=3")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/app/campus-event-manage.css?v=9")" rel="stylesheet" />
 }
 
 <div class="ca-content">
@@ -54,7 +54,7 @@
             }
             @if (semester.HasValue)
             {
-                <text> · Học kỳ @semester</text>
+                <text> · Học kì @semester</text>
             }
             @if (year.HasValue)
             {
@@ -64,6 +64,25 @@
     }
 
 </div>
+
+<div class="modal fade em-qr-modal" id="emQrDiemDanhModal" tabindex="-1" aria-labelledby="emQrDiemDanhModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content em-qr-modal__shell">
+            <div class="modal-header em-qr-modal__header">
+                <h2 class="modal-title em-qr-modal__title" id="emQrDiemDanhModalLabel">Điểm danh QR</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body em-qr-modal__body-outer" id="emQrDiemDanhModalBody">
+                <div class="em-qr-modal__loading">
+                    <span class="material-symbols-outlined em-spin">progress_activity</span>
+                    <span>Đang tạo mã...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="emQrFsGlobal" class="em-qr-fs-global" aria-hidden="true"></div>
 
 @Html.Partial("~/Areas/Admin/Views/AdminEvents/Manage/_StudentModal.cshtml")
 
@@ -111,7 +130,8 @@
         closeEventUrl:   '@Url.Action("CloseEvent","AdminEvents",new{area="Admin"})',
         reopenEventUrl:  '@Url.Action("ReopenEvent","AdminEvents",new{area="Admin"})',
         exportExcelUrl:  '@Url.Action("ExportExcel","AdminEvents",new{area="Admin"})',
-        toggleHiddenUrl: '@Url.Action("ToggleHidden","AdminEvents",new{area="Admin"})'
+        toggleHiddenUrl: '@Url.Action("ToggleHidden","AdminEvents",new{area="Admin"})',
+        getAttendanceQrUrl: '@Url.Action("GetAttendanceQr","AdminEvents",new{area="Admin"})'
     };
 </script>
 <script src="@Url.Content("~/Scripts/app/A-event-manage.js")"></script>

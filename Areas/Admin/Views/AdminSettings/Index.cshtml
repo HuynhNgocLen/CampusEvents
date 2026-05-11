@@ -391,16 +391,20 @@ function checkMatch() {
     else         { h.textContent = '✕ Mật khẩu không khớp'; h.style.color = 'var(--danger)'; }
 }
 
-// ── Theme switcher ────────────────────────────
+// ── Theme switcher (đồng bộ với CeTheme: header, localStorage, icon, viền swatch) ──
 function setTheme(theme) {
-    const oldTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const oldTheme = (typeof CeTheme !== 'undefined' && CeTheme.get) ? CeTheme.get() : (document.documentElement.getAttribute('data-theme') || 'light');
     const statusEl = document.getElementById('themeSaveStatus');
     const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
 
-    document.documentElement.setAttribute('data-theme', theme);
-    document.getElementById('swLight')?.classList.toggle('selected', theme==='light');
-    document.getElementById('swDark')?.classList.toggle('selected', theme==='dark');
-    try { localStorage.setItem('ce-theme', theme); } catch (e) {}
+    if (typeof CeTheme !== 'undefined' && CeTheme.set) {
+        CeTheme.set(theme, { skipServer: true });
+    } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        try { localStorage.setItem('ce-theme', theme); } catch (e) {}
+        document.getElementById('swLight')?.classList.toggle('selected', theme === 'light');
+        document.getElementById('swDark')?.classList.toggle('selected', theme === 'dark');
+    }
     if (statusEl) {
         statusEl.className = 'appearance-status';
         statusEl.textContent = 'Đang lưu giao diện...';
@@ -422,10 +426,14 @@ function setTheme(theme) {
         }
     })
     .catch(() => {
-        document.documentElement.setAttribute('data-theme', oldTheme);
-        document.getElementById('swLight')?.classList.toggle('selected', oldTheme==='light');
-        document.getElementById('swDark')?.classList.toggle('selected', oldTheme==='dark');
-        try { localStorage.setItem('ce-theme', oldTheme); } catch (e) {}
+        if (typeof CeTheme !== 'undefined' && CeTheme.set) {
+            CeTheme.set(oldTheme, { skipServer: true });
+        } else {
+            document.documentElement.setAttribute('data-theme', oldTheme);
+            document.getElementById('swLight')?.classList.toggle('selected', oldTheme === 'light');
+            document.getElementById('swDark')?.classList.toggle('selected', oldTheme === 'dark');
+            try { localStorage.setItem('ce-theme', oldTheme); } catch (e) {}
+        }
         if (statusEl) {
             statusEl.className = 'appearance-status error';
             statusEl.textContent = 'Lưu thất bại, đã hoàn tác giao diện.';

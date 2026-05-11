@@ -1,0 +1,49 @@
+@{
+    ViewBag.Title = ViewBag.Title ?? "Điểm danh";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+    var kind = ViewBag.CheckInKind as string ?? "invalid";
+}
+
+<div class="container py-5" style="max-width: 520px;">
+    <div class="text-center mb-4">
+        @if (kind == "success")
+        {
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                 style="width: 88px; height: 88px; background: rgba(16, 185, 129, 0.15); color: #059669;">
+                <span class="material-symbols-outlined" style="font-size: 52px;">check_circle</span>
+            </div>
+            <h1 class="h4 fw-bold mb-2" style="color: var(--text, #0f172a);">Điểm danh thành công</h1>
+        }
+        else if (kind == "already")
+        {
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                 style="width: 88px; height: 88px; background: rgba(59, 130, 246, 0.12); color: #2563eb;">
+                <span class="material-symbols-outlined" style="font-size: 52px;">info</span>
+            </div>
+            <h1 class="h4 fw-bold mb-2" style="color: var(--text, #0f172a);">Đã điểm danh</h1>
+        }
+        else
+        {
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                 style="width: 88px; height: 88px; background: rgba(239, 68, 68, 0.12); color: #dc2626;">
+                <span class="material-symbols-outlined" style="font-size: 52px;">cancel</span>
+            </div>
+            <h1 class="h4 fw-bold mb-2" style="color: var(--text, #0f172a);">Không thể điểm danh</h1>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ViewBag.EventTitle as string))
+    {
+        <p class="text-center text-muted small mb-2">Sự kiện</p>
+        <p class="text-center fw-semibold mb-4">@ViewBag.EventTitle</p>
+    }
+
+    <div class="rounded-3 p-4 mb-4 text-center" style="background: var(--surface, #f8fafc); border: 1px solid var(--border, #e2e8f0);">
+        <p class="mb-0" style="font-size: 0.95rem; line-height: 1.55;">@ViewBag.CheckInMessage</p>
+    </div>
+
+    <div class="d-grid gap-2">
+        <a href="@Url.Action("Events", "Events")" class="ce-btn ce-btn-primary ce-btn-block">Về danh sách sự kiện</a>
+        <a href="@Url.Action("Registrations", "Registration")" class="ce-btn ce-btn-outline ce-btn-block">Đăng ký của tôi</a>
+    </div>
+</div>

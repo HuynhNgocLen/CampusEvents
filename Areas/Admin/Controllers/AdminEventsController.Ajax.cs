@@ -143,5 +143,65 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             return Json(new { success = true, status = ev.TrangThai });
         }
+
+        /// <summary>Liên kết điểm danh + ảnh QR (modal trang Quản lý sự kiện).</summary>
+        public JsonResult GetAttendanceQr(int id)
+        {
+            var currentAdmin = GetCurrentAdmin();
+            if (currentAdmin == null)
+            {
+                return Json(new { success = false, message = "Phiên đăng nhập đã hết hạn." }, JsonRequestBehavior.AllowGet);
+            }
+
+            var ev = _db.EVENTs.FirstOrDefault(x => x.MaEvent == id);
+            if (ev == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy sự kiện." }, JsonRequestBehavior.AllowGet);
+            }
+
+            var canAccess = currentAdmin.Quyen == 0
+                || string.Equals(ev.NguoiDang, currentAdmin.MaQTV, StringComparison.OrdinalIgnoreCase);
+            if (!canAccess)
+            {
+                return Json(new { success = false, message = "Bạn không có quyền xem dữ liệu sự kiện này." }, JsonRequestBehavior.AllowGet);
+            }
+
+            var qrSecret = System.Configuration.ConfigurationManager.AppSettings["AttendanceQrSigningKey"];
+            qrSecret = string.IsNullOrWhiteSpace(qrSecret) ? "CampusEvents_AttendanceQr_ChangeInWebConfig" : qrSecret.Trim();
+            var token = AttendanceCheckInTokenHelper.CreateToken(id, qrSecret);
+            var rel = Url.Action("CheckIn", "Attendance", new { area = "", id = id, t = token });
+            string abs = null;
+            if (Request?.Url != null && rel != null)
+            {
+                abs = new System.Uri(Request.Url, rel).AbsoluteUri;
+            }
+
+            string qrSrc = null;
+            if (!string.IsNullOrEmpty(abs))
+            {
+                try
+                {
+                    qrSrc = shcool_event_management.Helpers.QRCodeHelper.GenerateQRCodeFromLink(abs, 12);
+                }
+                catch
+                {
+                    // bỏ qua nếu thư viện QR lỗi
+                }
+            }
+
+            var expiresAtUtc = AttendanceCheckInTokenHelper.GetCurrentTokenExpiresAtUtc();
+            var downloadFileName = AttendanceQrDownloadFileNameHelper.Build(id, ev.TenEvent);
+
+            return Json(new
+            {
+                success = true,
+                checkInUrl = abs,
+                qrSrc,
+                eventTitle = ev.TenEvent,
+                downloadFileName,
+                expiresAtUtc = expiresAtUtc.ToString("o", System.Globalization.CultureInfo.InvariantCulture),
+                windowSeconds = AttendanceCheckInTokenHelper.TokenWindowSeconds
+            }, JsonRequestBehavior.AllowGet);
+        }
     }
 }
