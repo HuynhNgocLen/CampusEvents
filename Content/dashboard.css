@@ -1,0 +1,304 @@
+/* ============================================================
+   CAMPUS EVENTS – DASHBOARD CSS  (dashboard.css)
+   Import sau site.css / your base styles
+   ============================================================ */
+
+/* ── Section layout ── */
+.dash-section { }
+.dash-section__hd {
+    display: flex; align-items: flex-end;
+    justify-content: space-between; gap: 12px;
+    flex-wrap: wrap;
+}
+.dash-section__title {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 800; color: var(--text); margin: 0 0 4px;
+}
+.dash-section__sub { font-size: .875rem; color: var(--text-muted); margin: 0; }
+.dash-link-more {
+    color: var(--primary); font-size: .875rem; font-weight: 600;
+    text-decoration: none; white-space: nowrap;
+    transition: gap .2s;
+}
+.dash-link-more:hover { color: var(--primary); text-decoration: underline; }
+
+/* ── Scroll reveal animation ── */
+.dash-reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity .5s ease, transform .5s ease;
+}
+.dash-reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Alert banner ── */
+.dash-alert {
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg,rgba(14,165,233,.12),rgba(37,99,235,.08));
+    border: 1px solid rgba(56,189,248,.25);
+    border-radius: 14px; padding: 14px 18px;
+}
+.dash-alert__icon {
+    width: 42px; height: 42px; flex-shrink: 0;
+    background: rgba(56,189,248,.15); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #38bdf8;
+}
+.dash-alert__title { font-weight: 700; font-size: .95rem; color: var(--text); }
+.dash-alert__sub { font-size: .8rem; color: var(--text-muted); }
+
+/* ── Filter chips ── */
+.dash-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dash-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface-2); border: 1.5px solid var(--border);
+    color: var(--text-muted); font-size: .82rem; font-weight: 500;
+    padding: 6px 14px; border-radius: 20px;
+    cursor: pointer; transition: all .2s;
+}
+.dash-chip .material-symbols-outlined { font-size: 16px; }
+.dash-chip:hover { border-color: var(--primary); color: var(--primary); }
+.dash-chip.active {
+    background: var(--primary); border-color: var(--primary);
+    color: #fff;
+}
+
+/* ── Event card (Modern Redesign) ── */
+.dash-card-modern {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    transition: transform .25s, box-shadow .25s;
+    display: flex; flex-direction: column; height: 100%;
+    overflow: hidden; text-decoration: none; color: inherit;
+}
+.dash-card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+.dash-event-card__img { position: relative; height: 200px; overflow: hidden; background: #f8fafc; }
+.dash-event-card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.dash-card-modern:hover .dash-event-card__img img { transform: scale(1.05); }
+
+/* Ripple Placeholder */
+.dash-event-card__ripple-ph {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+}
+.dash-event-card__ripple-ph .ripple-icon-wrapper {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.dash-event-card__ripple-ph .material-symbols-outlined { font-size: 32px; }
+
+/* Badges Top Left */
+.dash-event-card__badges-tl {
+    position: absolute; top: 12px; left: 12px;
+    display: flex; gap: 8px;
+}
+.ce-badge-pill {
+    font-size: 0.65rem; font-weight: 700; padding: 4px 10px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* Save Button Top Right */
+.dash-event-card__save-modern {
+    position: absolute; top: 12px; right: 12px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #ffffff; border: 1px solid #e2e8f0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all .2s;
+}
+.dash-event-card__save-modern:hover { background: #f8fafc; }
+.dash-event-card__save-modern .material-symbols-outlined { font-size: 18px; color: #64748b; }
+
+/* Body */
+.dash-event-card__body-modern { padding: 18px 16px; display: flex; flex-direction: column; flex: 1; }
+.dash-event-card__title-modern {
+    font-weight: 800; font-size: 1.05rem; color: #1e293b;
+    margin-bottom: 12px; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    line-height: 1.4;
+}
+.dash-event-card__meta-modern { margin-bottom: 16px; }
+.dash-event-card__meta-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.85rem; color: #64748b; margin-bottom: 6px;
+}
+.dash-event-card__meta-item .material-symbols-outlined { font-size: 16px; color: #94a3b8; }
+
+/* Footer */
+.dash-event-card__footer-modern {
+    margin-top: auto; display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; border-top: 1px dashed #e2e8f0;
+}
+.dash-event-card__slots-modern { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+.ce-badge-pill-solid {
+    font-size: 0.75rem; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+}
+.badge-free { background: #e0f2fe; color: #0284c7; }
+.badge-paid { background: #f1f5f9; color: #475569; }
+
+/* ── Poster Carousel Modern ── */
+.dash-posters-carousel-wrapper {
+    position: relative; display: flex; align-items: center; justify-content: center;
+}
+.dash-posters-carousel {
+    display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory;
+    scroll-behavior: smooth; scrollbar-width: none; padding: 20px 0; max-width: 900px; margin: 0 auto;
+}
+.dash-posters-carousel::-webkit-scrollbar { display: none; }
+
+.dash-poster-item {
+    flex: 0 0 260px; scroll-snap-align: center;
+}
+.dash-poster-modern {
+    display: block; text-decoration: none; color: inherit;
+    border-radius: 12px; overflow: hidden; background: transparent;
+    transition: transform .3s ease; text-align: center;
+}
+.dash-poster-modern:hover { transform: scale(1.05); }
+
+.dash-poster__img-modern {
+    position: relative; aspect-ratio: 3/4; overflow: hidden;
+    border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.dash-poster__img-modern img { width: 100%; height: 100%; object-fit: cover; }
+.dash-poster-modern-info { padding: 16px 0; }
+.dash-poster-modern-title { font-weight: 800; font-size: 1rem; color: #1e293b; margin-bottom: 4px; }
+.dash-poster-modern-club { font-size: 0.85rem; color: #64748b; }
+
+.dash-poster-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%; background: #fff;
+    border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 2; transition: all .2s;
+}
+.dash-poster-nav:hover { background: #0ea5e9; color: white; border-color: #0ea5e9; }
+.dash-poster-nav.prev-btn { left: 0; }
+.dash-poster-nav.next-btn { right: 0; }
+@media (max-width: 991px) {
+    .dash-posters-carousel { max-width: 100%; padding-left: 20px; padding-right: 20px; }
+    .dash-poster-nav { display: none; }
+}
+
+/* ── Modern Club Card ── */
+.dash-club-card-modern {
+    display: flex; flex-direction: column; background: #fff;
+    border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+    height: 100%; transition: transform .25s, box-shadow .25s;
+}
+.dash-club-card-modern:hover {
+    transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
+.dash-club-card-modern__img { position: relative; height: 120px; background: #0f172a; padding: 16px; }
+.dash-club-card-modern__ph {
+    width: 100%; height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; color: white;
+}
+.dash-club-card-modern__ph .club-shortname {
+    font-size: 1.2rem; font-weight: 900; letter-spacing: 1px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.dash-club-card-modern__body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+.dash-club-card-modern__title {
+    font-weight: 800; font-size: 1rem; color: #1e293b; margin-bottom: 8px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dash-club-card-modern__desc {
+    font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 16px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dash-club-card-modern__link {
+    margin-top: auto; font-size: 0.85rem; font-weight: 700; color: #0ea5e9; text-decoration: none;
+    display: inline-block; transition: color 0.2s;
+}
+.dash-club-card-modern__link:hover { color: #0284c7; text-decoration: underline; }
+
+/* ── Category card ── */
+.dash-cat-card {
+    display: flex; flex-direction: column;
+    border-radius: 16px; padding: 20px;
+    text-decoration: none; transition: transform .25s, box-shadow .25s;
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.06);
+    min-height: 140px;
+}
+.dash-cat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
+.dash-cat-card__icon { margin-bottom: 12px; }
+.dash-cat-card__label {
+    font-weight: 800; font-size: 1.05rem; color: #f0f9ff; margin-bottom: 4px;
+}
+.dash-cat-card__count { font-size: .78rem; color: rgba(255,255,255,.55); }
+.dash-cat-card__arrow {
+    position: absolute; bottom: 16px; right: 16px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.5); font-size: 16px;
+    transition: background .2s, color .2s;
+}
+.dash-cat-card:hover .dash-cat-card__arrow { background: rgba(255,255,255,.18); color: #fff; }
+
+/* ── Step card ── */
+.dash-step-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+    transition: transform .25s, box-shadow .25s;
+    position: relative;
+}
+.dash-step-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+.dash-step-card__num {
+    position: absolute; top: 16px; right: 16px;
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid; font-size: .8rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+}
+.dash-step-card__icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+}
+.dash-step-card__icon .material-symbols-outlined { font-size: 26px; }
+.dash-step-card__title {
+    font-weight: 800; font-size: 1.05rem; color: var(--text); margin-bottom: 8px;
+}
+.dash-step-card__desc { font-size: .85rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
+
+/* ── CTA Banner ── */
+.dash-cta {
+    background: linear-gradient(135deg, #0f2744 0%, #1e3a5f 50%, #0c1f3a 100%);
+    padding: 80px 0;
+}
+.dash-cta__inner {
+    max-width: 640px; margin: 0 auto; text-align: center;
+}
+.dash-cta__badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(56,189,248,.12);
+    border: 1px solid rgba(56,189,248,.25);
+    color: #7dd3fc; font-size: .75rem; font-weight: 600;
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 20px;
+}
+.dash-cta__title {
+    font-size: clamp(1.5rem,4vw,2.2rem); font-weight: 900;
+    color: #f0f9ff; margin-bottom: 14px;
+}
+.dash-cta__sub { color: #94a3b8; font-size: 1rem; margin-bottom: 28px; line-height: 1.7; }
+.dash-cta__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+/* ── Footer social ── */
+.dash-footer__social {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); transition: all .2s;
+    text-decoration: none;
+}
+.dash-footer__social:hover {
+    background: var(--primary); border-color: var(--primary); color: #fff;
+}
+.dash-footer__social .material-symbols-outlined { font-size: 18px; }

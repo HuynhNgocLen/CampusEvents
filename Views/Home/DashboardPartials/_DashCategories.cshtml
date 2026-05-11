@@ -1,0 +1,41 @@
+@*  ── DASH CATEGORIES ── *@
+<section class="dash-section" style="background:var(--surface-2)">
+    <div class="container py-5">
+        <div class="dash-section__hd mb-4 text-center d-flex flex-column align-items-center">
+            <h2 class="dash-section__title" style="font-size:1.5rem;font-weight:800;color:#1e293b;">Khám phá theo danh mục</h2>
+            <p class="dash-section__sub" style="font-size:0.9rem;color:#64748b;">Chọn lĩnh vực bạn yêu thích để bắt đầu</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            @{
+                var categories = new[]
+                {
+                    new { Icon="event",              Label="Sự kiện",      Count=32, Color="#3b82f6", Code="EVENT" },
+                    new { Icon="groups",             Label="Câu lạc bộ",   Count=47, Color="#10b981", Code="CLUB" },
+                    new { Icon="build",              Label="Workshop",     Count=24, Color="#8b5cf6", Code="WORK" },
+                    new { Icon="menu_book",          Label="Học thuật",    Count=12, Color="#0ea5e9", Code="ACAD" },
+                    new { Icon="palette",            Label="Văn hóa",      Count=18, Color="#f59e0b", Code="CULT" },
+                    new { Icon="volunteer_activism", Label="Tình nguyện",  Count=9,  Color="#ef4444", Code="VOLUN"},
+                };
+            }
+            @foreach (var cat in categories)
+            {
+                <div class="col-4 col-md-2 dash-reveal text-center">
+                    <a href="@Url.Action("Events","Events",new{category=cat.Code})" class="dash-cat-modern text-decoration-none d-block">
+                        <div class="dash-cat-modern__icon-box mx-auto mb-3" style="background-color: @(cat.Color)15; border: 1px solid @(cat.Color)30; width: 70px; height: 70px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                            <span class="material-symbols-outlined" style="font-size: 32px; color: @cat.Color;">@cat.Icon</span>
+                        </div>
+                        <div class="dash-cat-modern__label" style="font-weight: 700; color: #1e293b; font-size: 0.95rem; margin-bottom: 2px;">@cat.Label</div>
+                        <div class="dash-cat-modern__count" style="font-size: 0.8rem; color: #64748b;">@cat.Count sự kiện</div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+.dash-cat-modern:hover .dash-cat-modern__icon-box {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+</style>

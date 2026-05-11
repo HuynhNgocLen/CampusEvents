@@ -64,7 +64,10 @@ namespace school_event_management.Controllers
             ViewBag.ActivePage = "home";
             ViewBag.ListVien = db.Viens.OrderBy(v => v.TenVien).ToList();
             ViewBag.DanhMucs = db.DanhMucs.ToList();
-            ViewBag.StudentCount = db.SinhViens.Count();
+            
+            // Chuyển lấy EventCount xuống dưới để lấy chính xác số lượng sự kiện mới nhất (sắp diễn ra)
+            int dkCount = db.DangKySuKiens.Count();
+            ViewBag.StudentCount = dkCount > 0 ? dkCount : db.SinhViens.Count();
             ViewBag.ClubCount = db.Viens.Count();
 
             var threeDaysAgo = DateTime.Now.AddDays(-3);
@@ -84,6 +87,8 @@ namespace school_event_management.Controllers
                 )
                 .OrderByDescending(e => e.NgayBatDau)
                 .ToList();
+
+            ViewBag.EventCount = events.Count;
 
             return View(events);
         }

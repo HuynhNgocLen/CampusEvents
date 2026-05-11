@@ -199,23 +199,59 @@
             @RenderBody()
         </main>
 
-        <footer style="background:var(--surface);border-top:1px solid var(--border);padding:1.75rem 0;margin-top:2rem">
+        <footer class="ce-footer" style="background: var(--surface); padding: 60px 0 20px; border-top: 1px solid var(--border); margin-top: 2rem;">
             <div class="container">
-                <div class="row align-items-center g-3">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <div style="width:26px;height:26px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff">
-                                <span class="material-symbols-outlined" style="font-size:15px">school</span>
+                <div class="row g-4 mb-5">
+                    <div class="col-12 col-lg-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width:40px;height:40px;background:var(--primary);border-radius:12px;display:flex;align-items:center;justify-content:center">
+                                <span class="material-symbols-outlined" style="color:#fff;font-size:24px">school</span>
                             </div>
-                            <span style="font-weight:700;font-size:.9rem">CampusEvents</span>
+                            <span style="font-size:1.2rem;font-weight:900;color:var(--text)">Campus<span style="color:var(--primary)">Events</span></span>
                         </div>
-                        <p style="font-size:.78rem;color:var(--text-muted);margin:0">Cổng thông tin sự kiện sinh viên – Trường Đại học ABC</p>
+                        <p style="font-size:0.9rem;color:var(--text-muted);max-width:280px;line-height:1.6">
+                            Nền tảng kết nối sinh viên với hàng ngàn sự kiện thú vị tại khuôn viên trường đại học của bạn.
+                        </p>
+                        <div class="d-flex gap-3 mt-4">
+                            <a href="#" class="dash-footer__social-modern" title="Facebook" style="color:var(--text-muted);transition:color .2s;"><span class="material-symbols-outlined">language</span></a>
+                            <a href="#" class="dash-footer__social-modern" title="Zalo" style="color:var(--text-muted);transition:color .2s;"><span class="material-symbols-outlined">chat</span></a>
+                            <a href="#" class="dash-footer__social-modern" title="Email" style="color:var(--text-muted);transition:color .2s;"><span class="material-symbols-outlined">mail</span></a>
+                        </div>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <p style="font-size:.75rem;color:var(--text-muted);margin:0">© 2025 CampusEvents · Tất cả quyền được bảo lưu</p>
+                    <div class="col-6 col-md-2 offset-lg-2">
+                        <div class="ce-footer__heading-modern" style="font-weight:800;color:var(--text);margin-bottom:16px;font-size:0.95rem;text-transform:uppercase;">Khám phá</div>
+                        <ul class="list-unstyled d-flex flex-column gap-2" style="font-size:0.9rem;">
+                            <li><a href="@Url.Action("Events","Events")" style="color:var(--text-muted);text-decoration:none;">Sự kiện</a></li>
+                            <li><a href="@Url.Action("Events","Events",new{category="CLUB"})" style="color:var(--text-muted);text-decoration:none;">Câu lạc bộ</a></li>
+                            <li><a href="@Url.Action("Notifications","Home")" style="color:var(--text-muted);text-decoration:none;">Lịch của tôi</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="ce-footer__heading-modern" style="font-weight:800;color:var(--text);margin-bottom:16px;font-size:0.95rem;text-transform:uppercase;">Pháp lý</div>
+                        <ul class="list-unstyled d-flex flex-column gap-2" style="font-size:0.9rem;">
+                            <li><a href="#" style="color:var(--text-muted);text-decoration:none;">Quyền riêng tư</a></li>
+                            <li><a href="#" style="color:var(--text-muted);text-decoration:none;">Điều khoản sử dụng</a></li>
+                            <li><a href="#" style="color:var(--text-muted);text-decoration:none;">Trung tâm trợ giúp</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="ce-footer__heading-modern" style="font-weight:800;color:var(--text);margin-bottom:16px;font-size:0.95rem;text-transform:uppercase;">Đăng nhập</div>
+                        <ul class="list-unstyled d-flex flex-column gap-2" style="font-size:0.9rem;">
+                            <li><a href="@Url.Action("Profile","Home")" style="color:var(--text-muted);text-decoration:none;">Hồ sơ của tôi</a></li>
+                            <li><a href="@Url.Action("Login","Account")" style="color:var(--text-muted);text-decoration:none;">Đăng nhập / Đăng ký</a></li>
+                        </ul>
                     </div>
                 </div>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-4" style="border-top:1px solid var(--border);font-size:0.85rem;color:var(--text-muted);">
+                    <span class="mb-2 mb-md-0">© 2026 Campus Events. Nền tảng sự kiện sinh viên.</span>
+                    <span>Made with <span style="color:#ef4444">♥</span> for students</span>
+                </div>
             </div>
+            <style>
+                .dash-footer__social-modern:hover { color: var(--primary) !important; }
+                .ce-footer__heading-modern { letter-spacing: 0.5px; }
+                .ce-footer ul li a:hover { color: var(--primary) !important; text-decoration: underline !important; }
+            </style>
         </footer>
     </div>
 

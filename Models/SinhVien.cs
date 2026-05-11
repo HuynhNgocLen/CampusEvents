@@ -18,7 +18,6 @@ namespace shcool_event_management.Models
         public SinhVien()
         {
             this.DangKySuKiens = new HashSet<DangKySuKien>();
-            this.EVENTs = new HashSet<EVENT>();
             this.SuKienYeuThiches = new HashSet<SuKienYeuThich>();
         }
     
@@ -34,8 +33,6 @@ namespace shcool_event_management.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DangKySuKien> DangKySuKiens { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EVENT> EVENTs { get; set; }
         public virtual MaNghanh MaNghanh1 { get; set; }
         public virtual Vien Vien { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

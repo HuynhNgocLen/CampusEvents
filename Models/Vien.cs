@@ -18,9 +18,9 @@ namespace shcool_event_management.Models
         public Vien()
         {
             this.EVENTs = new HashSet<EVENT>();
-            this.SinhViens = new HashSet<SinhVien>();
             this.MaNghanhs = new HashSet<MaNghanh>();
             this.QuanTriViens = new HashSet<QuanTriVien>();
+            this.SinhViens = new HashSet<SinhVien>();
         }
     
         public string MaVien { get; set; }
@@ -29,10 +29,10 @@ namespace shcool_event_management.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EVENT> EVENTs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SinhVien> SinhViens { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MaNghanh> MaNghanhs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuanTriVien> QuanTriViens { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SinhVien> SinhViens { get; set; }
     }
 }

@@ -1,0 +1,177 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@*  ── DASH LATEST EVENTS ── *@
+<section class="dash-section">
+    <div class="container py-5">
+        <div class="dash-section__hd mb-4">
+            <div>
+                <h2 class="dash-section__title" style="font-size:1.5rem;font-weight:800;color:#1e293b;margin-bottom:4px">Sự kiện sắp diễn ra</h2>
+                <p class="dash-section__sub" style="font-size:0.9rem;color:#64748b;margin:0">Khám phá và tham gia các hoạt động nổi bật sắp tới</p>
+            </div>
+            <a href="@Url.Action("Events","Events")" class="dash-link-more" style="color:#0ea5e9;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px">
+                Xem tất cả <span class="material-symbols-outlined" style="font-size:18px">arrow_forward</span>
+            </a>
+        </div>
+
+        @* Filter chips *@
+        <div class="dash-chips mb-4" id="event-filters">
+            <button class="dash-chip active" data-filter="all">
+                <span class="material-symbols-outlined">apps</span> Tất cả
+            </button>
+            @if (ViewBag.DanhMucs != null)
+            {
+                foreach (var dm in ViewBag.DanhMucs)
+                {
+                    <button class="dash-chip" data-filter="@dm.MaDanhMuc">@dm.TenDanhMuc</button>
+                }
+            }
+        </div>
+
+        @* Event cards grid *@
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-3" id="events-grid">
+                @foreach (var item in Model.Take(6))
+                {
+                    var conLai = item.SoLuongToiDa - item.SoLuongDaDangKy;
+                    <div class="col-12 col-sm-6 col-xl-4 dash-reveal"
+                         data-category="@item.MaDanhMuc">
+                        <a href="@Url.Action("EventDetail","Events",new{id=item.MaEvent})"
+                           class="dash-event-card dash-card-modern">
+                            @* Image / placeholder *@
+                            <div class="dash-event-card__img">
+                                @{
+                                    string src = null;
+                                    var u = item.AnhBia;
+                                    bool hasImg = false;
+                                    if (!string.IsNullOrWhiteSpace(u)) {
+                                        if (u.StartsWith("http", StringComparison.OrdinalIgnoreCase)) {
+                                            src = u; hasImg = true;
+                                        } else {
+                                            if (u.StartsWith("~/"))      { src = Url.Content(u); }
+                                            else if (u.StartsWith("/"))  { src = Url.Content("~" + u); }
+                                            else                         { src = Url.Content("~/Uploads/Events/" + u.TrimStart('/')); }
+                                            
+                                            try {
+                                                string phys = Server.MapPath(src);
+                                                if (System.IO.File.Exists(phys)) { hasImg = true; }
+                                            } catch { }
+                                        }
+                                    }
+                                    if (!hasImg) { src = null; }
+                                    
+                                    string catColor = item.DanhMuc?.MauSac ?? "#3b82f6";
+                                    string bgLight = catColor + "10";
+                                    string rOuter  = catColor + "15";
+                                    string rMid    = catColor + "20";
+                                    string rInner  = catColor + "25";
+                                }
+                                @if (src != null)
+                                {
+                                    <img src="@src" alt="@item.TenEvent" loading="lazy" />
+                                }
+                                else
+                                {
+                                    @* Ripple Placeholder exactly matching Image 3 *@
+                                    <div class="dash-event-card__ripple-ph"
+                                         style="background: radial-gradient(circle, #fff 0%, #fff 12%, @rInner 12.1%, @rInner 28%, @rMid 28.1%, @rMid 50%, @rOuter 50.1%, @rOuter 75%, @bgLight 75.1%, @bgLight 100%);">
+                                        <div class="ripple-icon-wrapper" style="color: @catColor;">
+                                            <span class="material-symbols-outlined">@(item.DanhMuc?.Icon ?? "school")</span>
+                                        </div>
+                                    </div>
+                                }
+                                @* Badges Top Left *@
+                                <div class="dash-event-card__badges-tl">
+                                    <span class="ce-badge-pill" style="color: @catColor; background: @(catColor)15; border: 1px solid @(catColor)40;">
+                                        @(item.DanhMuc?.TenDanhMuc?.ToUpper() ?? "SỰ KIỆN")
+                                    </span>
+                                    @if (conLai <= 0)
+                                    { <span class="ce-badge-pill" style="color: #ef4444; background: #fee2e2; border: 1px solid #fca5a5;">HẾT CHỖ</span> }
+                                    else if (conLai <= 10)
+                                    { <span class="ce-badge-pill" style="color: #f59e0b; background: #fef3c7; border: 1px solid #fcd34d;">SẮP ĐẦY</span> }
+                                    else
+                                    { <span class="ce-badge-pill" style="color: #10b981; background: #d1fae5; border: 1px solid #6ee7b7;">CÒN CHỖ</span> }
+                                </div>
+                                @* Save button Top Right *@
+                                <button class="dash-event-card__save dash-event-card__save-modern"
+                                        data-event-id="@item.MaEvent"
+                                        title="Lưu sự kiện">
+                                    <span class="material-symbols-outlined">favorite_border</span>
+                                </button>
+                            </div>
+                            @* Body *@
+                            <div class="dash-event-card__body-modern">
+                                <div class="dash-event-card__title-modern">@item.TenEvent</div>
+                                <div class="dash-event-card__meta-modern">
+                                    <div class="dash-event-card__meta-item">
+                                        <span class="material-symbols-outlined">calendar_today</span>
+                                        @item.NgayBatDau.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("vi-VN"))
+                                    </div>
+                                    <div class="dash-event-card__meta-item">
+                                        <span class="material-symbols-outlined">location_on</span>
+                                        @(item.DiaDiem?.TenDiaDiem ?? "Chưa xác định")
+                                    </div>
+                                </div>
+                                <div class="dash-event-card__footer-modern">
+                                    <div class="dash-event-card__slots-modern">
+                                        @(item.SoLuongDaDangKy) / @(item.SoLuongToiDa) chỗ
+                                    </div>
+                                    <span class="ce-badge-pill-solid @(item.GiaVe == null || item.GiaVe == 0 ? "badge-free" : "badge-paid")">
+                                        @(item.GiaVe == null || item.GiaVe == 0
+                                            ? "MIỄN PHÍ"
+                                            : String.Format("{0:N0}đ", item.GiaVe))
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ce-empty">
+                <span class="material-symbols-outlined">event_busy</span>
+                <div class="ce-empty__title">Chưa có sự kiện nào</div>
+                <div class="ce-empty__sub">Hiện tại chưa có sự kiện nào được đăng. Vui lòng quay lại sau.</div>
+            </div>
+        }
+
+        <div class="text-center mt-4">
+            <a href="@Url.Action("Events","Events")" class="ce-btn ce-btn-outline">
+                <span class="material-symbols-outlined">expand_more</span> Xem thêm sự kiện
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+// Filter chips
+document.querySelectorAll('#event-filters .dash-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('#event-filters .dash-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const filter = chip.getAttribute('data-filter');
+        document.querySelectorAll('#events-grid [data-category]').forEach(card => {
+            const show = filter === 'all' || card.getAttribute('data-category') === filter;
+            if (card instanceof HTMLElement) {
+                card.style.display = show ? '' : 'none';
+            }
+        });
+    });
+});
+// Save toggle (placeholder – wire to your API)
+document.querySelectorAll('.dash-event-card__save').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const eventId = parseInt(btn.getAttribute('data-event-id') || '0');
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (icon && icon instanceof HTMLElement) {
+            const saved = icon.textContent === 'favorite';
+            icon.textContent = saved ? 'favorite_border' : 'favorite';
+            icon.style.color = saved ? '' : '#ef4444';
+        }
+    });
+});
+</script>
+}

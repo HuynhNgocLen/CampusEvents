@@ -1,0 +1,181 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@*  ── DASH HERO ── *@
+<section class="dash-hero-modern">
+    <div class="dash-hero-modern__bg"></div>
+    <div class="container position-relative z-1">
+        <div class="row align-items-center min-vh-60">
+            <div class="col-lg-7 py-5">
+                <div class="dash-hero-modern__brand">CampusEvents • Cổng sự kiện TDMU</div>
+                <h1 class="dash-hero-modern__title">
+                    Một nơi cho mọi hoạt động<br/>
+                    <span class="dash-hero-modern__accent">trên campus</span>
+                </h1>
+                <p class="dash-hero-modern__sub">
+                    Khám phá hàng ngàn sự kiện từ học thuật, thể thao đến nghệ thuật<br/>
+                    đang diễn ra ngay tại khuôn viên trường TDMU dành bạn.
+                </p>
+                <div class="dash-hero-modern__actions">
+                    <a href="@Url.Action("Events","Events")" class="btn-primary-modern">
+                        <span class="material-symbols-outlined">explore</span> Khám phá sự kiện
+                    </a>
+                    <a href="@Url.Action("Profile","Home")" class="btn-outline-modern">
+                        <span class="material-symbols-outlined">person</span> Hồ sơ của tôi
+                    </a>
+                </div>
+
+                <form action="@Url.Action("SmartSearch","Home")" method="GET" class="dash-hero-modern__search mt-4">
+                    <span class="material-symbols-outlined dash-hero-modern__search-icon">search</span>
+                    <input type="search" name="keyword" id="hero-search"
+                           placeholder="Tìm mã CLB, mã sinh viên hoặc Sự kiện…" autocomplete="off" />
+                    <button class="btn-primary-modern btn-sm" type="submit" style="padding: 8px 16px; margin: 4px; font-size: 0.9rem;">
+                        Tìm kiếm
+                    </button>
+                </form>
+                
+                <div class="dash-hero__tags mt-3">
+                    <span class="dash-hero__tag">🔥 Hackathon 2026</span>
+                    <span class="dash-hero__tag">🎵 Acoustic Night</span>
+                    <span class="dash-hero__tag">💉 Hiến máu</span>
+                    <span class="dash-hero__tag">🌱 Trồng cây xanh</span>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                @* Building Background area (handled by CSS) *@
+            </div>
+        </div>
+
+        @* ── Stats bar overlapping bottom ── *@
+        <div class="dash-hero-modern__stats-wrapper">
+            <div class="dash-hero-modern__stats-card">
+                <div class="stat-icon" style="color: #3b82f6; background: #eff6ff;"><span class="material-symbols-outlined">event</span></div>
+                <div class="stat-info">
+                    <div class="stat-val" id="cnt-ev" data-target="@((int)(ViewBag.EventCount ?? 0))">@((int)(ViewBag.EventCount ?? 0))</div>
+                    <div class="stat-lbl">SỰ KIỆN SẮP DIỄN RA</div>
+                </div>
+            </div>
+            <div class="dash-hero-modern__stats-card">
+                <div class="stat-icon" style="color: #10b981; background: #ecfdf5;"><span class="material-symbols-outlined">groups</span></div>
+                <div class="stat-info">
+                    <div class="stat-val" id="cnt-sv" data-target="@((int)(ViewBag.StudentCount ?? 0))">@((int)(ViewBag.StudentCount ?? 0))</div>
+                    <div class="stat-lbl">SINH VIÊN THAM GIA</div>
+                </div>
+            </div>
+            <div class="dash-hero-modern__stats-card">
+                <div class="stat-icon" style="color: #f59e0b; background: #fffbeb;"><span class="material-symbols-outlined">school</span></div>
+                <div class="stat-info">
+                    <div class="stat-val" id="cnt-clb" data-target="@((int)(ViewBag.ClubCount ?? 0))">@((int)(ViewBag.ClubCount ?? 0))</div>
+                    <div class="stat-lbl">CÂU LẠC BỘ & TỔ CHỨC</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.dash-hero-modern {
+    position: relative;
+    background: #0f172a;
+    padding: 60px 0 160px; /* Extra bottom padding for floating stats */
+    overflow: hidden;
+}
+.dash-hero-modern__bg {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 55%;
+    background: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 40%);
+    mask-image: linear-gradient(to right, transparent, black 40%);
+    opacity: 0.8;
+}
+.dash-hero-modern__brand {
+    color: #94a3b8; font-size: 0.9rem; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 24px; font-weight: 600;
+}
+.dash-hero-modern__title {
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900;
+    line-height: 1.1; color: #ffffff; margin-bottom: 24px;
+    letter-spacing: -1px;
+}
+.dash-hero-modern__accent { color: #38bdf8; }
+.dash-hero-modern__sub {
+    color: #cbd5e1; font-size: 1.15rem; max-width: 600px;
+    margin-bottom: 40px; line-height: 1.6;
+}
+.dash-hero-modern__actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-primary-modern {
+    background: #0ea5e9; color: white; border-radius: 8px; padding: 12px 24px;
+    font-weight: 600; font-size: 1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.2s, transform 0.2s; border: none;
+}
+.btn-primary-modern:hover { background: #0284c7; transform: translateY(-2px); color: white; }
+.btn-outline-modern {
+    background: transparent; color: white; border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 8px; padding: 10px 24px; font-weight: 600; font-size: 1rem;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+}
+.btn-outline-modern:hover { border-color: white; background: rgba(255,255,255,0.1); color: white; }
+
+.dash-hero-modern__search {
+    display: flex; align-items: center;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px; overflow: hidden;
+    max-width: 500px; backdrop-filter: blur(10px);
+}
+.dash-hero-modern__search-icon { color: #94a3b8; padding: 0 16px; }
+.dash-hero-modern__search input {
+    flex: 1; border: none; background: transparent;
+    color: white; font-size: 1rem; padding: 14px 0; outline: none;
+}
+.dash-hero-modern__search input::placeholder { color: #94a3b8; }
+
+.dash-hero__tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.dash-hero__tag {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: #cbd5e1; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;
+}
+
+/* Stats wrapper overlapping */
+.dash-hero-modern__stats-wrapper {
+    position: absolute; bottom: -80px; left: 15px; right: 15px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; z-index: 10;
+}
+.dash-hero-modern__stats-card {
+    background: white; border-radius: 16px; padding: 24px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #f1f5f9;
+}
+.stat-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+}
+.stat-icon .material-symbols-outlined { font-size: 28px; }
+.stat-info { display: flex; flex-direction: column; }
+.stat-val { font-size: 1.8rem; font-weight: 900; color: #0f172a; line-height: 1; margin-bottom: 4px; }
+.stat-val::after { content: "+"; color: #94a3b8; font-weight: 600; font-size: 1.2rem; }
+.stat-lbl { font-size: 0.75rem; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase; }
+
+@@media (max-width: 991px) {
+    .dash-hero-modern__bg { width: 100%; mask-image: none; -webkit-mask-image: none; opacity: 0.2; }
+    .dash-hero-modern__stats-wrapper { position: static; margin-top: 40px; }
+    .dash-hero-modern { padding: 60px 0 60px; }
+}
+</style>
+
+<script>
+(function() {
+    // Animate counters
+    document.querySelectorAll('[data-target]').forEach(el => {
+        const target = parseInt(el.getAttribute('data-target') || '0') || 0;
+        if (!target) return;
+        el.textContent = '0'; // reset visually to start animation
+        let current = 0;
+        const step = Math.ceil(target / 40);
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = current.toLocaleString('vi-VN');
+            if (current >= target) clearInterval(timer);
+        }, 40);
+    });
+})();
+</script>

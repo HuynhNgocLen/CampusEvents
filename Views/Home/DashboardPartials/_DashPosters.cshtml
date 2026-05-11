@@ -1,0 +1,107 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@*  ── DASH POSTERS ── *@
+@{
+    var list = Model != null ? Model.Take(12).ToList()
+             : new List<shcool_event_management.Models.EVENT>();
+}
+<section class="dash-section" style="background:var(--surface-2)">
+    <div class="container py-5">
+        <div class="dash-section__hd mb-4 text-center d-flex flex-column align-items-center">
+            <h2 class="dash-section__title" style="font-size:1.5rem;font-weight:800;color:#1e293b;">Poster &amp; sự kiện gần đây</h2>
+            <p class="dash-section__sub" style="font-size:0.9rem;color:#64748b;">Hình ảnh minh họa từ các hoạt động đang và sắp diễn ra</p>
+        </div>
+
+        @if (list.Any())
+        {
+            <div class="dash-posters-carousel-wrapper">
+                <button class="dash-poster-nav prev-btn"><span class="material-symbols-outlined">chevron_left</span></button>
+                <div class="dash-posters-carousel" id="posters-carousel">
+                    @foreach (var item in list)
+                    {
+                        string src = null;
+                        var u = item.AnhBia;
+                        if (!string.IsNullOrWhiteSpace(u))
+                        {
+                            if (u.StartsWith("http", StringComparison.OrdinalIgnoreCase)) {
+                                src = u;
+                            } else {
+                                if (u.StartsWith("~/"))     { src = Url.Content(u); }
+                                else if (u.StartsWith("/")) { src = Url.Content("~" + u); }
+                                else                        { src = Url.Content("~/Uploads/Events/" + u.TrimStart('/')); }
+                                
+                                try {
+                                    string phys = Server.MapPath(src);
+                                    if (!System.IO.File.Exists(phys)) { src = null; }
+                                } catch { }
+                            }
+                        }
+                        <div class="dash-poster-item dash-reveal">
+                            <a href="@Url.Action("EventDetail","Events",new{id=item.MaEvent})" class="dash-poster-modern">
+                                <div class="dash-poster__img-modern">
+                                    @if (src != null)
+                                    {
+                                        <img src="@src" alt="@item.TenEvent" loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        string catColor = item.DanhMuc?.MauSac ?? "#3b82f6";
+                                        string bgLight = catColor + "10";
+                                        string rOuter  = catColor + "15";
+                                        string rMid    = catColor + "20";
+                                        string rInner  = catColor + "25";
+
+                                        <div class="dash-event-card__ripple-ph" style="background: radial-gradient(circle, #fff 0%, #fff 12%, @rInner 12.1%, @rInner 28%, @rMid 28.1%, @rMid 50%, @rOuter 50.1%, @rOuter 75%, @bgLight 75.1%, @bgLight 100%); width: 100%; height: 100%; position: absolute; inset: 0;">
+                                            <div class="ripple-icon-wrapper" style="color: @catColor; width: 64px; height: 64px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                                <span class="material-symbols-outlined" style="font-size: 32px;">
+                                                    @(item.DanhMuc?.Icon ?? "event")
+                                                </span>
+                                            </div>
+                                            <div style="position: absolute; bottom: 20px; width: 100%; text-align: center; font-weight: 700; color: @catColor; font-size: 0.9rem; padding: 0 10px;">@item.TenEvent</div>
+                                        </div>
+                                    }
+                                    <div class="dash-poster__overlay">
+                                        <span class="material-symbols-outlined">open_in_new</span>
+                                    </div>
+                                </div>
+                                <div class="dash-poster-modern-info">
+                                    <div class="dash-poster-modern-title">@item.TenEvent</div>
+                                    <div class="dash-poster-modern-club">@(item.Vien?.TenVien ?? "Đại học ABC")</div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+                <button class="dash-poster-nav next-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+        }
+        else
+        {
+            <div class="ce-empty dash-reveal">
+                <span class="material-symbols-outlined">image_not_supported</span>
+                <div class="ce-empty__title">Chưa có poster sự kiện</div>
+                <div class="ce-empty__sub">Khi có sự kiện được đăng kèm ảnh bìa, nội dung sẽ hiển thị tại đây.</div>
+            </div>
+        }
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const carousel = document.getElementById('posters-carousel');
+        if(!carousel || !carousel.parentElement) return;
+        const prevBtn = carousel.parentElement.querySelector('.prev-btn');
+        const nextBtn = carousel.parentElement.querySelector('.next-btn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                carousel.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                carousel.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
