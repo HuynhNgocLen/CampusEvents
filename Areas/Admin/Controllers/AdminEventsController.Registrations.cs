@@ -6,17 +6,22 @@ using System.Data.Entity;
 using ClosedXML.Excel;
 using school_event_management.Helpers;
 using shcool_event_management.Areas.Admin.Helpers;
-
 namespace shcool_event_management.Areas.Admin.Controllers
 {
     public partial class AdminEventsController
     {
-        public ActionResult RegistrationDetail(int id,
+        public ActionResult RegistrationDetail(int? id,
                                                string search = null,
                                                string status = null,
                                                int page = 1,
                                                int pageSize = 10)
         {
+            if (!id.HasValue)
+                return HttpNotFound();
+
+            var eventId = id.Value;
+            ViewBag.MaEvent = eventId;
+
             ViewBag.ActiveMenu = "manage";
             var currentAdmin = GetCurrentAdmin();
             if (currentAdmin == null) return new HttpUnauthorizedResult();
@@ -24,7 +29,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
             var ev = _db.EVENTs
                         .Include("DanhMuc")
                         .Include("DiaDiem")
-                        .FirstOrDefault(e => e.MaEvent == id);
+                        .FirstOrDefault(e => e.MaEvent == eventId);
 
             if (ev == null) return HttpNotFound();
             var canAccessEvent = currentAdmin.Quyen == 0
@@ -33,7 +38,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             var query = _db.DangKySuKiens
                            .Include("SinhVien")
-                           .Where(d => d.MaEvent == id)
+                           .Where(d => d.MaEvent == eventId)
                            .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -50,7 +55,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToList();
 
-            var allRegs = _db.DangKySuKiens.Where(d => d.MaEvent == id).ToList();
+            var allRegs = _db.DangKySuKiens.Where(d => d.MaEvent == eventId).ToList();
             ViewBag.Event = ev;
             ViewBag.TotalReg = total;
             ViewBag.Registered = allRegs.Count(d => RegistrationStatusHelper.Normalize(d.TrangThai) == "Đã đăng ký");

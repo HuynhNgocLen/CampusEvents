@@ -5,6 +5,10 @@
 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
+    if (ViewBag.LoginReturnUrl != null)
+    {
+        <input type="hidden" name="returnUrl" value="@ViewBag.LoginReturnUrl" />
+    }
 
     if (TempData["Error"] != null)
     {

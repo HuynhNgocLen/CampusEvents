@@ -31,6 +31,29 @@
 
     <div class="ca-card" style="margin-top:1rem">
         <div class="ca-card__header">
+            <div class="ca-card__header-icon"><span class="material-symbols-outlined">qr_code_2</span></div>
+            <div class="ca-card__title">Ảnh QR điểm danh — đặt tên file</div>
+        </div>
+        <div class="ca-card__body" style="font-size:.9rem;line-height:1.65;color:var(--text-muted)">
+            <p style="margin:0 0 .65rem 0">Khi tải ảnh QR từ <strong>Quản lí sự kiện</strong>, hệ thống đặt tên file theo quy tắc cố định (đã loại ký tự không hợp lệ trên Windows):</p>
+            <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;font-family:ui-monospace,Consolas,monospace;font-size:.82rem;color:var(--text);margin-bottom:.65rem">
+                Điểm Danh - (<em>tên sự kiện</em>)-<strong>id</strong>.png
+            </div>
+            <ul style="margin:0;padding-left:1.15rem">
+                <li style="margin-bottom:.45rem"><strong>Điểm Danh</strong>: tiền tố cố định (có khoảng trắng sau chữ h).</li>
+                <li style="margin-bottom:.45rem"><strong>(tên sự kiện)</strong>: tên sự kiện trong ngoặc; ký tự <code>\ / : * ? &quot; &lt; &gt; |</code> thay bằng <code>_</code>; tối đa 100 ký tự.</li>
+                <li><strong>id</strong>: mã sự kiện (<code>MaEvent</code>) trong CSDL, trước phần mở rộng <code>.png</code>.</li>
+            </ul>
+            <p style="margin:.75rem 0 0 0;font-size:.82rem">Ví dụ: <code>Điểm Danh - (Olympic Tin học TDMU 2026)-12.png</code></p>
+            <p style="margin:1rem 0 0 0;padding-top:1rem;border-top:1px solid var(--border);font-size:.88rem">
+                <strong>QR trên modal Quản lí sự kiện:</strong> <strong>Chữ ký</strong> trên URL đổi theo chu kỳ <strong>1 phút</strong> trên máy chủ; menu <strong>Tự làm mới ảnh</strong> là tần suất tải lại trên trình duyệt (30s / 60s / 90s / 120s) — không rút ngắn chu kỳ 1 phút trên máy chủ.
+                Một dòng thời gian gộp <em>Chữ ký QR còn</em> và <em>Làm mới ảnh sau</em>; nút <strong>Toàn màn hình</strong> hiển thị tương tự phía trên mã (thoát bằng ESC hoặc nút Thoát).
+            </p>
+        </div>
+    </div>
+
+    <div class="ca-card" style="margin-top:1rem">
+        <div class="ca-card__header">
             <div class="ca-card__header-icon"><span class="material-symbols-outlined">filter_alt</span></div>
             <div class="ca-card__title">Lọc theo học kì</div>
         </div>
