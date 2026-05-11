@@ -1,0 +1,20 @@
+@model shcool_event_management.Models.EVENT
+@{
+    var inputClass = ViewBag.TimelineInputClass as string ?? "ce-form-control";
+    var labelClass = ViewBag.TimelineLabelClass as string ?? "ce-form-label";
+}
+<div class="ca-form-group">
+    <label class="@labelClass">Cột mốc thời gian (timeline)</label>
+    <div id="timelineEditorRoot" class="timeline-editor" data-input-class="@inputClass" aria-label="Chương trình thời gian">
+        <div id="timelineRows" class="timeline-editor__rows"></div>
+        <button type="button" class="ce-btn ce-btn-outline timeline-editor__add" id="timelineAddRow">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:4px">add</span>
+            Thêm mốc
+        </button>
+        <div class="text-muted" style="font-size:.76rem;margin-top:.5rem">
+            Mỗi dòng là một mốc: điền <strong>Giờ</strong>, <strong>Tiêu đề</strong> và <strong>Ghi chú</strong> (ghi chú có thể để trống). Dòng để trống cả ba ô sẽ không được lưu.
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.ChiTiet, new { id = "ChiTiet" })
+    @Html.ValidationMessageFor(m => m.ChiTiet, "", new { @class = "text-danger", style = "font-size:.76rem" })
+</div>

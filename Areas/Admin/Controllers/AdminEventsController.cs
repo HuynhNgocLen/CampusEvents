@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Data.Entity.Validation;
 using shcool_event_management.Areas.Admin.Helpers;
 using shcool_event_management.Models;
+using school_event_management.Helpers;
 
 namespace shcool_event_management.Areas.Admin.Controllers
 {
@@ -180,7 +181,6 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             PopulateDropdowns(model.MaDanhMuc, model.MaDiaDiem, model.MaVien);
             ViewBag.DiaDiemText = diaDiemText;
-            model.ChiTiet = model.MoTa;
             if (ModelState.ContainsKey("ChiTiet")) ModelState["ChiTiet"].Errors.Clear();
             if (!ModelState.IsValid) return View(model);
 
@@ -226,9 +226,9 @@ namespace shcool_event_management.Areas.Admin.Controllers
             existing.GiaVe = model.GiaVe;
             existing.DRL = model.DRL;
             existing.MoTa = model.MoTa;
-            existing.ChiTiet = model.MoTa;
+            existing.ChiTiet = string.IsNullOrWhiteSpace(model.ChiTiet) ? null : model.ChiTiet.Trim();
             existing.TrangThai = model.TrangThai;
-            existing.LinkZalo = model.LinkZalo;
+            existing.LinkZalo = WebUrlHelper.NormalizeExternalHref(model.LinkZalo);
             existing.NgayCapNhat = DateTime.Now;
 
             try

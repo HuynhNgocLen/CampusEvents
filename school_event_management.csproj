@@ -247,6 +247,7 @@
     <Compile Include="Areas\Admin\Controllers\AdminEventsController.Registrations.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminEventsController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminSettingsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminRulesController.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminStatsController.Export.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminStatsController.cs" />
     <Compile Include="Areas\Admin\Helpers\AdminEventCommonHelper.cs" />
@@ -265,6 +266,7 @@
     <Compile Include="Filters\JwtAuthorizeAttribute.cs" />
     <Compile Include="Filters\RestrictGuestAttribute.cs" />
     <Compile Include="Helpers\QRCodeHelper.cs" />
+    <Compile Include="Helpers\WebUrlHelper.cs" />
     <Compile Include="Helpers\RegistrationStatusHelper.cs" />
     <Compile Include="Models\DangKySuKien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -452,6 +454,7 @@
     <None Include="AppSettings.secret.config.example" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_EventTimelineEditor.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Create.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage\_Toolbar.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage\_CardGrid.cshtml" />
@@ -466,6 +469,7 @@
     <Content Include="Areas\Admin\Views\AdminDashboard\Dashboard.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\AdminStats.cshtml" />
     <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminRules\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Edit.cshtml" />
     <Content Include="Content\app\campus-event-index.css" />
@@ -473,6 +477,7 @@
     <Content Include="Content\app\campus-event-manage.css" />
     <Content Include="Content\app\campus-vibrant.css" />
     <Content Include="Scripts\app\A-event-create.js" />
+    <Content Include="Scripts\app\event-timeline-editor.js" />
     <Content Include="Scripts\app\A-event-edit.js" />
     <Content Include="Scripts\app\A-event-manage.js" />
     <Content Include="Areas\Admin\Views\AdminStats\_KpiCards.cshtml" />

@@ -65,6 +65,9 @@ thumb.style.transform = chk.checked ? 'translateX(18px)' : 'translateX(0)';
 const createForm = document.getElementById('createForm');
 if (createForm) {
     createForm.addEventListener('submit', function (e) {
+        if (typeof window.syncEventTimelineToHidden === 'function') {
+            window.syncEventTimelineToHidden();
+        }
         const ngayBatDauInput = document.getElementById('ngayBatDauInput');
         if (ngayBatDauInput && ngayBatDauInput.value) {
             const selectedDate = new Date(ngayBatDauInput.value + 'T00:00:00');

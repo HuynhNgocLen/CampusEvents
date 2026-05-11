@@ -1,0 +1,59 @@
+@{
+    ViewBag.Title = "Quy tắc — CampusEvents Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="ca-content">
+    <div class="ca-breadcrumb">
+        <a href="@Url.Action("Dashboard", "AdminDashboard", new { area = "Admin" })">Dashboard</a>
+        <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
+        <span>Quy tắc</span>
+    </div>
+
+    <h1 class="ca-page-title" style="margin-top:.75rem">Quy tắc sử dụng</h1>
+    <p class="ca-page-sub">Tóm tắt quy định nghiệp vụ và cách hệ thống xử lý dữ liệu trong khu vực quản trị.</p>
+
+    <div class="ca-card" style="margin-top:1.25rem">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon"><span class="material-symbols-outlined">event</span></div>
+            <div class="ca-card__title">Tạo &amp; đăng sự kiện</div>
+        </div>
+        <div class="ca-card__body" style="font-size:.9rem;line-height:1.65;color:var(--text-muted)">
+            <ul style="margin:0;padding-left:1.15rem">
+                <li style="margin-bottom:.5rem">Các trường bắt buộc: tên sự kiện, danh mục, viện tổ chức, địa điểm, ngày bắt đầu, số lượng tối đa (tối thiểu 10), ảnh bìa (JPG/PNG, dưới 5&nbsp;MB).</li>
+                <li style="margin-bottom:.5rem">Ngày bắt đầu không được sớm hơn ngày hiện tại quá 20 ngày.</li>
+                <li style="margin-bottom:.5rem">Nếu có ngày kết thúc, phải bằng hoặc sau ngày bắt đầu.</li>
+                <li style="margin-bottom:.5rem">Hạn đăng ký (nếu nhập) phải trước ngày bắt đầu sự kiện.</li>
+                <li>Tài khoản quyền 1–2 chỉ được tạo sự kiện cho viện được gắn với tài khoản (khi hệ thống khóa chọn viện).</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="ca-card" style="margin-top:1rem">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon"><span class="material-symbols-outlined">filter_alt</span></div>
+            <div class="ca-card__title">Lọc theo học kì</div>
+        </div>
+        <div class="ca-card__body" style="font-size:.9rem;line-height:1.65;color:var(--text-muted)">
+            <p style="margin:0 0 .75rem 0">Nhãn <strong>Học kì 1 / 2 / 3</strong> và <strong>Cả năm</strong> dùng để giới hạn sự kiện theo <strong>tháng của ngày bắt đầu</strong> trong năm lịch bạn chọn.</p>
+            <ul style="margin:0;padding-left:1.15rem">
+                <li style="margin-bottom:.5rem"><strong>Dashboard, danh sách &quot;Sự kiện&quot;, Quản lí sự kiện:</strong> Học kì 1 = tháng 9–12; Học kì 2 = tháng 1–4; Học kì 3 = tháng 5–8 (theo năm đang lọc).</li>
+                <li><strong>Thống kê &amp; xuất Excel:</strong> Học kì 1 = tháng 8–12; Học kì 2 = tháng 1–5; Học kì 3 = tháng 6–7 (theo năm báo cáo).</li>
+            </ul>
+            <p style="margin:.75rem 0 0 0;font-size:.82rem">Hai nhóm trang trên dùng cùng tên học kì nhưng <strong>phạm vi tháng khác nhau</strong>; khi đối chiếu số liệu giữa Thống kê và Danh sách sự kiện, cần chú ý điểm này.</p>
+        </div>
+    </div>
+
+    <div class="ca-card" style="margin-top:1rem">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon"><span class="material-symbols-outlined">admin_panel_settings</span></div>
+            <div class="ca-card__title">Phân quyền quản trị</div>
+        </div>
+        <div class="ca-card__body" style="font-size:.9rem;line-height:1.65;color:var(--text-muted)">
+            <ul style="margin:0;padding-left:1.15rem">
+                <li style="margin-bottom:.5rem">Quyền xem thống kê / báo cáo và phạm vi viện tuỳ cấp quyền tài khoản (xem toàn trường hoặc chỉ viện được giao).</li>
+                <li>Thao tác nhạy cảm (quản lí QTV, nhật ký) chỉ hiển thị với tài khoản được phép.</li>
+            </ul>
+        </div>
+    </div>
+</div>

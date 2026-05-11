@@ -7,6 +7,7 @@
     --primary: #137fec;
     --primary-dark: #0e65c0;
     --primary-light: #e8f3fd;
+    --secondary: #38bdf8;
     --accent: #38bdf8;
     --success: #10b981;
     --danger: #ef4444;
@@ -33,6 +34,7 @@
     --text-muted: #9dc0df;
     --text-light: #7292b4;
     --primary-light: rgba(19, 127, 236, 0.2);
+    --secondary: #38bdf8;
 }
 
 body {
@@ -307,4 +309,12 @@ body {
             color-mix(in srgb, var(--cat-color) 62%, #020617) 0%,
             color-mix(in srgb, var(--cat-color) 70%, #0c4a6e) 56%,
             color-mix(in srgb, var(--cat-color) 54%, #0369a1) 100%);
+}
+
+/* Ghi đè sau rule .ce-sticky-reg { backdrop-filter } — tránh lỗi lớp phủ trên mobile */
+@media (max-width: 991.98px) {
+    .ce-sticky-reg {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
 }

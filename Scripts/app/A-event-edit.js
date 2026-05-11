@@ -54,6 +54,9 @@ if (cancelBtn) {
 const editForm = document.getElementById('editForm');
 if (editForm) {
     editForm.addEventListener('submit', function () {
+        if (typeof window.syncEventTimelineToHidden === 'function') {
+            window.syncEventTimelineToHidden();
+        }
         if (detailEditor) {
             document.querySelector('#richContent').value = detailEditor.getData();
         }
