@@ -90,10 +90,21 @@ namespace school_event_management.Controllers
         }
 
         [HttpGet]
-        public ActionResult Login(bool tokenExpired = false)
+        public ActionResult Login(bool tokenExpired = false, string returnUrl = null)
         {
             if (JwtService.GetStudentId(Request) != null)
+            {
+                Session.Remove("StudentLoginReturnUrl");
+                if (SafeReturnUrlHelper.IsSafeRelativeAppPath(Request, returnUrl))
+                    return Redirect(returnUrl);
                 return RedirectToAction("Home", "Home");
+            }
+
+            if (SafeReturnUrlHelper.IsSafeRelativeAppPath(Request, returnUrl))
+                Session["StudentLoginReturnUrl"] = returnUrl;
+            else
+                Session.Remove("StudentLoginReturnUrl");
+
             if (tokenExpired)
                 TempData["Error"] = "Phiên làm việc đã thay đổi hoặc hết hạn. Vui lòng thử lại.";
             return View();
@@ -102,6 +113,8 @@ namespace school_event_management.Controllers
         [ChildActionOnly]
         public ActionResult GetForm(string type)
         {
+            ViewBag.LoginReturnUrl = Session["StudentLoginReturnUrl"] as string;
+
             if (type == "Register")
             {
                 ViewBag.MaNghanhs = db.MaNghanhs.OrderBy(n => n.TenNghanh).ToList();
@@ -114,6 +127,8 @@ namespace school_event_management.Controllers
 
         public ActionResult GetFormAjax(string type)
         {
+            ViewBag.LoginReturnUrl = Session["StudentLoginReturnUrl"] as string;
+
             if (type == "Register")
             {
                 ViewBag.MaNghanhs = db.MaNghanhs.OrderBy(n => n.TenNghanh).ToList();
@@ -158,7 +173,7 @@ namespace school_event_management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string username, string password)
+        public ActionResult Login(string username, string password, string returnUrl = null)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
@@ -184,6 +199,14 @@ namespace school_event_management.Controllers
             }
 
             SetJwtCookie(sv.ID, sv.Ten);
+
+            var target = !string.IsNullOrWhiteSpace(returnUrl) && SafeReturnUrlHelper.IsSafeRelativeAppPath(Request, returnUrl)
+                ? returnUrl
+                : Session["StudentLoginReturnUrl"] as string;
+            Session.Remove("StudentLoginReturnUrl");
+            if (!string.IsNullOrWhiteSpace(target) && SafeReturnUrlHelper.IsSafeRelativeAppPath(Request, target))
+                return Redirect(target);
+
             return RedirectToAction("Home", "Home");
         }
 
@@ -246,6 +269,12 @@ namespace school_event_management.Controllers
                 catch (Exception ex) { TempData["Error"] = "Lỗi tạo tài khoản: " + ex.Message; return RedirectToAction("Login"); }
             }
             SetJwtCookie(sv.ID, sv.Ten);
+
+            var target = Session["StudentLoginReturnUrl"] as string;
+            Session.Remove("StudentLoginReturnUrl");
+            if (!string.IsNullOrWhiteSpace(target) && SafeReturnUrlHelper.IsSafeRelativeAppPath(Request, target))
+                return Redirect(target);
+
             return RedirectToAction("Home", "Home");
         }
 
@@ -441,17 +470,5 @@ namespace school_event_management.Controllers
             public string MaNghanh { get; set; }
             public string TenNghanh { get; set; }
         }
-    }
-
-    public class JwtAuthorizeAttribute : AuthorizeAttribute
-    {
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
-        {
-            var cookie = httpContext.Request.Cookies["jwt"];
-            if (cookie == null) return false;
-            return JwtService.ValidateToken(cookie.Value) != null;
-        }
-        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
-            => filterContext.Result = new RedirectResult("/Account/Login?tokenExpired=true");
     }
 }

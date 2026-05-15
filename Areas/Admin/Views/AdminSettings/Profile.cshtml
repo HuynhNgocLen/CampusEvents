@@ -1,0 +1,103 @@
+@model shcool_event_management.Models.QuanTriVien
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    string QuyenLabel(int q)
+    {
+        switch (q)
+        {
+            case 0: return "Hỗ trợ / chỉ xem";
+            case 1: return "Quản lý nội dung";
+            case 2: return "Toàn quyền";
+            default: return "—";
+        }
+    }
+
+    var tenDn = Model?.TenDN ?? "";
+    var letters = new System.Text.StringBuilder();
+    foreach (var ch in tenDn)
+    {
+        if (char.IsLetterOrDigit(ch))
+        {
+            letters.Append(ch);
+        }
+    }
+    var s = letters.ToString();
+    string initials;
+    if (s.Length >= 2)
+    {
+        initials = s.Substring(0, 2).ToUpperInvariant();
+    }
+    else if (s.Length == 1)
+    {
+        initials = (s + s).ToUpperInvariant();
+    }
+    else if (tenDn.Length >= 2)
+    {
+        initials = tenDn.Substring(0, 2).ToUpperInvariant();
+    }
+    else
+    {
+        initials = string.IsNullOrEmpty(tenDn) ? "-" : tenDn.ToUpperInvariant();
+    }
+}
+
+<div class="ca-content">
+    <h1 class="ca-page-title">Hồ sơ quản trị viên</h1>
+    <p class="ca-page-sub">Thông tin tài khoản đăng nhập và phạm vi quyền trong hệ thống.</p>
+
+    <div class="ca-card ca-profile-card" style="max-width: 680px;">
+        <div class="ca-card__header">
+            <div class="ca-card__header-icon"><span class="material-symbols-outlined">badge</span></div>
+            <div class="ca-card__title">Tài khoản</div>
+        </div>
+        <div class="ca-card__body">
+            <div class="ca-profile-identity">
+                <div class="ca-profile-avatar" aria-hidden="true">@initials</div>
+                <div class="ca-profile-identity__text">
+                    <div class="ca-profile-identity__login">@Model.TenDN</div>
+                    <span class="ca-profile-role">@QuyenLabel(Model.Quyen)</span>
+                </div>
+            </div>
+
+            <div class="ca-profile-fields" role="list">
+                <div class="ca-profile-field" role="listitem">
+                    <div class="ca-profile-field__label">Mã QTV</div>
+                    <div class="ca-profile-field__value">@(string.IsNullOrEmpty(Model.MaQTV) ? "—" : Model.MaQTV)</div>
+                </div>
+                <div class="ca-profile-field" role="listitem">
+                    <div class="ca-profile-field__label">Tên đăng nhập</div>
+                    <div class="ca-profile-field__value">@Model.TenDN</div>
+                </div>
+                <div class="ca-profile-field" role="listitem">
+                    <div class="ca-profile-field__label">Viện / đơn vị</div>
+                    <div class="ca-profile-field__value">
+                        @if (Model.Vien != null && !string.IsNullOrEmpty(Model.Vien.TenVien))
+                        {
+                            <text>@Model.Vien.TenVien</text>
+                            if (!string.IsNullOrEmpty(Model.Vien.MaVien))
+                            {
+                                <text> <span class="ca-profile-field__meta">(@Model.Vien.MaVien)</span></text>
+                            }
+                        }
+                        else
+                        {
+                            <text>—</text>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="ca-profile-actions">
+                <a class="ce-btn ce-btn-primary" href="@Url.Action("Index", "AdminSettings", new { area = "Admin", tab = "security" })">
+                    <span class="material-symbols-outlined">lock</span>
+                    Đổi mật khẩu &amp; bảo mật
+                </a>
+                <a class="ce-btn ce-btn-outline" href="@Url.Action("Index", "AdminSettings", new { area = "Admin", tab = "general" })">
+                    <span class="material-symbols-outlined">settings</span>
+                    Cài đặt chung
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

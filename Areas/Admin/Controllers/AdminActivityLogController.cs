@@ -65,6 +65,7 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 ViewBag.DayFilter = dayFilter;
                 ViewBag.FilterableAccounts = accountScope;
                 ViewBag.CanFilterRole0 = admin.Quyen == 0;
+                ViewBag.LogMemberPickerQuyen1Only = admin.Quyen == 2;
 
                 return View();
             }
@@ -251,6 +252,16 @@ OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
                 return _db.QuanTriViens.Select(x => x.TenDN).ToList();
             }
             var maVien = ResolveAdminVienCode(currentAdmin);
+            // Quyền 2: chỉ chọn lọc theo từng QTV quyền 1 cùng viện (xem "tất cả" = bỏ lọc tài khoản).
+            if (currentAdmin.Quyen == 2)
+            {
+                return _db.QuanTriViens
+                    .Where(x => x.MaQTV == maVien && x.Quyen == 1)
+                    .Select(x => x.TenDN)
+                    .OrderBy(x => x)
+                    .ToList();
+            }
+
             return _db.QuanTriViens
                 .Where(x => x.MaQTV == maVien)
                 .Select(x => x.TenDN)

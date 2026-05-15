@@ -1,5 +1,6 @@
 using school_event_management.Filters;
 using school_event_management.Models;
+using shcool_event_management.Infrastructure.Constants;
 using shcool_event_management.Models;
 using System;
 using System.Collections.Generic;
@@ -78,9 +79,9 @@ namespace school_event_management.Controllers
                 .Include(e => e.Vien)
                 .Where(e => e.IsHidden == false)
                 .Where(e =>
-                    e.TrangThai == "Sắp diễn ra"
-                    || e.TrangThai == "Đang diễn ra"
-                    || (e.TrangThai == "Đã kết thúc"
+                    e.TrangThai == EventTrangThai.SapDienRa
+                    || e.TrangThai == EventTrangThai.DangDienRa
+                    || (e.TrangThai == EventTrangThai.DaKetThuc
                         && (e.NgayKetThuc.HasValue
                             ? e.NgayKetThuc.Value >= threeDaysAgo
                             : e.NgayBatDau >= threeDaysAgo))

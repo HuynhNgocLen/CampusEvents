@@ -10,7 +10,7 @@
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/campus-event-form.css?v=2")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/app/campus-event-form.css?v=3")" rel="stylesheet" />
 <link href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/contents.css" rel="stylesheet"/>
 
 }
@@ -109,6 +109,11 @@
                             <label class="ca-form-label">Mô tả sự kiện</label>
                             @Html.TextAreaFor(m => m.MoTa, new { id = "richContent" })
                         </div>
+                        @{
+                            ViewBag.TimelineInputClass = "ca-form-input";
+                            ViewBag.TimelineLabelClass = "ca-form-label";
+                        }
+                        @Html.Partial("_EventTimelineEditor", Model)
                     </div>
                 </div>
 
@@ -233,5 +238,6 @@
 
 @section scripts {
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
-<script src="@Url.Content("~/Scripts/A-event-edit.js")"></script>
+<script src="@Url.Content("~/Scripts/app/event-timeline-editor.js")"></script>
+<script src="@Url.Content("~/Scripts/app/A-event-edit.js")"></script>
 }

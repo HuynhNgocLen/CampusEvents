@@ -5,7 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity.Validation;
 using shcool_event_management.Areas.Admin.Helpers;
+using shcool_event_management.Infrastructure.Constants;
 using shcool_event_management.Models;
+using school_event_management.Helpers;
 
 namespace shcool_event_management.Areas.Admin.Controllers
 {
@@ -48,7 +50,6 @@ namespace shcool_event_management.Areas.Admin.Controllers
 
             AdminSelectListHelper.PopulateDropdowns(ViewBag, _db, model.MaDanhMuc, model.MaDiaDiem, model.MaVien, currentAdmin, true);
             ViewBag.DiaDiemText = diaDiemText;
-            model.ChiTiet = model.MoTa;
             if (ModelState.ContainsKey("ChiTiet")) ModelState["ChiTiet"].Errors.Clear();
             if (!ModelState.IsValid) return View(CreateViewPath, model);
 
@@ -81,8 +82,9 @@ namespace shcool_event_management.Areas.Admin.Controllers
                 return View(CreateViewPath, model);
             }
 
-            model.TrangThai = btnAction == "draft" ? "Bản nháp" : "Sắp diễn ra";
-            model.ChiTiet = model.MoTa;
+            model.TrangThai = btnAction == "draft" ? EventTrangThai.BanNhap : EventTrangThai.SapDienRa;
+            model.ChiTiet = string.IsNullOrWhiteSpace(model.ChiTiet) ? null : model.ChiTiet.Trim();
+            model.LinkZalo = WebUrlHelper.NormalizeExternalHref(model.LinkZalo);
             model.NgayTao = DateTime.Now;
             model.SoLuongDaDangKy = 0;
             model.IsHidden = false;

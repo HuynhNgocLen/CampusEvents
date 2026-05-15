@@ -1,7 +1,13 @@
+@using System.Text
 @{
     var adminQuyen = Session["AdminQuyen"] != null ? Convert.ToInt32(Session["AdminQuyen"]) : -1;
     var adminMaQTV = Session["AdminMaQTV"]?.ToString();
     var currentTenDN = User?.Identity?.Name;
+
+    var headerAdminName = "Admin Campus";
+    var headerAdminRole = "Administrator";
+    var headerAdminInitials = "AC";
+    string headerAdminAvatar = null;
 
     // Đồng bộ quyền theo DB để tránh lệch khi đổi quyền trực tiếp trong SQL.
     using (var db = new shcool_event_management.Models.school_event_managementEntities())
@@ -31,9 +37,60 @@
             adminQuyen = quyenFromDb.Value;
             Session["AdminQuyen"] = adminQuyen;
         }
+
+        var hdr = !string.IsNullOrEmpty(adminMaQTV)
+            ? db.QuanTriViens.FirstOrDefault(x => x.MaQTV == adminMaQTV)
+            : (!string.IsNullOrEmpty(currentTenDN)
+                ? db.QuanTriViens.FirstOrDefault(x => x.TenDN == currentTenDN)
+                : null);
+        if (hdr != null && !string.IsNullOrEmpty(hdr.TenDN))
+        {
+            headerAdminName = hdr.TenDN;
+            var lettersSb = new StringBuilder();
+            foreach (var ch in hdr.TenDN)
+            {
+                if (char.IsLetterOrDigit(ch))
+                {
+                    lettersSb.Append(ch);
+                }
+            }
+            var letters = lettersSb.ToString();
+            if (letters.Length >= 2)
+            {
+                headerAdminInitials = letters.Substring(0, 2).ToUpperInvariant();
+            }
+            else if (letters.Length == 1)
+            {
+                headerAdminInitials = (letters + letters).ToUpperInvariant();
+            }
+            else if (hdr.TenDN.Length >= 2)
+            {
+                headerAdminInitials = hdr.TenDN.Substring(0, 2).ToUpperInvariant();
+            }
+            else
+            {
+                headerAdminInitials = hdr.TenDN.ToUpperInvariant();
+            }
+
+            switch (hdr.Quyen)
+            {
+                case 0:
+                    headerAdminRole = "Hỗ trợ / chỉ xem";
+                    break;
+                case 1:
+                    headerAdminRole = "Quản lý nội dung";
+                    break;
+                case 2:
+                    headerAdminRole = "Toàn quyền";
+                    break;
+                default:
+                    headerAdminRole = "Quản trị viên";
+                    break;
+            }
+        }
     }
 
-    var canViewStats = adminQuyen == 0;
+    var canViewStats = adminQuyen == 0 || adminQuyen == 1 || adminQuyen == 2;
     var canManageAdmins = adminQuyen == 0 || adminQuyen == 2;
     var canViewActivityLogFull = adminQuyen == 0 || adminQuyen == 2;
     var canViewActivityAudit = false;
@@ -63,13 +120,13 @@
     <!-- toastr -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
-    <link href="@Url.Content("~/Content/campus-variables.css")"  rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-base.css")"       rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-navbar.css")"     rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-components.css")" rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-pages.css")"      rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-admin.css")"      rel="stylesheet" />
-    <link href="@Url.Content("~/Content/campus-vibrant.css")"    rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-variables.css")"  rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-base.css")"       rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-navbar.css")"     rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-components.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-pages.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-admin.css")"      rel="stylesheet" />
+    <link href="@Url.Content("~/Content/app/campus-vibrant.css")"    rel="stylesheet" />
 
     @RenderSection("styles", required: false)
 
@@ -152,12 +209,28 @@
 
                 <span class="ca-nav-section-label">Hệ thống</span>
 
+                <a href="@Url.Action("Profile", "AdminSettings", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "profile" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "profile" ? "page" : null)"
+                   data-label="Hồ sơ">
+                    <span class="material-symbols-outlined">person</span>
+                    <span>Hồ sơ</span>
+                </a>
+
                 <a href="@Url.Action("Index", "AdminSettings", new { area = "Admin" })"
                    class="ca-nav-item @(ViewBag.ActiveMenu == "settings" ? "active" : "")"
                    aria-current="@(ViewBag.ActiveMenu == "settings" ? "page" : null)"
                    data-label="Cài đặt">
                     <span class="material-symbols-outlined">settings</span>
                     <span>Cài đặt</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminRules", new { area = "Admin" })"
+                   class="ca-nav-item @(ViewBag.ActiveMenu == "rules" ? "active" : "")"
+                   aria-current="@(ViewBag.ActiveMenu == "rules" ? "page" : null)"
+                   data-label="Quy tắc">
+                    <span class="material-symbols-outlined">gavel</span>
+                    <span>Quy tắc</span>
                 </a>
 
                 @if (canManageAdmins)
@@ -246,20 +319,20 @@
                     </button>
 
                     <a href="@Url.Action("Profile", "AdminSettings", new { area = "Admin" })"
-                       class="ca-header__profile" title="Hồ sơ Admin">
-                        @if (!string.IsNullOrEmpty(ViewBag.AdminAvatar?.ToString()))
+                       class="ca-header__profile" title="Hồ sơ quản trị viên">
+                        @if (!string.IsNullOrEmpty(headerAdminAvatar))
                         {
                             <div class="ca-header__avatar">
-                                <img src="@ViewBag.AdminAvatar" alt="Avatar" />
+                                <img src="@headerAdminAvatar" alt="" />
                             </div>
                         }
                         else
                         {
-                            <div class="ca-header__avatar-initials">AC</div>
+                            <div class="ca-header__avatar-initials">@headerAdminInitials</div>
                         }
                         <div>
-                            <div class="ca-header__profile-name">@(ViewBag.AdminName ?? "Admin Campus")</div>
-                            <div class="ca-header__profile-role">@(ViewBag.AdminRole ?? "Administrator")</div>
+                            <div class="ca-header__profile-name">@headerAdminName</div>
+                            <div class="ca-header__profile-role">@headerAdminRole</div>
                         </div>
                     </a>
 
@@ -365,6 +438,11 @@
         </div>
     </div>
 
+    @Html.AntiForgeryToken()
+    <script>
+        window.ceAdminSaveThemeUrl = @Html.Raw(System.Web.Helpers.Json.Encode(Url.Action("SaveTheme", "AdminSettings", new { area = "Admin" })));
+    </script>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -372,7 +450,7 @@
     <script>
         window.ceServerNotifications = @Html.Raw(System.Web.Helpers.Json.Encode(adminNotifications));
     </script>
-    <script src="@Url.Content("~/Scripts/campus-app.js")"></script>
+    <script src="@Url.Content("~/Scripts/app/campus-app.js")"></script>
 
     @RenderSection("scripts", required: false)
 </body>
