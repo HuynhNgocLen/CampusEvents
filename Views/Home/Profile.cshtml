@@ -1,33 +1,46 @@
-﻿@model shcool_event_management.Models.SinhVien
+@model shcool_event_management.Models.SinhVien
 @using shcool_event_management.Models
 @{
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
     ViewBag.ActivePage = "profile";
 
-    var drl          = (int)(ViewBag.DRL ?? 0);
-    var hocKy        = (int)(ViewBag.HocKy ?? 1);
-    var nam          = (int)(ViewBag.Nam ?? DateTime.Now.Year);
-    var tongHT       = (int)(ViewBag.TongHoanThanh ?? 0);
-    var isMe         = ViewBag.IsCurrentUser == true;
-    var thanhTich    = ViewBag.ThanhTich as List<string> ?? new List<string>();
-    var daThamDu     = ViewBag.DaThamDu   as List<DangKySuKien> ?? new List<DangKySuKien>();
-    var suKienNam    = ViewBag.SuKienTrongNam as List<EVENT> ?? new List<EVENT>();
-    var currentYear  = (int)(ViewBag.CurrentYear ?? DateTime.Now.Year);
+    var drl = (int)(ViewBag.DRL ?? 0);
+    var hocKy = (int)(ViewBag.HocKy ?? 1);
+    var nam = (int)(ViewBag.Nam ?? DateTime.Now.Year);
+    var tongHT = (int)(ViewBag.TongHoanThanh ?? 0);
+    var isMe = ViewBag.IsCurrentUser == true;
+    var thanhTich = ViewBag.ThanhTich as List<string> ?? new List<string>();
+    var daThamDu = ViewBag.DaThamDu as List<DangKySuKien> ?? new List<DangKySuKien>();
+    var suKienNam = ViewBag.SuKienTrongNam as List<EVENT> ?? new List<EVENT>();
+    var currentYear = (int)(ViewBag.CurrentYear ?? DateTime.Now.Year);
 
-    var words    = (Model.Ten ?? "SV").Trim().Split(new[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+    var words = (Model.Ten ?? "SV").Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
     var initials = words.Length >= 2
-        ? (words[words.Length - 2].Substring(0,1) + words[words.Length - 1].Substring(0,1)).ToUpper()
-        : words[0].Substring(0,1).ToUpper();
+        ? (words[words.Length - 2].Substring(0, 1) + words[words.Length - 1].Substring(0, 1)).ToUpper()
+        : words[0].Substring(0, 1).ToUpper();
 
     string drlCls = drl >= 15 ? "pf-drl--green" : (drl >= 8 ? "pf-drl--blue" : "pf-drl--gray");
 }
+
+@* FIX TS2683: tách hàm đóng alert ra script riêng, không dùng this trong onclick *@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.pf-alert__close').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var alert = btn.closest('.pf-alert');
+            if (alert) alert.remove();
+        });
+    });
+});
+</script>
 
 @if (TempData["Success"] != null)
 {
     <div class="pf-alert pf-alert--success">
         <span class="material-symbols-outlined">check_circle</span>
         @TempData["Success"]
-        <button onclick="this.parentElement.remove()" class="pf-alert__close">
+        @* FIX line 30: dùng closeAlert(this) thay vì this.parentElement.remove() *@
+        <button class="pf-alert__close">
             <span class="material-symbols-outlined">close</span>
         </button>
     </div>
@@ -37,7 +50,8 @@
     <div class="pf-alert pf-alert--error">
         <span class="material-symbols-outlined">error</span>
         @TempData["Error"]
-        <button onclick="this.parentElement.remove()" class="pf-alert__close">
+        @* FIX line 40: dùng closeAlert(this) thay vì this.parentElement.remove() *@
+        <button class="pf-alert__close">
             <span class="material-symbols-outlined">close</span>
         </button>
     </div>

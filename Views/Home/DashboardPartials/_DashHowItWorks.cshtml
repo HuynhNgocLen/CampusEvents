@@ -1,0 +1,39 @@
+@*  ── DASH HOW IT WORKS ── *@
+<section class="dash-section">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="dash-section__title" style="font-size:clamp(1.5rem,4vw,2.2rem)">
+                Tham gia sự kiện chỉ với <span style="color:#38bdf8">4 bước</span>
+            </h2>
+            <p class="dash-section__sub" style="margin-top:.5rem">
+                Trải nghiệm liền mạch trên cả mobile và desktop.
+            </p>
+        </div>
+        <div class="row g-3">
+            @{
+                var steps = new[]
+                {
+                    new { Num="1", Icon="search",          Color="#0ea5e9", Title="Tìm sự kiện",    Desc="Lọc theo viện, danh mục, thời gian — tìm sự kiện phù hợp trong vài giây." },
+                    new { Num="2", Icon="calendar_add_on", Color="#8b5cf6", Title="Đăng ký nhanh", Desc="Một cú click để giữ chỗ. Nhận xác nhận tức thì qua thông báo in-app." },
+                    new { Num="3", Icon="qr_code_2",       Color="#22c55e", Title="Check-in QR",   Desc="Mã QR cá nhân giúp bạn check-in tại sự kiện chỉ trong 1 giây." },
+                    new { Num="4", Icon="notifications",   Color="#f59e0b", Title="Nhắc lịch",     Desc="Đồng bộ lịch &amp; nhận nhắc nhở để không bỏ lỡ bất kỳ sự kiện nào." },
+                };
+            }
+            @foreach (var step in steps)
+            {
+                <div class="col-12 col-sm-6">
+                    <div class="dash-step-card dash-reveal">
+                        <div class="dash-step-card__num" style="background:@(step.Color)22;color:@step.Color;border-color:@(step.Color)33">
+                            @step.Num
+                        </div>
+                        <div class="dash-step-card__icon" style="background:@(step.Color)18">
+                            <span class="material-symbols-outlined" style="color:@step.Color">@step.Icon</span>
+                        </div>
+                        <div class="dash-step-card__title">@step.Title</div>
+                        <p class="dash-step-card__desc">@step.Desc</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

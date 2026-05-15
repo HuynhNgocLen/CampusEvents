@@ -39,8 +39,6 @@ namespace shcool_event_management.Models
         public virtual DbSet<vw_DiemRenLuyenTheoKy> vw_DiemRenLuyenTheoKy { get; set; }
         public virtual DbSet<vw_SoChoConLai> vw_SoChoConLai { get; set; }
         public virtual DbSet<vw_UserStatsByYear> vw_UserStatsByYear { get; set; }
-        public virtual DbSet<QTVAdminDangNhapLog> QTVAdminDangNhapLogs { get; set; }
-        public virtual DbSet<QTVHanhDongLog> QTVHanhDongLogs { get; set; }
     
         public virtual int sp_AutoUpdate_TrangThaiEvent()
         {

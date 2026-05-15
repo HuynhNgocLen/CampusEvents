@@ -1,0 +1,56 @@
+@model IEnumerable<shcool_event_management.Models.EVENT>
+@*  ── DASH CLUB EVENTS ── *@
+<section class="dash-section">
+    <div class="container py-5">
+        <div class="dash-section__hd mb-4">
+            <div>
+                <h2 class="dash-section__title" style="font-size:1.5rem;font-weight:800;color:#1e293b;">Khám phá sự kiện của Câu lạc bộ</h2>
+                <p class="dash-section__sub" style="font-size:0.9rem;color:#64748b;">Khám phá các tổ chức, câu lạc bộ hoạt động sôi nổi nhất</p>
+            </div>
+            <a href="@Url.Action("Events","Events", new { category="CLUB" })" class="dash-link-more" style="color:#0ea5e9;font-weight:600;text-decoration:none;">Xem tất cả →</a>
+        </div>
+
+        @{
+            var clubs = ViewBag.ListVien as List<shcool_event_management.Models.Vien> 
+                        ?? new List<shcool_event_management.Models.Vien>();
+            clubs = clubs.Take(8).ToList();
+        }
+
+        @if (clubs.Any())
+        {
+            <div class="row g-3 g-md-4">
+                @foreach (var item in clubs)
+                {
+                    <div class="col-6 col-md-4 col-lg-3 dash-reveal">
+                        <div class="dash-club-card-modern">
+                            <div class="dash-club-card-modern__img">
+                                @* Simulate a dark logo background for clubs since there's no logo image in db yet *@
+                                <div class="dash-club-card-modern__ph">
+                                    <span class="material-symbols-outlined" style="font-size:40px;color:rgba(255,255,255,0.8)">
+                                        groups
+                                    </span>
+                                    <div class="club-shortname">@(item.MaVien)</div>
+                                </div>
+                            </div>
+                            <div class="dash-club-card-modern__body">
+                                <h3 class="dash-club-card-modern__title">@item.TenVien</h3>
+                                <p class="dash-club-card-modern__desc">
+                                    Nơi kết nối các bạn có đam mê, nhiệt huyết. Tham gia để học hỏi và phát triển kỹ năng...
+                                </p>
+                                <a href="@Url.Action("Events","Events", new { vien = item.MaVien })" class="dash-club-card-modern__link">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ce-empty">
+                <span class="material-symbols-outlined">groups</span>
+                <div class="ce-empty__title">Chưa có thông tin Câu lạc bộ</div>
+                <div class="ce-empty__sub">Các câu lạc bộ sẽ hiển thị tại đây.</div>
+            </div>
+        }
+    </div>
+</section>

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="school_event_managementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="DangKySuKien">
           <Key>
             <PropertyRef Name="MaEvent" />
@@ -70,32 +70,6 @@
           <Property Name="MaNghanh" Type="varchar" MaxLength="6" Nullable="false" />
           <Property Name="TenNghanh" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="THUOCVIEN" Type="varchar" MaxLength="12" />
-        </EntityType>
-        <EntityType Name="QTVAdminDangNhapLog">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ThoiGian" Type="datetime2" Precision="7" Nullable="false" />
-          <Property Name="TenDN" Type="varchar" MaxLength="64" Nullable="false" />
-          <Property Name="MaQTV" Type="varchar" MaxLength="32" />
-          <Property Name="Quyen" Type="int" />
-          <Property Name="DiaChiIP" Type="nvarchar" MaxLength="45" />
-          <Property Name="ThietBi" Type="nvarchar" MaxLength="512" />
-        </EntityType>
-        <EntityType Name="QTVHanhDongLog">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ThoiGian" Type="datetime2" Precision="7" Nullable="false" />
-          <Property Name="TenDN" Type="varchar" MaxLength="64" Nullable="false" />
-          <Property Name="MaQTV" Type="varchar" MaxLength="32" />
-          <Property Name="PhuongThuc" Type="varchar" MaxLength="16" Nullable="false" />
-          <Property Name="ControllerName" Type="varchar" MaxLength="128" Nullable="false" />
-          <Property Name="ActionName" Type="varchar" MaxLength="128" Nullable="false" />
-          <Property Name="DuongDan" Type="nvarchar" MaxLength="500" />
-          <Property Name="MoTa" Type="nvarchar" MaxLength="2000" />
         </EntityType>
         <EntityType Name="QuanTriVien">
           <Key>
@@ -179,7 +153,7 @@ warning 6002: The table/view 'school_event_management.dbo.vw_UserStatsByYear' do
           <Property Name="TongHoanThanhNam" Type="int" />
           <Property Name="TongHuyNam" Type="int" />
         </EntityType>
-        <Association Name="FK__MaNghanh__THUOCV__6E01572D">
+        <Association Name="FK__MaNghanh__THUOCV__4CA06362">
           <End Role="Vien" Type="Self.Vien" Multiplicity="0..1" />
           <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="*" />
           <ReferentialConstraint>
@@ -321,8 +295,6 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           <EntitySet Name="DiaDiem" EntityType="Self.DiaDiem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EVENT" EntityType="Self.EVENT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaNghanh" EntityType="Self.MaNghanh" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="QTVAdminDangNhapLog" EntityType="Self.QTVAdminDangNhapLog" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="QTVHanhDongLog" EntityType="Self.QTVHanhDongLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QuanTriVien" EntityType="Self.QuanTriVien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SinhVien" EntityType="Self.SinhVien" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SuKienYeuThich" EntityType="Self.SuKienYeuThich" Schema="dbo" store:Type="Tables" />
@@ -354,7 +326,7 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
     [vw_UserStatsByYear].[TongHuyNam] AS [TongHuyNam]
     FROM [dbo].[vw_UserStatsByYear] AS [vw_UserStatsByYear]</DefiningQuery>
           </EntitySet>
-          <AssociationSet Name="FK__MaNghanh__THUOCV__6E01572D" Association="Self.FK__MaNghanh__THUOCV__6E01572D">
+          <AssociationSet Name="FK__MaNghanh__THUOCV__4CA06362" Association="Self.FK__MaNghanh__THUOCV__4CA06362">
             <End Role="Vien" EntitySet="Vien" />
             <End Role="MaNghanh" EntitySet="MaNghanh" />
           </AssociationSet>
@@ -399,7 +371,8 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             <End Role="SuKienYeuThich" EntitySet="SuKienYeuThich" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="school_event_managementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -467,7 +440,6 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_Event" FromRole="EVENT" ToRole="DangKySuKien" />
           <NavigationProperty Name="DanhMuc" Relationship="Self.FK_Event_DanhMuc" FromRole="EVENT" ToRole="DanhMuc" />
           <NavigationProperty Name="DiaDiem" Relationship="Self.FK_Event_DiaDiem" FromRole="EVENT" ToRole="DiaDiem" />
-          <NavigationProperty Name="SinhVien" Relationship="Self.FK_Event_NguoiDang" FromRole="EVENT" ToRole="SinhVien" />
           <NavigationProperty Name="Vien" Relationship="Self.FK_Event_Vien" FromRole="EVENT" ToRole="Vien" />
           <NavigationProperty Name="SuKienYeuThiches" Relationship="Self.FK_YeuThich_Event" FromRole="EVENT" ToRole="SuKienYeuThich" />
         </EntityType>
@@ -477,9 +449,9 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           </Key>
           <Property Name="MaNghanh1" Type="String" MaxLength="6" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenNghanh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="SinhViens" Relationship="Self.FK_SinhVien_Nghanh" FromRole="MaNghanh" ToRole="SinhVien" />
           <Property Name="THUOCVIEN" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Vien" Relationship="school_event_managementModel.FK__MaNghanh__THUOCV__6E01572D" FromRole="MaNghanh" ToRole="Vien" />
+          <NavigationProperty Name="Vien" Relationship="Self.FK__MaNghanh__THUOCV__4CA06362" FromRole="MaNghanh" ToRole="Vien" />
+          <NavigationProperty Name="SinhViens" Relationship="Self.FK_SinhVien_Nghanh" FromRole="MaNghanh" ToRole="SinhVien" />
         </EntityType>
         <EntityType Name="QuanTriVien">
           <Key>
@@ -488,9 +460,9 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           <Property Name="TenDN" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="MatKhau" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Quyen" Type="Int32" Nullable="false" />
-          <Property Name="MaQTV" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Vien" Relationship="school_event_managementModel.FK_QTV_Vien" FromRole="QuanTriVien" ToRole="Vien" />
+          <Property Name="MaQTV" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TrangThaiKhoa" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Vien" Relationship="Self.FK_QTV_Vien" FromRole="QuanTriVien" ToRole="Vien" />
         </EntityType>
         <EntityType Name="SinhVien">
           <Key>
@@ -506,7 +478,6 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="MatKhau" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="DangKySuKiens" Relationship="Self.FK_DangKy_SinhVien" FromRole="SinhVien" ToRole="DangKySuKien" />
-          <NavigationProperty Name="EVENTs" Relationship="Self.FK_Event_NguoiDang" FromRole="SinhVien" ToRole="EVENT" />
           <NavigationProperty Name="MaNghanh1" Relationship="Self.FK_SinhVien_Nghanh" FromRole="SinhVien" ToRole="MaNghanh" />
           <NavigationProperty Name="Vien" Relationship="Self.FK_SinhVien_Vien" FromRole="SinhVien" ToRole="Vien" />
           <NavigationProperty Name="SuKienYeuThiches" Relationship="Self.FK_YeuThich_SinhVien" FromRole="SinhVien" ToRole="SuKienYeuThich" />
@@ -530,9 +501,9 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           <Property Name="MaVien" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="TenVien" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="EVENTs" Relationship="Self.FK_Event_Vien" FromRole="Vien" ToRole="EVENT" />
+          <NavigationProperty Name="MaNghanhs" Relationship="Self.FK__MaNghanh__THUOCV__4CA06362" FromRole="Vien" ToRole="MaNghanh" />
+          <NavigationProperty Name="QuanTriViens" Relationship="Self.FK_QTV_Vien" FromRole="Vien" ToRole="QuanTriVien" />
           <NavigationProperty Name="SinhViens" Relationship="Self.FK_SinhVien_Vien" FromRole="Vien" ToRole="SinhVien" />
-          <NavigationProperty Name="MaNghanhs" Relationship="school_event_managementModel.FK__MaNghanh__THUOCV__6E01572D" FromRole="Vien" ToRole="MaNghanh" />
-          <NavigationProperty Name="QuanTriViens" Relationship="school_event_managementModel.FK_QTV_Vien" FromRole="Vien" ToRole="QuanTriVien" />
         </EntityType>
         <EntityType Name="vw_DiemRenLuyenTheoKy">
           <Key>
@@ -617,18 +588,6 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Event_NguoiDang">
-          <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="0..1" />
-          <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SinhVien">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="EVENT">
-              <PropertyRef Name="NguoiDang" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Event_Vien">
           <End Role="Vien" Type="Self.Vien" Multiplicity="1" />
           <End Role="EVENT" Type="Self.EVENT" Multiplicity="*" />
@@ -653,6 +612,18 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__MaNghanh__THUOCV__4CA06362">
+          <End Role="Vien" Type="Self.Vien" Multiplicity="0..1" />
+          <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="MaNghanh">
+              <PropertyRef Name="THUOCVIEN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SinhVien_Nghanh">
           <End Role="MaNghanh" Type="Self.MaNghanh" Multiplicity="0..1" />
           <End Role="SinhVien" Type="Self.SinhVien" Multiplicity="*" />
@@ -662,6 +633,18 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             </Principal>
             <Dependent Role="SinhVien">
               <PropertyRef Name="MaNghanh" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QTV_Vien">
+          <End Role="Vien" Type="Self.Vien" Multiplicity="1" />
+          <End Role="QuanTriVien" Type="Self.QuanTriVien" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vien">
+              <PropertyRef Name="MaVien" />
+            </Principal>
+            <Dependent Role="QuanTriVien">
+              <PropertyRef Name="MaQTV" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -718,10 +701,6 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             <End Role="DiaDiem" EntitySet="DiaDiems" />
             <End Role="EVENT" EntitySet="EVENTs" />
           </AssociationSet>
-          <AssociationSet Name="FK_Event_NguoiDang" Association="Self.FK_Event_NguoiDang">
-            <End Role="SinhVien" EntitySet="SinhViens" />
-            <End Role="EVENT" EntitySet="EVENTs" />
-          </AssociationSet>
           <AssociationSet Name="FK_Event_Vien" Association="Self.FK_Event_Vien">
             <End Role="Vien" EntitySet="Viens" />
             <End Role="EVENT" EntitySet="EVENTs" />
@@ -730,9 +709,17 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             <End Role="EVENT" EntitySet="EVENTs" />
             <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
           </AssociationSet>
+          <AssociationSet Name="FK__MaNghanh__THUOCV__4CA06362" Association="Self.FK__MaNghanh__THUOCV__4CA06362">
+            <End Role="Vien" EntitySet="Viens" />
+            <End Role="MaNghanh" EntitySet="MaNghanhs" />
+          </AssociationSet>
           <AssociationSet Name="FK_SinhVien_Nghanh" Association="Self.FK_SinhVien_Nghanh">
             <End Role="MaNghanh" EntitySet="MaNghanhs" />
             <End Role="SinhVien" EntitySet="SinhViens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QTV_Vien" Association="Self.FK_QTV_Vien">
+            <End Role="Vien" EntitySet="Viens" />
+            <End Role="QuanTriVien" EntitySet="QuanTriViens" />
           </AssociationSet>
           <AssociationSet Name="FK_SinhVien_Vien" Association="Self.FK_SinhVien_Vien">
             <End Role="Vien" EntitySet="Viens" />
@@ -743,67 +730,7 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             <End Role="SuKienYeuThich" EntitySet="SuKienYeuThiches" />
           </AssociationSet>
           <FunctionImport Name="sp_AutoUpdate_TrangThaiEvent" />
-          <AssociationSet Name="FK__MaNghanh__THUOCV__6E01572D" Association="school_event_managementModel.FK__MaNghanh__THUOCV__6E01572D">
-            <End Role="Vien" EntitySet="Viens" />
-            <End Role="MaNghanh" EntitySet="MaNghanhs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_QTV_Vien" Association="school_event_managementModel.FK_QTV_Vien">
-            <End Role="Vien" EntitySet="Viens" />
-            <End Role="QuanTriVien" EntitySet="QuanTriViens" />
-          </AssociationSet>
-          <EntitySet Name="QTVAdminDangNhapLogs" EntityType="school_event_managementModel.QTVAdminDangNhapLog" />
-          <EntitySet Name="QTVHanhDongLogs" EntityType="school_event_managementModel.QTVHanhDongLog" />
         </EntityContainer>
-        <Association Name="FK__MaNghanh__THUOCV__6E01572D">
-          <End Type="school_event_managementModel.Vien" Role="Vien" Multiplicity="0..1" />
-          <End Type="school_event_managementModel.MaNghanh" Role="MaNghanh" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Vien">
-              <PropertyRef Name="MaVien" />
-            </Principal>
-            <Dependent Role="MaNghanh">
-              <PropertyRef Name="THUOCVIEN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_QTV_Vien">
-          <End Type="school_event_managementModel.Vien" Role="Vien" Multiplicity="1" />
-          <End Type="school_event_managementModel.QuanTriVien" Role="QuanTriVien" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Vien">
-              <PropertyRef Name="MaVien" />
-            </Principal>
-            <Dependent Role="QuanTriVien">
-              <PropertyRef Name="MaQTV" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="QTVAdminDangNhapLog">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ThoiGian" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="TenDN" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="MaQTV" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
-          <Property Name="Quyen" Type="Int32" />
-          <Property Name="DiaChiIP" Type="String" MaxLength="45" FixedLength="false" Unicode="true" />
-          <Property Name="ThietBi" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="QTVHanhDongLog">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ThoiGian" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="TenDN" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="MaQTV" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
-          <Property Name="PhuongThuc" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
-          <Property Name="ControllerName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ActionName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="DuongDan" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="MoTa" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -874,20 +801,20 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
           <EntitySetMapping Name="MaNghanhs">
             <EntityTypeMapping TypeName="school_event_managementModel.MaNghanh">
               <MappingFragment StoreEntitySet="MaNghanh">
-                <ScalarProperty Name="THUOCVIEN" ColumnName="THUOCVIEN" />
                 <ScalarProperty Name="MaNghanh1" ColumnName="MaNghanh" />
                 <ScalarProperty Name="TenNghanh" ColumnName="TenNghanh" />
+                <ScalarProperty Name="THUOCVIEN" ColumnName="THUOCVIEN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="QuanTriViens">
             <EntityTypeMapping TypeName="school_event_managementModel.QuanTriVien">
               <MappingFragment StoreEntitySet="QuanTriVien">
-                <ScalarProperty Name="TrangThaiKhoa" ColumnName="TrangThaiKhoa" />
-                <ScalarProperty Name="MaQTV" ColumnName="MaQTV" />
                 <ScalarProperty Name="TenDN" ColumnName="TenDN" />
                 <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
                 <ScalarProperty Name="Quyen" ColumnName="Quyen" />
+                <ScalarProperty Name="MaQTV" ColumnName="MaQTV" />
+                <ScalarProperty Name="TrangThaiKhoa" ColumnName="TrangThaiKhoa" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -958,34 +885,6 @@ warning 6035: The relationship 'FK_Event_NguoiDang' has columns that are not par
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="sp_AutoUpdate_TrangThaiEvent" FunctionName="school_event_managementModel.Store.sp_AutoUpdate_TrangThaiEvent" />
-          <EntitySetMapping Name="QTVAdminDangNhapLogs">
-            <EntityTypeMapping TypeName="school_event_managementModel.QTVAdminDangNhapLog">
-              <MappingFragment StoreEntitySet="QTVAdminDangNhapLog">
-                <ScalarProperty Name="ThietBi" ColumnName="ThietBi" />
-                <ScalarProperty Name="DiaChiIP" ColumnName="DiaChiIP" />
-                <ScalarProperty Name="Quyen" ColumnName="Quyen" />
-                <ScalarProperty Name="MaQTV" ColumnName="MaQTV" />
-                <ScalarProperty Name="TenDN" ColumnName="TenDN" />
-                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="QTVHanhDongLogs">
-            <EntityTypeMapping TypeName="school_event_managementModel.QTVHanhDongLog">
-              <MappingFragment StoreEntitySet="QTVHanhDongLog">
-                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
-                <ScalarProperty Name="DuongDan" ColumnName="DuongDan" />
-                <ScalarProperty Name="ActionName" ColumnName="ActionName" />
-                <ScalarProperty Name="ControllerName" ColumnName="ControllerName" />
-                <ScalarProperty Name="PhuongThuc" ColumnName="PhuongThuc" />
-                <ScalarProperty Name="MaQTV" ColumnName="MaQTV" />
-                <ScalarProperty Name="TenDN" ColumnName="TenDN" />
-                <ScalarProperty Name="ThoiGian" ColumnName="ThoiGian" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
