@@ -1,13 +1,71 @@
 @model IEnumerable<shcool_event_management.Models.EVENT>
 @{
-    ViewBag.Title      = "Trang chủ";
+    ViewBag.Title = "Trang chủ – CampusEvents";
     ViewBag.ActivePage = "home";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
 }
 
-@section Hero {
-    @Html.Partial("HomePartials/_LandingHero")
+@section Styles {
+    <link rel="stylesheet" href="~/Content/dashboard.css?v=@DateTime.Now.Ticks" />
 }
 
-@Html.Partial("HomePartials/_LandingPosters", Model)
-@Html.Partial("HomePartials/_LandingAbout", Model)
+@* ── HERO (full-width, nằm trong section Hero của Layout) ── *@
+@section Hero {
+    @Html.Partial("DashboardPartials/_DashHero", Model)
+}
+
+@* ── SỰ KIỆN NỔI BẬT ── *@
+@Html.Partial("DashboardPartials/_DashLatestEvents", Model)
+
+@* ── POSTER GALLERY ── *@
+@Html.Partial("DashboardPartials/_DashPosters", Model)
+
+@* ── CLB EVENTS (scroll ngang) ── *@
+@Html.Partial("DashboardPartials/_DashClubEvents", Model)
+
+@* ── KHÁM PHÁ THEO DANH MỤC ── *@
+@Html.Partial("DashboardPartials/_DashCategories")
+
+@* ── 4 BƯỚC THAM GIA ── *@
+@Html.Partial("DashboardPartials/_DashHowItWorks")
+
+@* ── CTA + FOOTER ── *@
+@Html.Partial("DashboardPartials/_DashCtaFooter")
+
+@* ── SCRIPTS CHUNG CHO DASHBOARD ── *@
+@section Scripts {
+    <script>
+// ── Scroll reveal ──
+const revealEls = document.querySelectorAll('.dash-reveal');
+const observer  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── Staggered delay cho các card trong cùng 1 row ──
+document.querySelectorAll('.row').forEach(row => {
+    const cards = row.querySelectorAll('.dash-reveal');
+    cards.forEach((c, i) => { 
+        if (c instanceof HTMLElement) {
+            c.style.transitionDelay = (i * 80) + 'ms'; 
+        }
+    });
+});
+
+// ── Hero search live suggestions (placeholder) ──
+const searchInput = document.getElementById('hero-search');
+if (searchInput) {
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const form = this.closest('form');
+            if (form) form.submit();
+        }
+    });
+}
+    </script>
+}

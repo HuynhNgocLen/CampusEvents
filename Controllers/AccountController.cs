@@ -57,6 +57,7 @@ namespace school_event_management.Controllers
             }
 
             string otp = new Random().Next(10000000, 99999999).ToString();
+
             Session["RegisterOTP"] = otp;
             Session["OTPExpiry"] = DateTime.Now.AddMinutes(5);
             Session["ResendCount"] = resendCount + 1;
