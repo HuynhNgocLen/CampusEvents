@@ -288,7 +288,7 @@
     <Compile Include="Models\EVENT.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\Home\HomeViewModel.cs" />
+    <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\MaNghanh.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -313,7 +313,16 @@
     <Compile Include="Models\SinhVien.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sp_helpdiagrams_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SuKienYeuThich.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Vien.cs">
@@ -328,7 +337,6 @@
     <Compile Include="Models\vw_UserStatsByYear.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Infrastructure\Constants\EventTrangThai.cs" />
     <Compile Include="Services\EmailService.cs" />
@@ -366,7 +374,7 @@
     <Content Include="Content\dashboard.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Content\app\Site.css" />
+    <Content Include="Content\Site.css" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -453,7 +461,7 @@
     <Content Include="packages\EntityFramework.6.5.1\tools\net45\win-x86\ef6.pdb" />
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.dll" />
     <Content Include="packages\EntityFramework.6.5.1\tools\net6.0\any\ef6.pdb" />
-    <None Include="AppSettings.secret.config" />
+    <Content Include="AppSettings.secret.config" />
     <None Include="AppSettings.secret.config.example" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
@@ -473,17 +481,18 @@
     <Content Include="Areas\Admin\Views\AdminDashboard\Dashboard.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\AdminStats.cshtml" />
     <Content Include="Areas\Admin\Views\AdminSettings\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AdminSettings\Profile.cshtml" />
     <Content Include="Areas\Admin\Views\AdminRules\Index.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Manage.cshtml" />
     <Content Include="Areas\Admin\Views\AdminEvents\Edit.cshtml" />
-    <Content Include="Content\app\campus-event-index.css" />
-    <Content Include="Content\app\campus-event-form.css" />
-    <Content Include="Content\app\campus-event-manage.css" />
-    <Content Include="Content\app\campus-vibrant.css" />
-    <Content Include="Scripts\app\A-event-create.js" />
+    <Content Include="Content\campus-event-index.css" />
+    <Content Include="Content\campus-event-form.css" />
+    <Content Include="Content\campus-event-manage.css" />
+    <Content Include="Content\campus-vibrant.css" />
+    <Content Include="Scripts\A-event-create.js" />
     <Content Include="Scripts\app\event-timeline-editor.js" />
-    <Content Include="Scripts\app\A-event-edit.js" />
-    <Content Include="Scripts\app\A-event-manage.js" />
+    <Content Include="Scripts\A-event-edit.js" />
+    <Content Include="Scripts\A-event-manage.js" />
     <Content Include="Areas\Admin\Views\AdminStats\_KpiCards.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\_StatusDoughnut.cshtml" />
     <Content Include="Areas\Admin\Views\AdminStats\_CategoryTable.cshtml" />
@@ -774,10 +783,11 @@
     <Content Include="packages\QRCoder.1.7.0\QRCoder.1.7.0.nupkg" />
     <Content Include="packages\QRCoder.1.7.0\README.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
-    <Content Include="Scripts\app\campus-app.js" />
-    <Content Include="Scripts\app\A-user-events.js" />
-    <Content Include="Scripts\app\AdminDashboard.js" />
-    <Content Include="Scripts\app\A-StatsScripts.js" />
+    <Content Include="Scripts\campus-app.js" />
+    <Content Include="Scripts\A-user-events.js" />
+    <Content Include="Scripts\AdminDashboard.js" />
+    <Content Include="Scripts\QuanTriVien.sql" />
+    <Content Include="Scripts\A-StatsScripts.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -788,7 +798,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Web.config" />
     <Content Include="Views\Home\DashboardPartials\_DashCategories.cshtml" />
     <Content Include="Views\Home\DashboardPartials\_DashClubEvents.cshtml" />
     <Content Include="Views\Home\DashboardPartials\_DashCtaFooter.cshtml" />
@@ -796,6 +805,7 @@
     <Content Include="Views\Home\DashboardPartials\_DashHowItWorks.cshtml" />
     <Content Include="Views\Home\DashboardPartials\_DashLatestEvents.cshtml" />
     <Content Include="Views\Home\DashboardPartials\_DashPosters.cshtml" />
+    <Content Include="Web.config" />
     <None Include="Web.config.example" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -824,6 +834,7 @@
     <Content Include="Views\Home\HomePartials\_LandingPosters.cshtml" />
     <Content Include="Views\Home\HomePartials\_LandingAbout.cshtml" />
     <Content Include="Views\Events\Events.cshtml" />
+    <Content Include="Views\Attendance\CheckIn.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -835,17 +846,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Images\" />
-    <Folder Include="Infrastructure\Configuration\" />
-    <Folder Include="Infrastructure\Constants\" />
-    <Folder Include="Infrastructure\Extensions\" />
-    <Folder Include="Repositories\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="ViewModels\Account\" />
-    <Folder Include="ViewModels\Events\" />
     <Folder Include="ViewModels\Home\" />
-    <Folder Include="ViewModels\Registration\" />
-    <Folder Include="ViewModels\Schedule\" />
-    <Folder Include="ViewModels\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Infrastructure\Configuration\.gitkeep" />

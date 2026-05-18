@@ -17,7 +17,7 @@
 <div class="em-header">
     <div>
         <h1 class="ca-page-title">Quản lí sự kiện</h1>
-        <p class="ca-page-sub">Xem, cập nhật và quản lý tất cả sự kiện theo từng học kì.</p>
+        <p class="ca-page-sub">Xem, cập nhật và quản lý tất cả sự kiện theo từng học kỳ.</p>
     </div>
 </div>
 
@@ -38,11 +38,11 @@
             <a class="em-semester-tab @(!semester.HasValue ? "active" : "")"
                href="@Url.Action("Manage","AdminEvents",new{area="Admin",search,status,cat,vien,year})">Tất cả</a>
             <a class="em-semester-tab @(semester == 1 ? "active" : "")"
-               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=1,search,status,cat,vien,year})">Học kì 1</a>
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=1,search,status,cat,vien,year})">Kỳ 1</a>
             <a class="em-semester-tab @(semester == 2 ? "active" : "")"
-               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=2,search,status,cat,vien,year})">Học kì 2</a>
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=2,search,status,cat,vien,year})">Kỳ 2</a>
             <a class="em-semester-tab @(semester == 3 ? "active" : "")"
-               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=3,search,status,cat,vien,year})">Học kì 3</a>
+               href="@Url.Action("Manage","AdminEvents",new{area="Admin",semester=3,search,status,cat,vien,year})">Kỳ 3</a>
         </div>
 
         <div class="em-sep"></div>

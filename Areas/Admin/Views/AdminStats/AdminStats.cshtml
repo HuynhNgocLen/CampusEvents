@@ -1,16 +1,13 @@
 @using shcool_event_management.Models
-@using System.Collections.Generic
 @{
     ViewBag.Title = "Thống kê — CampusEvents Admin";
     ViewBag.ActiveMenu = "stats";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    int adminQuyenStats = (int)(ViewBag.AdminQuyen ?? -1);
-    string statsMaVien = (string)(ViewBag.StatsMaVien ?? "");
     int year = (int)(ViewBag.Year ?? DateTime.Now.Year);
     string semester = (string)(ViewBag.Semester ?? "");
-    string semLabel = semester == "hk1" ? "Học kì 1"
-                    : semester == "hk2" ? "Học kì 2"
-                    : semester == "hk3" ? "Học kì 3"
+    string semLabel = semester == "hk1" ? "Học kỳ 1 (T8–T12)"
+                    : semester == "hk2" ? "Học kỳ 2 (T1–T5)"
+                    : semester == "hk3" ? "Học kỳ 3 (T6–T7)"
                     : "Cả năm";
 
     int totalEvents = (int)(ViewBag.TotalEvents ?? 0);
@@ -27,7 +24,7 @@
 }
 
 @section styles {
-    <link href="~/Content/app/AdminStats.css" rel="stylesheet" />
+    <link href="~/Content/AdminStats.css" rel="stylesheet" />
 }
 
 <div class="ca-content">
@@ -44,42 +41,17 @@
                 </select>
                 <select name="semester" onchange="this.form.submit()" style="height:38px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.83rem;outline:none">
                     <option value="" @(semester == "" ? "selected" : "")>Cả năm</option>
-                    <option value="hk1" @(semester == "hk1" ? "selected" : "")>Học kì 1</option>
-                    <option value="hk2" @(semester == "hk2" ? "selected" : "")>Học kì 2</option>
-                    <option value="hk3" @(semester == "hk3" ? "selected" : "")>Học kì 3</option>
+                    <option value="hk1" @(semester == "hk1" ? "selected" : "")>HK1 — T8 đến T12</option>
+                    <option value="hk2" @(semester == "hk2" ? "selected" : "")>HK2 — T1 đến T5</option>
+                    <option value="hk3" @(semester == "hk3" ? "selected" : "")>HK3 — T6 đến T7</option>
                 </select>
-                if (adminQuyenStats == 0)
-                {
-                    var viens = ViewBag.Viens as IEnumerable<Vien>;
-                    if (viens != null)
-                    {
-                        string selMv = (string)(ViewBag.SelectedMaVien ?? "");
-                        <select name="maVien" onchange="this.form.submit()" style="height:38px;max-width:220px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-family:var(--font-main);font-size:.83rem;outline:none" title="Lọc theo viện">
-                            <option value="" @(string.IsNullOrEmpty(selMv) ? "selected" : "")>Tất cả viện</option>
-                            @foreach (var v in viens)
-                            {
-                                <option value="@v.MaVien" @(v.MaVien == selMv ? "selected" : "")>@v.TenVien</option>
-                            }
-                        </select>
-                    }
-                }
             }
-            <a href="@Url.Action("ExportReport","AdminStats",new{area="Admin",year,semester,maVien=statsMaVien})" class="ce-btn ce-btn-primary">
+            <a href="@Url.Action("ExportReport","AdminStats",new{area="Admin",year,semester})" class="ce-btn ce-btn-primary">
                 <span class="material-symbols-outlined">download</span>Xuất Excel
             </a>
         </div>
     </div>
-    <p class="ca-page-sub">
-        Phân tích hoạt động sự kiện năm @year — @semLabel.
-        @if (adminQuyenStats == 0)
-        {
-            <span style="display:block;margin-top:.35rem;font-size:.8rem;color:var(--text-muted)">Phạm vi: @(ViewBag.ScopeLabel ?? "Tất cả viện")</span>
-        }
-        else if (adminQuyenStats == 1 || adminQuyenStats == 2)
-        {
-            <span style="display:block;margin-top:.35rem;font-size:.8rem;color:var(--text-muted)">Bạn chỉ xem thống kê của viện: <strong>@(ViewBag.ScopeLabel ?? statsMaVien)</strong></span>
-        }
-    </p>
+    <p class="ca-page-sub">Phân tích toàn diện hoạt động sự kiện năm @year — @semLabel.</p>
 
     @* GỌI FILE PARTIAL: KPI ROW *@
     @Html.Partial("_KpiCards")
@@ -153,7 +125,6 @@
         const WEEK_LABELS  = @Html.Raw(weekLabelsJson);
         const WEEK_DATA    = @Html.Raw(weekCountsJson);
         const CHART_DATA_URL = '@Url.Action("GetChartData", "AdminStats", new { area = "Admin" })';
-        const STATS_MA_VIEN = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(statsMaVien ?? ""));
 
         @{
             var byStatusList = (System.Collections.IEnumerable)ViewBag.ByStatus;
@@ -173,5 +144,5 @@
         const STATUS_DATA   = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(statusCounts));
     </script>
 
-    <script src="~/Scripts/app/A-StatsScripts.js"></script>
+    <script src="~/Scripts/A-StatsScripts.js"></script>
 }

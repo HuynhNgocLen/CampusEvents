@@ -1,13 +1,40 @@
+﻿using System.Net;
+using System.Net.Mail;
+using System.Configuration;
+
 namespace school_event_management.Services
 {
-    /// <summary>
-    /// Cửa gọi tĩnh tương thích ngược — controller vẫn dùng EmailService.SendEmail.
-    /// </summary>
-    public static class EmailService
+    public class EmailService
     {
-        private static readonly IEmailSender Sender = new SmtpEmailSender();
-
         public static void SendEmail(string toEmail, string subject, string body)
-            => Sender.SendEmail(toEmail, subject, body);
+        {
+            // Đọc từ Web.config
+            var fromEmail = ConfigurationManager.AppSettings["SmtpEmail"];
+            var password = ConfigurationManager.AppSettings["SmtpPassword"];
+            var fromName = ConfigurationManager.AppSettings["SmtpDisplayName"] ?? "CampusEvents";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromEmail, password),
+                TargetName = "STARTTLS/smtp.gmail.com"
+            };
+
+            using (var message = new MailMessage()
+            {
+                From = new MailAddress(fromEmail, fromName),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            })
+            {
+                message.To.Add(toEmail);
+                smtp.Send(message);
+            }
+        }
     }
 }

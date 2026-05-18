@@ -22,105 +22,9 @@
 
     //Sinh viên đã đăng ký rồi
     bool daDangKy = ViewBag.DaDangKy != null && (bool)ViewBag.DaDangKy;
-    var coverImageUrl = string.Empty;
-    if (!string.IsNullOrWhiteSpace(Model.AnhBia))
-    {
-        var rawCover = Model.AnhBia.Trim();
-        string coverVirtualPath;
-        if (rawCover.StartsWith("~/", StringComparison.Ordinal))
-        {
-            coverVirtualPath = rawCover;
-        }
-        else if (rawCover.StartsWith("/", StringComparison.Ordinal))
-        {
-            coverVirtualPath = "~" + rawCover;
-        }
-        else
-        {
-            coverVirtualPath = "~/Uploads/Events/" + rawCover.TrimStart('/');
-        }
-
-        var coverPhysicalPath = Server.MapPath(coverVirtualPath);
-        if (!string.IsNullOrEmpty(coverPhysicalPath) && System.IO.File.Exists(coverPhysicalPath))
-        {
-            coverImageUrl = Url.Content(coverVirtualPath);
-        }
-        else if (!rawCover.StartsWith("~/", StringComparison.Ordinal)
-                 && !rawCover.StartsWith("/", StringComparison.Ordinal)
-                 && rawCover.IndexOf('/') < 0)
-        {
-            var legacyVirtual = "~/Content/img/events/" + rawCover;
-            var legacyPhysical = Server.MapPath(legacyVirtual);
-            if (!string.IsNullOrEmpty(legacyPhysical) && System.IO.File.Exists(legacyPhysical))
-            {
-                coverImageUrl = Url.Content(legacyVirtual);
-            }
-        }
-    }
-
-    Func<string, string> normalizeTimelineTime = raw =>
-    {
-        if (string.IsNullOrWhiteSpace(raw))
-        {
-            return string.Empty;
-        }
-
-        var normalized = raw.Trim().ToLowerInvariant().Replace(" ", string.Empty);
-        normalized = System.Text.RegularExpressions.Regex.Replace(normalized, @"(\d{1,2})h", "$1:00");
-        normalized = normalized.Replace("--", "-").Replace("–", "-");
-
-        var segments = normalized.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .ToList();
-
-        if (!segments.Any())
-        {
-            return raw.Trim();
-        }
-
-        Func<string, string> formatSegment = value =>
-        {
-            if (System.Text.RegularExpressions.Regex.IsMatch(value, @"^\d{1,2}$"))
-            {
-                return value.PadLeft(2, '0') + ":00";
-            }
-
-            if (System.Text.RegularExpressions.Regex.IsMatch(value, @"^\d{1,2}:\d{1,2}$"))
-            {
-                var parts = value.Split(':');
-                return parts[0].PadLeft(2, '0') + ":" + parts[1].PadLeft(2, '0');
-            }
-
-            return value;
-        };
-
-        var formattedSegments = segments.Select(formatSegment).ToList();
-        return formattedSegments.Count > 1
-            ? string.Join(" - ", formattedSegments)
-            : formattedSegments[0];
-    };
-
-    var timelineItems = new List<Tuple<string, string, string>>();
-    if (!string.IsNullOrWhiteSpace(Model.ChiTiet))
-    {
-        var rows = Model.ChiTiet
-            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(r => r.Trim())
-            .Where(r => !string.IsNullOrWhiteSpace(r));
-
-        foreach (var row in rows)
-        {
-            var parts = row.Split('|').Select(p => p.Trim()).ToArray();
-            if (parts.Length >= 2)
-            {
-                var time = normalizeTimelineTime(parts[0]);
-                var title = parts[1];
-                var note = parts.Length >= 3 ? string.Join(" | ", parts.Skip(2)) : string.Empty;
-                timelineItems.Add(Tuple.Create(time, title, note));
-            }
-        }
-    }
+    var coverImageUrl = !string.IsNullOrWhiteSpace(Model.AnhBia)
+        ? Url.Content("~/Content/img/events/" + Model.AnhBia)
+        : string.Empty;
 }
 
 <div class="container py-4">
@@ -244,27 +148,7 @@
 
                 <div class="mt-4">
                     <h5 style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">Chương trình</h5>
-                    @if (timelineItems.Any())
-                    {
-                        <div class="ce-program-shell">
-                            <div class="ce-program-timeline">
-                            @foreach (var item in timelineItems)
-                            {
-                                <div class="ce-program-item">
-                                    <div class="ce-program-item__time">@item.Item1</div>
-                                    <div class="ce-program-item__body">
-                                        <div class="ce-program-item__title">@item.Item2</div>
-                                        @if (!string.IsNullOrWhiteSpace(item.Item3))
-                                        {
-                                            <div class="ce-program-item__meta">@item.Item3</div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                            </div>
-                        </div>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(Model.ChiTiet))
+                    @if (!string.IsNullOrWhiteSpace(Model.ChiTiet))
                     {
                         <div style="font-size:.875rem;color:var(--text-muted);line-height:1.85;background:var(--surface-2);border-radius:var(--radius);padding:.875rem">
                             @Html.Raw(Model.ChiTiet.Replace("\n", "<br/>"))
@@ -396,12 +280,17 @@
                             <span class="material-symbols-outlined" style="font-size:14px">mail</span> Email
                         </button>
 
-                        @{
-                            var zaloHref = school_event_management.Helpers.WebUrlHelper.NormalizeExternalHref(Model.LinkZalo);
-                        }
-                        @if (!string.IsNullOrWhiteSpace(zaloHref))
+                        @* Chỉ hiển thị nút Zalo nếu đã đăng ký *@
+                        @if (daDangKy)
                         {
-                            <a class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1" href="@zaloHref" target="_blank" rel="noopener">
+                            <button class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1; color: var(--primary); font-weight: bold;"
+                                    onclick="ceOpenModal('modal-success')">
+                                <span class="material-symbols-outlined" style="font-size:14px">qr_code_2</span> Mã QR
+                            </button>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.LinkZalo))
+                        {
+                            <a class="ce-btn ce-btn-ghost ce-btn-sm" style="flex:1" href="@Model.LinkZalo" target="_blank" rel="noopener">
                                 <span class="material-symbols-outlined" style="font-size:14px">groups</span> Zalo
                             </a>
                         }
@@ -523,9 +412,23 @@
                 <span class="material-symbols-outlined" style="font-size:34px">check_circle</span>
             </div>
             <h4 style="font-weight:800;margin-bottom:.4rem">Đăng ký thành công!</h4>
-            <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.25rem">
+            <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.4rem">
                 Bạn đã đăng ký <strong>@Model.TenEvent</strong>.<br />Email xác nhận đã được gửi.
             </p>
+            <div style="background:var(--surface-2);border-radius:var(--radius-lg);padding:1.1rem;margin-bottom:1.25rem;text-align:center">
+                <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.65rem">Mã QR Check-in</p>
+                <div style="width:110px;height:110px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto">
+                    @if (ViewBag.QRCodeBase64 != null)
+                    {
+                        <img src="@ViewBag.QRCodeBase64" style="width:100px;height:100px" />
+                    }
+                    else
+                    {
+                        <span class="material-symbols-outlined" style="color:var(--text-muted)">qr_code_2</span>
+                    }
+                </div>
+                <p style="font-size:.73rem;color:var(--text-muted);margin-top:.55rem">Xuất trình khi tham gia sự kiện</p>
+            </div>
             <div class="d-flex gap-2">
                 <a href="@Url.Action("Registrations","Registration")" class="ce-btn ce-btn-outline" style="flex:1">Xem đăng ký</a>
                 <button class="ce-btn ce-btn-primary" style="flex:1" onclick="ceCloseModal('modal-success')">Đóng</button>
@@ -551,7 +454,7 @@
 </div>
 
 @section scripts {
-    <script src="~/Scripts/app/A-user-events.js"></script>
+    <script src="~/Scripts/A-user-events.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             if (document.getElementById('url-input')) {

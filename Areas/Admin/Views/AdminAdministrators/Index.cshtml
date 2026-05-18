@@ -6,7 +6,7 @@
 
     var admins = ViewBag.Admins as List<QuanTriVien> ?? new List<QuanTriVien>();
     var viens = ViewBag.Viens as List<Vien> ?? new List<Vien>();
-    var roleOptions = ViewBag.RoleOptions as List<int> ?? new List<int>();
+    var roleOptions = ViewBag.RoleOptions as List<int> ?? new List<int> { 0, 1, 2 };
     var lockedMap = ViewBag.LockedMap as Dictionary<string, bool> ?? new Dictionary<string, bool>();
     var currentAdminRole = ViewBag.CurrentAdminRole as int? ?? -1;
     var currentVienDisplay = ViewBag.CurrentVienDisplay as string;
@@ -40,7 +40,7 @@
                     <select name="quyen" class="form-select" required>
                         @foreach (var role in roleOptions)
                         {
-                            <option value="@role" @(role == roleOptions.First() ? "selected" : "")>@role</option>
+                            <option value="@role" @(role == roleOptions.FirstOrDefault() ? "selected" : "")>@role</option>
                         }
                     </select>
                 </div>
@@ -60,13 +60,9 @@
                             }
                         </select>
                     }
-                    @if (currentAdminRole == 0)
-                    {
-                        <small class="text-muted">Quyền 0 có thể thêm tài khoản quyền 0, 1 hoặc 2.</small>
-                    }
                     @if (currentAdminRole == 2)
                     {
-                        <small class="text-muted">Quyền 2 chỉ thêm được tài khoản quyền 1 trong cùng viện.</small>
+                        <small class="text-muted">Quyền 2 chỉ tạo tài khoản quyền 1 trong cùng viện.</small>
                     }
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
@@ -109,11 +105,7 @@
                                 <td><strong>@admin.TenDN</strong></td>
                                 <td>@(admin.Vien != null ? admin.Vien.TenVien + " (" + admin.MaQTV + ")" : admin.MaQTV)</td>
                                 <td style="min-width: 220px;">
-                                    @if (currentAdminRole != 0)
-                                    {
-                                        <span class="text-muted">@admin.Quyen</span>
-                                    }
-                                    else if (isCurrentAdmin || isPeerRoot)
+                                    @if (isCurrentAdmin || isPeerRoot)
                                     {
                                         <div class="d-flex gap-2 align-items-center">
                                             <select class="form-select form-select-sm" disabled>
@@ -148,28 +140,21 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (currentAdminRole == 0 && !isCurrentAdmin)
-                                    {
-                                        <div class="d-flex gap-2">
-                                            <form method="post" action="@Url.Action("ToggleLock", "AdminAdministrators", new { area = "Admin" })">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="tenDN" value="@admin.TenDN" />
-                                                <button type="submit" class="ce-btn ce-btn-sm @(isLocked ? "ce-btn-primary" : "ce-btn-warning")" @(isPeerRoot ? "disabled" : "")>
-                                                    @(isLocked ? "Mở khóa" : "Khóa")
-                                                </button>
-                                            </form>
-                                            <form method="post" action="@Url.Action("Delete", "AdminAdministrators", new { area = "Admin" })"
-                                                  onsubmit="return confirm('Xác nhận xóa quản trị viên @admin.TenDN?');">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="tenDN" value="@admin.TenDN" />
-                                                <button type="submit" class="ce-btn ce-btn-sm ce-btn-danger" @(isPeerRoot ? "disabled" : "")>Xóa</button>
-                                            </form>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">—</span>
-                                    }
+                                    <div class="d-flex gap-2">
+                                        <form method="post" action="@Url.Action("ToggleLock", "AdminAdministrators", new { area = "Admin" })">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="tenDN" value="@admin.TenDN" />
+                                            <button type="submit" class="ce-btn ce-btn-sm @(isLocked ? "ce-btn-primary" : "ce-btn-warning")">
+                                                @(isLocked ? "Mở khóa" : "Khóa")
+                                            </button>
+                                        </form>
+                                        <form method="post" action="@Url.Action("Delete", "AdminAdministrators", new { area = "Admin" })"
+                                              onsubmit="return confirm('Xác nhận xóa quản trị viên @admin.TenDN?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="tenDN" value="@admin.TenDN" />
+                                            <button type="submit" class="ce-btn ce-btn-sm ce-btn-danger">Xóa</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         }

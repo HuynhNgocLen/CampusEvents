@@ -823,16 +823,6 @@
 
 .ca-dash-month-item {
     text-align: center;
-    transition: transform var(--transition);
-}
-
-.ca-dash-month-item:hover {
-    transform: translateY(-2px);
-}
-
-.ca-dash-month-item:hover .ca-dash-month-col:not(.ca-dash-month-col--zero) {
-    filter: brightness(1.06);
-    box-shadow: 0 10px 22px rgba(19, 127, 236, 0.32);
 }
 
 .ca-dash-month-col-wrap {
@@ -840,8 +830,7 @@
     display: flex;
     align-items: end;
     justify-content: center;
-    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-    border: 1px solid var(--border);
+    background: var(--surface-2);
     border-radius: .65rem;
     padding: .45rem;
 }
@@ -851,19 +840,8 @@
     max-width: 34px;
     border-radius: .55rem;
     min-height: 4px;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 42%, var(--secondary) 100%);
-    box-shadow: 0 6px 16px rgba(19, 127, 236, 0.28);
-    transition: filter var(--transition), box-shadow var(--transition);
-}
-
-/* Tháng 0 lượt: vẫn có màu nhạt theo brand, không trùng nền */
-.ca-dash-month-col.ca-dash-month-col--zero {
-    background: linear-gradient(180deg, rgba(19, 127, 236, 0.38) 0%, rgba(56, 189, 248, 0.2) 100%);
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-}
-
-.ca-dash-month-item:hover .ca-dash-month-col.ca-dash-month-col--zero {
-    background: linear-gradient(180deg, rgba(19, 127, 236, 0.48) 0%, rgba(56, 189, 248, 0.28) 100%);
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    box-shadow: 0 6px 14px rgba(53, 92, 210, .24);
 }
 
 .ca-dash-month-label {
@@ -885,144 +863,5 @@
     .ca-dash-event-thumb {
         width: 44px;
         height: 44px;
-    }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   Admin — Hồ sơ QTV (Profile)
-   Nhãn dùng token theme; tránh Bootstrap .text-muted (màu cố định, tối trên dark).
-   ══════════════════════════════════════════════════════════════ */
-.ca-profile-card .ca-card__body {
-    padding: 1.5rem 1.5rem 1.35rem;
-}
-
-.ca-profile-identity {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 1.2rem 1.25rem;
-    margin: -0.25rem 0 1.35rem;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
-
-.ca-profile-avatar {
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.35rem;
-    font-weight: var(--fw-black);
-    color: var(--primary);
-    background: var(--primary-light);
-    border: 3px solid var(--primary);
-    box-shadow: 0 4px 14px rgba(19, 127, 236, 0.22);
-}
-
-.ca-profile-identity__text {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-}
-
-.ca-profile-identity__login {
-    font-size: 1.06rem;
-    font-weight: var(--fw-bold);
-    color: var(--text);
-    line-height: 1.3;
-    word-break: break-word;
-}
-
-.ca-profile-role {
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    max-width: 100%;
-    padding: 0.22rem 0.65rem;
-    font-size: 0.74rem;
-    font-weight: var(--fw-semibold);
-    color: var(--primary);
-    background: var(--primary-light);
-    border: 1px solid rgba(19, 127, 236, 0.22);
-    border-radius: var(--radius-full);
-    line-height: 1.3;
-}
-
-[data-theme="dark"] .ca-profile-role {
-    border-color: rgba(56, 189, 248, 0.28);
-}
-
-.ca-profile-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.ca-profile-field {
-    display: grid;
-    grid-template-columns: minmax(9.5rem, 32%) 1fr;
-    gap: 0.65rem 1.25rem;
-    align-items: start;
-    padding: 0.95rem 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.ca-profile-field:first-of-type {
-    padding-top: 0.15rem;
-}
-
-.ca-profile-field:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.ca-profile-field__label {
-    font-size: 0.72rem;
-    font-weight: var(--fw-semibold);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-muted);
-    line-height: 1.45;
-    padding-top: 0.2rem;
-}
-
-.ca-profile-field__value {
-    font-size: 0.94rem;
-    font-weight: var(--fw-semibold);
-    color: var(--text);
-    line-height: 1.5;
-    word-break: break-word;
-}
-
-.ca-profile-field__meta {
-    font-weight: var(--fw-medium);
-    font-size: 0.88rem;
-    color: var(--text-muted);
-}
-
-.ca-profile-actions {
-    margin-top: 1.5rem;
-    padding-top: 1.35rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-@media (max-width: 520px) {
-    .ca-profile-field {
-        grid-template-columns: 1fr;
-        gap: 0.25rem;
-        padding: 0.85rem 0;
-    }
-
-    .ca-profile-field__label {
-        padding-top: 0;
     }
 }

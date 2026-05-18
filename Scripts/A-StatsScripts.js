@@ -90,10 +90,7 @@ if (WEEK_LABELS.length > 0) {
 }
 
 function loadChartData(yr) {
-    let url = `${CHART_DATA_URL}?year=${encodeURIComponent(yr)}`;
-    if (typeof STATS_MA_VIEN === 'string' && STATS_MA_VIEN.length) {
-        url += `&maVien=${encodeURIComponent(STATS_MA_VIEN)}`;
-    }
+    const url = `${CHART_DATA_URL}?year=${encodeURIComponent(yr)}`;
 
     fetch(url)
         .then(response => {

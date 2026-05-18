@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    Content/campus-variables.css  —  Design tokens
    ============================================================ */
 :root {
@@ -6,8 +6,6 @@
     --primary:       #137fec;
     --primary-dark:  #0e65c0;
     --primary-light: #e8f3fd;
-    /* Dùng chung cho gradient (campus-admin progress + biểu đồ tháng) */
-    --secondary:     #38bdf8;
     --accent:        #f59e0b;
     --danger:        #ef4444;
     --success:       #22c55e;
@@ -60,5 +58,4 @@
     --text-muted: #94a3b8;
     --text-light: #64748b;
     --primary-light: #0e2a44;
-    --secondary: #38bdf8;
 }

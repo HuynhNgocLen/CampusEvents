@@ -13,7 +13,7 @@
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/app/campus-event-index.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/campus-event-index.css")" rel="stylesheet" />
 }
 
 <div class="ca-content">
@@ -40,9 +40,9 @@
         </select>
         <select name="semester" class="ca-dash-filter-select" onchange="this.form.submit()">
             <option value="" @(!selectedSemester.HasValue ? "selected" : "")>Cả năm</option>
-            <option value="1" @(selectedSemester == 1 ? "selected" : "")>Học kì 1</option>
-            <option value="2" @(selectedSemester == 2 ? "selected" : "")>Học kì 2</option>
-            <option value="3" @(selectedSemester == 3 ? "selected" : "")>Học kì 3</option>
+            <option value="1" @(selectedSemester == 1 ? "selected" : "")>Kỳ 1 (T9-T12)</option>
+            <option value="2" @(selectedSemester == 2 ? "selected" : "")>Kỳ 2 (T1-T4)</option>
+            <option value="3" @(selectedSemester == 3 ? "selected" : "")>Kỳ 3 (T5-T8)</option>
         </select>
         @if (!string.IsNullOrWhiteSpace(currentCat))
         {

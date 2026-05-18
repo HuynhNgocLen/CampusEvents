@@ -11,7 +11,7 @@
 }
 
 @section styles {
-<link href="@Url.Content("~/Content/app/campus-event-form.css?v=3")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/campus-event-form.css?v=2")" rel="stylesheet" />
 <link href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/contents.css" rel="stylesheet" />
 
 }
@@ -122,11 +122,6 @@
                             @Html.TextAreaFor(m => m.MoTa, new { id = "richContent", rows = 10 })
                             @Html.ValidationMessageFor(m => m.MoTa, "", new { @class = "text-danger", style = "font-size:.76rem" })
                         </div>
-                        @{
-                            ViewBag.TimelineInputClass = "ce-form-control";
-                            ViewBag.TimelineLabelClass = "ce-form-label";
-                        }
-                        @Html.Partial("_EventTimelineEditor", Model)
                     </div>
                 </div>
 
@@ -306,6 +301,5 @@
 
 @section scripts {
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
-<script src="@Url.Content("~/Scripts/app/event-timeline-editor.js")"></script>
-<script src="@Url.Content("~/Scripts/app/A-event-create.js")"></script>
+<script src="@Url.Content("~/Scripts/A-event-create.js")"></script>
 }

@@ -1,6 +1,4 @@
 using System;
-using System.Data.Entity;
-using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 using shcool_event_management.Areas.Admin.Helpers;
@@ -16,25 +14,6 @@ namespace shcool_event_management.Areas.Admin.Controllers
         private readonly school_event_managementEntities _db
             = new school_event_managementEntities();
 
-
-        public new ActionResult Profile()
-        {
-            ViewBag.ActiveMenu = "profile";
-            ViewBag.Title = "Hồ sơ quản trị viên";
-
-            var tenDn = User.Identity?.Name;
-            if (string.IsNullOrEmpty(tenDn))
-                return RedirectToAction("Login", "AdminAccount", new { area = "Admin" });
-
-            var admin = _db.QuanTriViens.Include(q => q.Vien).FirstOrDefault(x => x.TenDN == tenDn);
-            if (admin == null)
-            {
-                TempData["Error"] = "Không tìm thấy tài khoản quản trị.";
-                return RedirectToAction("Login", "AdminAccount", new { area = "Admin" });
-            }
-
-            return View(admin);
-        }
 
         public ActionResult Index(string tab = "general")
         {

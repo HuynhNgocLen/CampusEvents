@@ -20,7 +20,7 @@
     <globalization requestEncoding="utf-8" responseEncoding="utf-8" fileEncoding="utf-8" culture="vi-VN" uiCulture="vi-VN" />
     <compilation debug="true" targetFramework="4.7.2" />
     <httpRuntime targetFramework="4.7.2" />
-    <!-- Required when using FormsAuthentication.SetAuthCookie (admin login) with [Authorize] -->
+  <!-- Bắt buộc cho đăng nhập admin (FormsAuthentication.SetAuthCookie + [Authorize]) -->
     <authentication mode="Forms">
       <forms loginUrl="~/Admin/AdminAccount/Login" timeout="60" slidingExpiration="true" />
     </authentication>

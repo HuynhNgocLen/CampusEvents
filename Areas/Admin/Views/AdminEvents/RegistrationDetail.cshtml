@@ -3,7 +3,6 @@
     ViewBag.Title = "Chi tiết đăng ký — CampusEvents Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var ev       = ViewBag.Event as shcool_event_management.Models.EVENT;
-    var maEventId = ViewBag.MaEvent as int? ?? ev?.MaEvent ?? 0;
     int totalReg = (int)(ViewBag.TotalReg   ?? 0);
     int registered = (int)(ViewBag.Registered ?? 0);
     int completed = (int)(ViewBag.Completed ?? 0);
@@ -14,7 +13,7 @@
     string status= ViewBag.Status as string;
 
     Func<int,string> pageUrl = p => Url.Action("RegistrationDetail","AdminEvents",
-        new{area="Admin",id=maEventId,page=p,search,status});
+        new{area="Admin",id=ev?.MaEvent,page=p,search,status});
     double pct = ev != null && ev.SoLuongToiDa > 0
         ? Math.Round(ev.SoLuongDaDangKy * 100.0 / ev.SoLuongToiDa,1) : 0;
 }
@@ -64,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="display:flex;gap:.5rem;flex-shrink:0;flex-wrap:wrap">
+                    <div style="display:flex;gap:.5rem;flex-shrink:0">
                         <a href="@Url.Action("ExportExcel","AdminEvents",new{area="Admin",id=ev.MaEvent,search,status})"
                            class="ce-btn ce-btn-outline">
                             <span class="material-symbols-outlined">download</span>Xuất Excel
@@ -99,13 +98,9 @@
         </div>
     }
 
-    @* Filter bar — luôn gửi id (query) để tránh thiếu route segment khiến binding lỗi *@
-    <form method="get" action="@Url.Action("RegistrationDetail","AdminEvents",new{area="Admin"})"
+    @* Filter bar *@
+    <form method="get" action="@Url.Action("RegistrationDetail","AdminEvents",new{area="Admin",id=ev?.MaEvent})"
           style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:.875rem 1.1rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm)">
-        @if (maEventId > 0)
-        {
-            <input type="hidden" name="id" value="@maEventId" />
-        }
         <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-light)">filter_list</span>
         <div style="position:relative;flex:1;max-width:280px">
             <span class="material-symbols-outlined" style="position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:16px;color:var(--text-light);pointer-events:none">search</span>
@@ -124,7 +119,7 @@
         </button>
         @if (!string.IsNullOrWhiteSpace(search) || !string.IsNullOrWhiteSpace(status))
         {
-            <a href="@Url.Action("RegistrationDetail","AdminEvents",new{area="Admin",id=maEventId})"
+            <a href="@Url.Action("RegistrationDetail","AdminEvents",new{area="Admin",id=ev?.MaEvent})"
                class="ce-btn ce-btn-outline ce-btn-sm"><span class="material-symbols-outlined">close</span>Xóa lọc</a>
         }
     </form>
@@ -205,7 +200,7 @@
                                         using (Html.BeginForm("CancelRegistration","AdminEvents",new{area="Admin"},FormMethod.Post))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <input type="hidden" name="maEvent"    value="@maEventId"/>
+                                            <input type="hidden" name="maEvent"    value="@ev?.MaEvent"/>
                                             <input type="hidden" name="idSinhVien" value="@reg.IDSinhVien"/>
                                             <button type="submit" class="ce-btn ce-btn-sm ce-btn-danger"
                                                     onclick="return confirm('Hủy đăng ký của @sv?.Ten?')"

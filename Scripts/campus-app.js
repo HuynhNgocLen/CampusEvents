@@ -3,52 +3,20 @@
 /* Theme (light / dark) */
 var CeTheme = (function () {
     var KEY = 'ce-theme';
+    function set(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem(KEY, t);
+        _syncIcons(t);
+    }
+    function toggle() { set(get() === 'dark' ? 'light' : 'dark'); }
+    function get() { return document.documentElement.getAttribute('data-theme') || 'light'; }
+    function init() { set(localStorage.getItem(KEY) || 'light'); }
     function _syncIcons(t) {
         document.querySelectorAll('.ce-theme-icon').forEach(function (el) {
             el.textContent = t === 'dark' ? 'dark_mode' : 'light_mode';
         });
     }
-    /** Cập nhật viền chọn chủ đề trên trang Cài đặt (nếu có). */
-    function _syncAdminThemePickers(t) {
-        var swL = document.getElementById('swLight');
-        var swD = document.getElementById('swDark');
-        if (!swL && !swD) return;
-        if (swL) swL.classList.toggle('selected', t === 'light');
-        if (swD) swD.classList.toggle('selected', t === 'dark');
-        var st = document.getElementById('themeSaveStatus');
-        if (st) {
-            st.className = 'appearance-status';
-            st.textContent = 'Đang dùng: ' + (t === 'dark' ? 'Tối (Dark)' : 'Sáng (Light)');
-        }
-    }
-    function _persistAdminTheme(t) {
-        if (!window.ceAdminSaveThemeUrl) return;
-        var tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
-        if (!tokenInput || !tokenInput.value) return;
-        fetch(window.ceAdminSaveThemeUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-            body: 'theme=' + encodeURIComponent(t) + '&__RequestVerificationToken=' + encodeURIComponent(tokenInput.value)
-        }).catch(function () { /* im lặng: chủ đề vẫn áp dụng cục bộ */ });
-    }
-    /**
-     * @param {string} t  'light' | 'dark'
-     * @param {{ skipServer?: boolean }} [opts]  skipServer: không gọi API (dùng khi trang tự fetch hoặc init)
-     */
-    function set(t, opts) {
-        opts = opts || {};
-        document.documentElement.setAttribute('data-theme', t);
-        try { localStorage.setItem(KEY, t); } catch (e) { }
-        _syncIcons(t);
-        _syncAdminThemePickers(t);
-        if (!opts.skipServer) {
-            _persistAdminTheme(t);
-        }
-    }
-    function toggle() { set(get() === 'dark' ? 'light' : 'dark'); }
-    function get() { return document.documentElement.getAttribute('data-theme') || 'light'; }
-    function init() { set(localStorage.getItem(KEY) || 'light', { skipServer: true }); }
-    return { init: init, toggle: toggle, get: get, set: set };
+    return { init: init, toggle: toggle, get: get };
 })();
 
 /* Toast */
