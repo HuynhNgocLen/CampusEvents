@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="27afcef698eb4ec483e15cd7b4c9ece2" Name="Diagram1">
+      <Diagram DiagramId="58d19e1b38184badbbf13081ff61716f" Name="Diagram1">
         <EntityTypeShape EntityType="school_event_managementModel.DangKySuKien" Width="1.5" PointX="10.25" PointY="7.5" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.DanhMuc" Width="1.5" PointX="5.75" PointY="3.375" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.DiaDiem" Width="1.5" PointX="5.75" PointY="11.125" IsExpanded="true" />
@@ -13,10 +13,11 @@
         <EntityTypeShape EntityType="school_event_managementModel.QuanTriVien" Width="1.5" PointX="3" PointY="16.625" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.SinhVien" Width="1.5" PointX="5.25" PointY="6.125" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.SuKienYeuThich" Width="1.5" PointX="10.25" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.sysdiagram" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="school_event_managementModel.Vien" Width="1.5" PointX="0.75" PointY="7.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.vw_SoChoConLai" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="school_event_managementModel.vw_UserStatsByYear" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_DiemRenLuyenTheoKy" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_SoChoConLai" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="school_event_managementModel.vw_UserStatsByYear" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
         <AssociationConnector Association="school_event_managementModel.FK_DangKy_Event" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_DangKy_SinhVien" ManuallyRouted="false" />
         <AssociationConnector Association="school_event_managementModel.FK_Event_DanhMuc" ManuallyRouted="false" />

@@ -189,8 +189,9 @@ namespace shcool_event_management.Areas.Admin.Helpers
             var registrationCount = db.DangKySuKiens
                 .Count(d => eventIds.Contains(d.MaEvent) && d.NgayDangKy >= weekStart && d.NgayDangKy < weekEnd);
 
+            var upcomingEnd = now.AddDays(7);
             var upcomingCount = db.EVENTs
-                .Count(e => e.NguoiDang == adminMaQtv && e.NgayBatDau >= now && e.NgayBatDau < now.AddDays(7));
+                .Count(e => e.NguoiDang == adminMaQtv && e.NgayBatDau >= now && e.NgayBatDau < upcomingEnd);
 
             items.Add(new AdminNotificationItem
             {
